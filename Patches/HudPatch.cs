@@ -288,6 +288,7 @@ namespace TownOfHost
         }
         public static string GetText()
         {
+            if (SystemType == 0 && !TypingAmount) return "";
             return SystemType.ToString() + "(" + ((SystemTypes)SystemType).ToString() + ")\r\n" + amount;
         }
     }

@@ -15,6 +15,9 @@ public class MeetingVoteManager
     private static MeetingVoteManager _instance;
     private static LogHandler logger = Logger.Handler(nameof(MeetingVoteManager));
 
+    public const byte Skip = 253;
+    public const byte NoVote = 254;
+
     private MeetingVoteManager()
     {
         meetingHud = MeetingHud.Instance;
@@ -31,11 +34,29 @@ public class MeetingVoteManager
     /// </summary>
     public void ClearVotes()
     {
+        allVotes.Clear();
         foreach (var voteArea in meetingHud.playerStates)
         {
-            allVotes[voteArea.TargetPlayerId] = new(voteArea.TargetPlayerId);
+            if (voteArea == null) continue;
+
+            byte playerId = (byte)voteArea.PlayerId;
+
+            // 死亡しているプレイヤーは投票権なし（NoVote扱い）
+            var state = PlayerState.GetByPlayerId(playerId);
+            if (state != null && state.IsDead)
+            {
+                allVotes[playerId] = new VoteData(playerId)
+                {
+                    VotedFor = NoVote
+                };
+            }
+            else
+            {
+                allVotes[playerId] = new VoteData(playerId);
+            }
         }
     }
+
     /// <summary>
     /// 今までに行われた投票をすべて削除し，特定の投票先に1票投じられた状態で会議を強制終了します
     /// </summary>
@@ -50,13 +71,10 @@ public class MeetingVoteManager
         allVotes[voter] = vote;
         EndMeeting(false);
     }
+
     /// <summary>
     /// 投票を行います．投票者が既に投票している場合は票を上書きします
     /// </summary>
-    /// <param name="voter">投票者</param>
-    /// <param name="voteFor">投票先</param>
-    /// <param name="numVotes">票数</param>
-    /// <param name="isIntentional">投票者自身の投票操作による自発的な投票かどうか</param>
     public void SetVote(byte voter, byte voteFor, int numVotes = 1, bool isIntentional = true)
     {
         if (!allVotes.TryGetValue(voter, out var vote))
@@ -95,6 +113,7 @@ public class MeetingVoteManager
             vote.DoVote(voteFor, numVotes);
         }
     }
+
     /// <summary>
     /// 議論時間が終わってる or 全員が投票を終えていれば会議を終了します
     /// </summary>
@@ -105,10 +124,10 @@ public class MeetingVoteManager
             EndMeeting();
         }
     }
+
     /// <summary>
     /// 無条件で会議を終了します
     /// </summary>
-    /// <param name="applyVoteMode">スキップと同数投票の設定を適用するかどうか</param>
     public void EndMeeting(bool applyVoteMode = true)
     {
         var result = CountVotes(applyVoteMode);
@@ -118,17 +137,18 @@ public class MeetingVoteManager
         var states = new List<MeetingHud.VoterState>();
         foreach (var voteArea in meetingHud.playerStates)
         {
-            var voteData = AllVotes.TryGetValue(voteArea.TargetPlayerId, out var value) ? value : null;
+            byte areaPlayerId = (byte)voteArea.PlayerId;
+            var voteData = AllVotes.TryGetValue(areaPlayerId, out var value) ? value : null;
             if (voteData == null)
             {
-                logger.Warn($"{Utils.GetPlayerById(voteArea.TargetPlayerId).GetNameWithRole()} の投票データがありません");
+                logger.Warn($"{Utils.GetPlayerById(areaPlayerId).GetNameWithRole()} の投票データがありません");
                 continue;
             }
             for (var i = 0; i < voteData.NumVotes; i++)
             {
                 states.Add(new()
                 {
-                    VoterId = voteArea.TargetPlayerId,
+                    VoterId = areaPlayerId,
                     VotedForId = voteData.VotedFor,
                 });
             }
@@ -136,12 +156,12 @@ public class MeetingVoteManager
 
         if (AntiBlackout.OverrideExiledPlayer)
         {
-            meetingHud.RpcVotingComplete(states.ToArray(), null, true);
+            meetingHud.RpcVotingComplete(states.ToArray(), null, true, false, 0);
             ExileControllerWrapUpPatch.AntiBlackout_LastExiled = result.Exiled;
         }
         else
         {
-            meetingHud.RpcVotingComplete(states.ToArray(), result.Exiled, result.IsTie);
+            meetingHud.RpcVotingComplete(states.ToArray(), result.Exiled, result.IsTie, false, 0);
         }
         if (result.Exiled != null)
         {
@@ -149,25 +169,21 @@ public class MeetingVoteManager
         }
         Destroy();
     }
+
     /// <summary>
     /// <see cref="AllVotes"/>から投票をカウントします
     /// </summary>
-    /// <param name="applyVoteMode">スキップと同数投票の設定を適用するかどうか</param>
-    /// <returns>([Key: 投票先,Value: 票数]の辞書, 追放される人, 同数投票かどうか)</returns>
     public VoteResult CountVotes(bool applyVoteMode)
     {
-        // 投票モードに従って投票を変更
         if (applyVoteMode && Options.VoteMode.GetBool())
         {
             ApplySkipAndNoVoteMode();
         }
 
-        // Key: 投票された人
-        // Value: 票数
         Dictionary<byte, int> votes = new();
         foreach (var voteArea in meetingHud.playerStates)
         {
-            votes[voteArea.TargetPlayerId] = 0;
+            votes[(byte)voteArea.PlayerId] = 0;
         }
         votes[Skip] = 0;
         foreach (var vote in AllVotes.Values)
@@ -181,9 +197,7 @@ public class MeetingVoteManager
 
         return new VoteResult(votes);
     }
-    /// <summary>
-    /// スキップモードと無投票モードに応じて，投票を上書きしたりプレイヤーを死亡させたりします
-    /// </summary>
+
     private void ApplySkipAndNoVoteMode()
     {
         var ignoreSkipModeDueToFirstMeeting = MeetingStates.FirstMeeting && Options.WhenSkipVoteIgnoreFirstMeeting.GetBool();
@@ -232,6 +246,7 @@ public class MeetingVoteManager
             }
         }
     }
+
     public void Destroy()
     {
         _instance = null;
@@ -251,7 +266,7 @@ public class MeetingVoteManager
     public class VoteData
     {
         public byte Voter { get; private set; } = byte.MaxValue;
-        public byte VotedFor { get; private set; } = NoVote;
+        public byte VotedFor { get; set; } = NoVote;
         public int NumVotes { get; private set; } = 1;
         public bool IsSkip => VotedFor == Skip && !PlayerState.GetByPlayerId(Voter).IsDead;
         public bool HasVoted => VotedFor != NoVote || PlayerState.GetByPlayerId(Voter).IsDead;
@@ -268,33 +283,19 @@ public class MeetingVoteManager
 
     public readonly struct VoteResult
     {
-        /// <summary>
-        /// Key: 投票された人<br/>
-        /// Value: 得票数
-        /// </summary>
         public IReadOnlyDictionary<byte, int> VotedCounts => votedCounts;
         private readonly Dictionary<byte, int> votedCounts;
-        /// <summary>
-        /// 追放されるプレイヤー
-        /// </summary>
         public readonly NetworkedPlayerInfo Exiled;
-        /// <summary>
-        /// 同数投票かどうか
-        /// </summary>
         public readonly bool IsTie;
 
         public VoteResult(Dictionary<byte, int> votedCounts)
         {
             this.votedCounts = votedCounts;
 
-            // 票数順に整列された投票
             var orderedVotes = votedCounts.OrderByDescending(vote => vote.Value);
-            // 最も票を得た人の票数
             var maxVoteNum = orderedVotes.FirstOrDefault().Value;
-            // 最多票数のプレイヤー全員
             var mostVotedPlayers = votedCounts.Where(vote => vote.Value == maxVoteNum).Select(vote => vote.Key).ToArray();
 
-            // 最多票数のプレイヤーが複数人いる場合
             if (mostVotedPlayers.Length > 1)
             {
                 IsTie = true;
@@ -308,7 +309,6 @@ public class MeetingVoteManager
                 logger.Info($"最多得票者: {GetVoteName(mostVotedPlayers[0])}");
             }
 
-            // 同数投票時の特殊モード
             if (IsTie && Options.VoteMode.GetBool())
             {
                 var tieMode = (TieMode)Options.WhenTie.GetValue();
@@ -334,7 +334,4 @@ public class MeetingVoteManager
             }
         }
     }
-
-    public const byte Skip = 253;
-    public const byte NoVote = 254;
 }

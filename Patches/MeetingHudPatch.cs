@@ -36,7 +36,7 @@ public static class MeetingHudPatch
             var voted = Utils.GetPlayerById(suspectPlayerId);
             if (voter.GetRoleClass()?.CheckVoteAsVoter(voted) == false)
             {
-                __instance.RpcClearVote(voter.GetClientId());
+                __instance.RpcClearVote((InnerNet.PlayerId)voter.PlayerId);
                 Logger.Info($"{voter.GetNameWithRole()} は投票しない", nameof(CastVotePatch));
                 return false;
             }
@@ -65,7 +65,7 @@ public static class MeetingHudPatch
             var myRole = PlayerControl.LocalPlayer.GetRoleClass();
             foreach (var pva in __instance.playerStates)
             {
-                var pc = Utils.GetPlayerById(pva.TargetPlayerId);
+                var pc = Utils.GetPlayerById((byte)pva.PlayerId);
                 if (pc == null) continue;
                 var roleTextMeeting = UnityEngine.Object.Instantiate(pva.NameText);
                 roleTextMeeting.transform.SetParent(pva.NameText.transform);
@@ -130,7 +130,7 @@ public static class MeetingHudPatch
                 var seer = PlayerControl.LocalPlayer;
                 var seerRole = seer.GetRoleClass();
 
-                var target = Utils.GetPlayerById(pva.TargetPlayerId);
+                var target = Utils.GetPlayerById((byte)pva.PlayerId);
                 if (target == null) continue;
 
                 var sb = new StringBuilder();
@@ -175,7 +175,7 @@ public static class MeetingHudPatch
             {
                 __instance.playerStates.DoIf(x => x.HighlightedFX.enabled, x =>
                 {
-                    var player = Utils.GetPlayerById(x.TargetPlayerId);
+                    var player = Utils.GetPlayerById((byte)x.PlayerId);
                     player.RpcExile();
                     var state = PlayerState.GetByPlayerId(player.PlayerId);
                     state.DeathReason = CustomDeathReason.Execution;

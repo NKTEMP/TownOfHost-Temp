@@ -1,34 +1,63 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
-    <Description>Town Of Host</Description>
-    <Authors>tukasa0001(EmptyBottle), integral0131</Authors>
-    <langVersion>preview</langVersion>
-    <NoWarn>MSB3246</NoWarn>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+		<GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+		<Description>Town Of Host</Description>
+		<Authors>tukasa0001(EmptyBottle), integral0131</Authors>
+		<langVersion>preview</langVersion>
+		<NoWarn>MSB3246</NoWarn>
 
-  <ItemGroup>
-    <Reference Include="$(AmongUs)\BepInEx\core\*.dll" />
-    <Reference Include="$(AmongUs)\BepInEx\interop\*.dll" />
-    <EmbeddedResource Include=".\Resources\*.png" />
-    <EmbeddedResource Include=".\Resources\string.csv" />
-  </ItemGroup>
-    
-  <ItemGroup>
-    <PackageReference Include="Costura.Fody" Version="5.7.0">
-      <IncludeAssets>runtime; compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="csv" Version="2.0.87" />
-    <PackageReference Include="GitInfo" Version="2.0.20">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
+		<!-- バージョン固定とGitInfoの完全停止設定 -->
+		<Version>5.1.14</Version>
+		<PackageVersion>5.1.14</PackageVersion>
+		<InformationalVersion>5.1.14</InformationalVersion>
+		<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+		<GitInfoReportNotRepository>false</GitInfoReportNotRepository>
+		<GitBranch></GitBranch>
+		<GitCommit></GitCommit>
+		<GitSha></GitSha>
+		<GitBaseVersionLabel></GitBaseVersionLabel>
+		<GitSemVerLabel></GitSemVerLabel>
 
-  <Target Name="Copy" AfterTargets="Build" Condition="'$(AmongUs)' != ''">
-    <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(AmongUs)/BepInEx/plugins/" Condition="'$(Configuration)' == 'Debug'" />
-  </Target>
+		<!-- Mod環境のパス -->
+		<AmongUs>D:\SteamLibrary\steamapps\common\TeU</AmongUs>
+	</PropertyGroup>
+
+	<!-- BepInEx 6.x のみ（v5.xを除外してピンポイント指定） -->
+	<ItemGroup>
+		<Reference Include="$(AmongUs)\BepInEx\core\BepInEx.Core.dll" />
+		<Reference Include="$(AmongUs)\BepInEx\core\BepInEx.Unity.IL2CPP.dll" />
+		<Reference Include="$(AmongUs)\BepInEx\core\BepInEx.Unity.Common.dll" />
+		<Reference Include="$(AmongUs)\BepInEx\core\0Harmony.dll" />
+		<Reference Include="$(AmongUs)\BepInEx\core\Il2CppInterop.Common.dll" />
+		<Reference Include="$(AmongUs)\BepInEx\core\Il2CppInterop.Runtime.dll" />
+		<Reference Include="$(AmongUs)\BepInEx\core\Il2CppInterop.HarmonySupport.dll" />
+
+		<!-- ゲーム本体側の生成アセンブリ -->
+		<Reference Include="$(AmongUs)\BepInEx\interop\*.dll" />
+
+		<!-- リソース -->
+		<EmbeddedResource Include=".\Resources\*.png" />
+		<EmbeddedResource Include=".\Resources\string.csv" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Costura.Fody" Version="6.2.0">
+			<IncludeAssets>runtime; compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+		<PackageReference Include="csv" Version="2.0.245" />
+		<PackageReference Include="GitInfo" Version="3.6.1">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>none</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<Target Name="Copy" AfterTargets="Build" Condition="'$(AmongUs)' != ''">
+		<Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(AmongUs)/BepInEx/plugins/" Condition="'$(Configuration)' == 'Debug'" />
+	</Target>
+
+	<Target Name="GitInfo" />
+	<Target Name="GitVersion" />
 </Project>

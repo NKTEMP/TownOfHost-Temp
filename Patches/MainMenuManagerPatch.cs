@@ -37,11 +37,12 @@ namespace TownOfHost
                     new(1f, -1f, 1f),
                     new(153, 153, 153, byte.MaxValue),
                     new(209, 209, 209, byte.MaxValue),
-                    () => Application.OpenURL("https://github.com/tukasa0001/TownOfHost"),
+                    () => Application.OpenURL("https://github.com/NKTEMP/TownOfHost-Temp"),
                     "GitHub");
             }
 
             //Updateボタンを生成
+            /*
             if (SimpleButton.IsNullOrDestroyed(UpdateButton))
             {
                 UpdateButton = CreateButton(
@@ -58,7 +59,7 @@ namespace TownOfHost
                     new(2.5f, 1f),
                     isActive: false);
             }
-
+            */
 #if RELEASE
             // フリープレイの無効化
             var howToPlayButton = __instance.howToPlayButton;
