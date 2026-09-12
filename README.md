@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./Images/TownOfHost-Logo.png" alt="Town Of Host-Temp">
+  <img src=".TownOfHost-Logo.png" alt="Town Of Host-Temp">
 </p>
 
 # Town Of Host-Temp
