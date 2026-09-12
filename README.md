@@ -3,7 +3,7 @@
 このModは非公式のものであり、Among Usの開発元である"Innersloth"は一切関与していません。
 このModに関する問題などについて、公式サポートへ問い合わせないでください。
 
-**Town Of Host-Temp** は、[Town Of Host](https://github.com/townofhost/TownOfHost) をフォーク元としたAmong Us向けModです。
+**Town Of Host-Temp** は、[Town Of Host](https://github.com/tukasa0001/TownOfHost) をフォーク元としたAmong Us向けModです。
 
 また、**会議の処理についてはTownOfHost-Kを参考にしています。**
 
