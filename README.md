@@ -6,7 +6,7 @@
 
 Town Of Host-Temp は、Among Us 向けの非公式MODです。
 
-Town Of Host をフォーク元とし、会議処理など一部の実装について TownOfHost-K を参考にしています。
+Town Of Host-Kをフォーク元とし、会議処理など一部の実装について TownOfHost-K を参考にしています。
 
 > [!WARNING]
 > このMODは非公式のファンメイドMODです。
@@ -22,10 +22,10 @@ Town Of Host をフォーク元とし、会議処理など一部の実装につ�
 | --- | --- |
 | MOD名 | Town Of Host-Temp |
 | Among Us バージョン | **18.0.0** |
-| フォーク元 | Town Of Host |
+| フォーク元 | Town Of Host-k |
 | 参考プロジェクト | TownOfHost-K |
 | 開発者 | てんぷら |
-| イラスト | CheEZ! |
+| イラスト | CheEZ!,あけぼの,てんぷら|
 
 ### 🔗 Links
 
