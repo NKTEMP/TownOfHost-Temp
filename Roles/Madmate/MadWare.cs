@@ -17,7 +17,8 @@ public sealed class MadWare : RoleBase, IKillFlashSeeable, IDeathReasonSeeable
             25000,
             SetupOptionItem,
             "MWa",
-            OptionSort: (4, 3)
+            OptionSort: (4, 3),
+            from: From.TownOfHost_K
         );
     public MadWare(PlayerControl player)
     : base(

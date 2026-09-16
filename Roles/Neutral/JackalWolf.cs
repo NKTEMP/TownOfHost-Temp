@@ -29,6 +29,7 @@ public sealed class JackalWolf : RoleBase, ILNKiller, IUsePhantomButton, IDouble
             {
                 AssignCountRule = new(1, 1, 1)
             },
+            from: From.TownOfHost_K,
             AddHaveRole: () => OptionHaveRole.GetRole());
     public JackalWolf(PlayerControl player)
     : base(

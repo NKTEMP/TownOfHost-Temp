@@ -26,6 +26,7 @@ public sealed class Satellite : RoleBase, ISelfVoter
             "Sat",
             "#00e1ff",
             (6, 3),
+            from: From.TownOfHost_K,
             introSound: () => DestroyableSingleton<AutoOpenDoor>.Instance.OpenSound
         );
     public Satellite(PlayerControl player)

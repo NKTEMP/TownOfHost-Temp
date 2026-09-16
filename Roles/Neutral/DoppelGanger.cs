@@ -27,7 +27,8 @@ public sealed class DoppelGanger : RoleBase, ILNKiller, ISchrodingerCatOwner, IA
             {
                 AssignCountRule = new(1, 1, 1)
             },
-            Desc: () => string.Format(GetString("DoppelGangerDesc"), OptionShapeCountUp.GetFloat(), OptionAddWinCount.GetInt(), OptionSoloWinCount.GetInt())
+            Desc: () => string.Format(GetString("DoppelGangerDesc"), OptionShapeCountUp.GetFloat(), OptionAddWinCount.GetInt(), OptionSoloWinCount.GetInt()),
+            from: From.TownOfHost_K
             );
     public DoppelGanger(PlayerControl player)
     : base(

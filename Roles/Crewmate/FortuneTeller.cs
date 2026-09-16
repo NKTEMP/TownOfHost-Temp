@@ -25,6 +25,8 @@ public sealed class FortuneTeller : RoleBase, ISelfVoter
             "#6b3ec3",
             (3, 0),
             introSound: () => GetIntroSound(RoleTypes.Scientist)
+            //Kの役なのか微妙。元はと言えば本家人狼役だし()
+            //from: From.TownOfHost_K
         );
     public FortuneTeller(PlayerControl player)
     : base(

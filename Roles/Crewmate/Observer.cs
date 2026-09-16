@@ -16,10 +16,11 @@ public sealed class Observer : RoleBase
             CustomRoleTypes.Crewmate,
             23300,
             SetupOptionItem,
-            "Observer",
+            "Obs",
             "#8a99b7",
             (3, 9),
-            false
+            false,
+            from: From.TownOfHost_K
         );
     public Observer(PlayerControl player)
     : base(

@@ -30,7 +30,9 @@ public sealed class Fox : RoleBase, ISystemTypeUpdateHook, IRoomTasker
             assignInfo: new RoleAssignInfo(CustomRoles.Fox, CustomRoleTypes.Neutral)
             {
                 AssignCountRule = new(1, 1, 1)
-            }
+            },
+            //正直これもKのオリ役じゃないと思ってる by あけぼの
+            from: From.TOR_GM_Edition
         );
     public Fox(PlayerControl player)
     : base(

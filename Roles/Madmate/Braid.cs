@@ -20,7 +20,8 @@ public sealed class Braid : RoleBase, IKillFlashSeeable, IDeathReasonSeeable
             "br",
             OptionSort: (0, 1),
             introSound: () => GetIntroSound(RoleTypes.Impostor),
-            combination: CombinationRoles.DriverandBraid
+            combination: CombinationRoles.DriverandBraid,
+            from: From.TownOfHost_K
         );
     public Braid(PlayerControl player)
     : base(

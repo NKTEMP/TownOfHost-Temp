@@ -25,7 +25,8 @@ public sealed class Fool : RoleBase, IKiller, IAdditionalWinner
             {
                 AssignUnitRoles = [CustomRoles.Fool, CustomRoles.Nue]
             },
-            combination: CombinationRoles.FoolandNue
+            combination: CombinationRoles.FoolandNue,
+            from: From.TownOfHost_K
         );
     public Fool(PlayerControl player)
     : base(

@@ -37,7 +37,8 @@ public sealed class JackalAlien : RoleBase, IMeetingTimeAlterable, ILNKiller, IS
                 Desc: () =>
                 {
                     return GetString("JackalAlienInfoLong") + (OptionCanMakeSidekick.GetBool() ? string.Format(GetString("JackalDescSidekick"), !OptionImpostorCanSidekick.GetBool() ? GetString("JackalDescImpostorSideKick") : "") : "");
-                }
+                },
+                from: From.TownOfHost_K
             );
     public JackalAlien(PlayerControl player)
 : base(

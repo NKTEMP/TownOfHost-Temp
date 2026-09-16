@@ -21,7 +21,8 @@ public sealed class Bakery : RoleBase
             "#8f6121",
             (4, 2),
             introSound: () => GetIntroSound(RoleTypes.Crewmate)
-        );
+            //fromは一旦なしでいっときます by あけぼの
+            );
     public Bakery(PlayerControl player)
     : base(
         RoleInfo,
