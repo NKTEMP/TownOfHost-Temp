@@ -198,7 +198,7 @@ namespace TownOfHost
                     SelfName = SelfSuffix.ToString() == "" ? SelfName : ($"\n{SelfName}" + "<line-height=85%>\r\n " + SelfSuffix.ToString() + "</line-height>");
                     SelfName = "<line-height=85%>" + SelfName + "\r\n";
                     SelfName = SelfName.RemoveDeltext("color=#", "#");
-                    //SelfName = $"\n\n\n\n\n\n{SelfName}{(SelfSuffix.ToString() == "" ? "\n\n\n\n\n\n" : "\n\n\n\n")}<{Main.ModColor}55>TOH-K</color>";
+                    //SelfName = $"\n\n\n\n\n\n{SelfName}{(SelfSuffix.ToString() == "" ? "\n\n\n\n\n\n" : "\n\n\n\n")}<{Main.ModColor}55>TOH-Tm</color>";
 
                     if (SelfName.Length > 340 && IsRestriction())
                     {
@@ -453,7 +453,7 @@ namespace TownOfHost
             if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default && !Main.DontGameSet) return;
 
             /* 会議拡張の奴 */
-            var secondpcMinfo = $"<voffset=20><line-height=0><{Main.ModColor}><size=85%>TownOfHost-K</size>\t\t \n \t\t</color><size=70%><#ffffff>v{Main.PluginShowVersion}</color></size></voffset>";
+            var secondpcMinfo = $"<voffset=20><line-height=0><{Main.ModColor}><size=85%>TownOfHost-Temp</size>\t\t \n \t\t</color><size=70%><#ffffff>v{Main.PluginShowVersion}</color></size></voffset>";
             var Minfo = $"\n<line-height=0><voffset=17.5><#fc9003>Day.{UtilsGameLog.day}</color>" + Bakery.BakeryMark() + $"<voffset=15>\n{ExtendedMeetingText}";
             if (CustomRolesHelper.CheckGuesser() || PlayerCatch.AllPlayerControls.Any(pc => pc.Is(CustomRoles.Guesser)))
             {

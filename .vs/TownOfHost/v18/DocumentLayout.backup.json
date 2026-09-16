@@ -1,0 +1,161 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\tiram\\TownOfHost-Temp\\Temp-main\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{1FC72121-C82A-F097-6BE3-3B951E5B6959}|TownOfHost.csproj|c:\\users\\tiram\\townofhost-temp\\temp-main\\main.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1FC72121-C82A-F097-6BE3-3B951E5B6959}|TownOfHost.csproj|solutionrelative:main.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1FC72121-C82A-F097-6BE3-3B951E5B6959}|TownOfHost.csproj|c:\\users\\tiram\\townofhost-temp\\temp-main\\patches\\credentialspatch.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1FC72121-C82A-F097-6BE3-3B951E5B6959}|TownOfHost.csproj|solutionrelative:patches\\credentialspatch.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1FC72121-C82A-F097-6BE3-3B951E5B6959}|TownOfHost.csproj|c:\\users\\tiram\\townofhost-temp\\temp-main\\modules\\debugmodemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1FC72121-C82A-F097-6BE3-3B951E5B6959}|TownOfHost.csproj|solutionrelative:modules\\debugmodemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1FC72121-C82A-F097-6BE3-3B951E5B6959}|TownOfHost.csproj|c:\\users\\tiram\\townofhost-temp\\temp-main\\townofhost.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{1FC72121-C82A-F097-6BE3-3B951E5B6959}|TownOfHost.csproj|solutionrelative:townofhost.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1FC72121-C82A-F097-6BE3-3B951E5B6959}|TownOfHost.csproj|c:\\users\\tiram\\townofhost-temp\\temp-main\\modules\\modupdater.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1FC72121-C82A-F097-6BE3-3B951E5B6959}|TownOfHost.csproj|solutionrelative:modules\\modupdater.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1FC72121-C82A-F097-6BE3-3B951E5B6959}|TownOfHost.csproj|c:\\users\\tiram\\townofhost-temp\\temp-main\\modules\\versioninfomanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1FC72121-C82A-F097-6BE3-3B951E5B6959}|TownOfHost.csproj|solutionrelative:modules\\versioninfomanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1FC72121-C82A-F097-6BE3-3B951E5B6959}|TownOfHost.csproj|c:\\users\\tiram\\townofhost-temp\\temp-main\\patches\\mainmanunewspatch.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1FC72121-C82A-F097-6BE3-3B951E5B6959}|TownOfHost.csproj|solutionrelative:patches\\mainmanunewspatch.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1FC72121-C82A-F097-6BE3-3B951E5B6959}|TownOfHost.csproj|c:\\users\\tiram\\townofhost-temp\\temp-main\\resources\\achievements.csv||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{1FC72121-C82A-F097-6BE3-3B951E5B6959}|TownOfHost.csproj|solutionrelative:resources\\achievements.csv||{8B382828-6202-11D1-8870-0000F87579D2}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "main.cs",
+              "DocumentMoniker": "C:\\Users\\tiram\\TownOfHost-Temp\\Temp-main\\main.cs",
+              "RelativeDocumentMoniker": "main.cs",
+              "ToolTip": "C:\\Users\\tiram\\TownOfHost-Temp\\Temp-main\\main.cs",
+              "RelativeToolTip": "main.cs",
+              "ViewState": "AgIAACMAAAAAAAAAAAAxwCoAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-16T10:54:03.525Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "CredentialsPatch.cs",
+              "DocumentMoniker": "C:\\Users\\tiram\\TownOfHost-Temp\\Temp-main\\Patches\\CredentialsPatch.cs",
+              "RelativeDocumentMoniker": "Patches\\CredentialsPatch.cs",
+              "ToolTip": "C:\\Users\\tiram\\TownOfHost-Temp\\Temp-main\\Patches\\CredentialsPatch.cs",
+              "RelativeToolTip": "Patches\\CredentialsPatch.cs",
+              "ViewState": "AgIAAN4AAAAAAAAAAADwv/MAAACGAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-16T10:57:48.659Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "DebugModeManager.cs",
+              "DocumentMoniker": "C:\\Users\\tiram\\TownOfHost-Temp\\Temp-main\\Modules\\DebugModeManager.cs",
+              "RelativeDocumentMoniker": "Modules\\DebugModeManager.cs",
+              "ToolTip": "C:\\Users\\tiram\\TownOfHost-Temp\\Temp-main\\Modules\\DebugModeManager.cs",
+              "RelativeToolTip": "Modules\\DebugModeManager.cs",
+              "ViewState": "AgIAAAgAAAAAAAAAAAAqwA0AAAAKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-16T10:57:17.933Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "MainManuNewsPatch.cs",
+              "DocumentMoniker": "C:\\Users\\tiram\\TownOfHost-Temp\\Temp-main\\Patches\\MainManuNewsPatch.cs",
+              "RelativeDocumentMoniker": "Patches\\MainManuNewsPatch.cs",
+              "ToolTip": "C:\\Users\\tiram\\TownOfHost-Temp\\Temp-main\\Patches\\MainManuNewsPatch.cs",
+              "RelativeToolTip": "Patches\\MainManuNewsPatch.cs",
+              "ViewState": "AgIAAMMIAAAAAAAAAAAIwNEIAABeAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-16T10:56:20.866Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "VersionInfoManager.cs",
+              "DocumentMoniker": "C:\\Users\\tiram\\TownOfHost-Temp\\Temp-main\\Modules\\VersionInfoManager.cs",
+              "RelativeDocumentMoniker": "Modules\\VersionInfoManager.cs",
+              "ToolTip": "C:\\Users\\tiram\\TownOfHost-Temp\\Temp-main\\Modules\\VersionInfoManager.cs",
+              "RelativeToolTip": "Modules\\VersionInfoManager.cs",
+              "ViewState": "AgIAAAgAAAAAAAAAAAAAABMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-16T10:56:08.113Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "ModUpdater.cs",
+              "DocumentMoniker": "C:\\Users\\tiram\\TownOfHost-Temp\\Temp-main\\Modules\\ModUpdater.cs",
+              "RelativeDocumentMoniker": "Modules\\ModUpdater.cs",
+              "ToolTip": "C:\\Users\\tiram\\TownOfHost-Temp\\Temp-main\\Modules\\ModUpdater.cs",
+              "RelativeToolTip": "Modules\\ModUpdater.cs",
+              "ViewState": "AgIAAAgAAAAAAAAAAAAAwBUAAABhAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-16T10:55:53.343Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "TownOfHost",
+              "DocumentMoniker": "C:\\Users\\tiram\\TownOfHost-Temp\\Temp-main\\TownOfHost.csproj",
+              "RelativeDocumentMoniker": "TownOfHost.csproj",
+              "ToolTip": "C:\\Users\\tiram\\TownOfHost-Temp\\Temp-main\\TownOfHost.csproj",
+              "RelativeToolTip": "TownOfHost.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-09-16T10:54:24.737Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "achievements.csv",
+              "DocumentMoniker": "C:\\Users\\tiram\\TownOfHost-Temp\\Temp-main\\Resources\\achievements.csv",
+              "RelativeDocumentMoniker": "Resources\\achievements.csv",
+              "ToolTip": "C:\\Users\\tiram\\TownOfHost-Temp\\Temp-main\\Resources\\achievements.csv",
+              "RelativeToolTip": "Resources\\achievements.csv",
+              "ViewState": "AgIAAB8CAAAAAAAAAAAQwDsCAAAqAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002120|",
+              "WhenOpened": "2026-09-16T10:53:50.974Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

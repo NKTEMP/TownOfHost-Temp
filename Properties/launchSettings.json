@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "TownOfHost": {
+      "commandName": "Project"
+    },
+    "プロファイル 1": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Among Us TOHT\\Among Us.exe"
+    }
+  }
+}

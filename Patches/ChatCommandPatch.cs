@@ -1011,7 +1011,7 @@ namespace TownOfHost
                         break;
 
                     case "/cr":
-                        if (DebugModeManager.EnableTOHkDebugMode.GetBool())
+                        if (DebugModeManager.EnableTOHTmDebugMode.GetBool())
                         {
                             canceled = true;
                             subArgs = args.Length < 2 ? "" : args[1];
@@ -1048,7 +1048,7 @@ namespace TownOfHost
                         }
                         break;
                     case "/fps":
-                        if (DebugModeManager.EnableTOHkDebugMode.GetBool() && DebugModeManager.AmDebugger)
+                        if (DebugModeManager.EnableTOHTmDebugMode.GetBool() && DebugModeManager.AmDebugger)
                         {
                             CredentialsPatch.a = true;
                             _ = new LateTask(() =>
@@ -1071,7 +1071,7 @@ namespace TownOfHost
                         }
                         break;
                     case "/tp":
-                        if (DebugModeManager.EnableTOHkDebugMode.GetBool())
+                        if (DebugModeManager.EnableTOHTmDebugMode.GetBool())
                         {
                             canceled = true;
                             subArgs = args.Length < 2 ? "" : args[1];
@@ -1083,7 +1083,7 @@ namespace TownOfHost
                         }
                         break;
                     case "/wi":
-                        if (DebugModeManager.EnableTOHkDebugMode.GetBool())
+                        if (DebugModeManager.EnableTOHTmDebugMode.GetBool())
                         {
                             canceled = true;
                             subArgs = args.Length < 2 ? "" : args[1];
@@ -1106,7 +1106,7 @@ namespace TownOfHost
                         }
                         break;
                     case "/wiop":
-                        if (DebugModeManager.EnableTOHkDebugMode.GetBool())
+                        if (DebugModeManager.EnableTOHTmDebugMode.GetBool())
                         {
                             canceled = true;
                             subArgs = args.Length < 2 ? "" : args[1];
@@ -1140,7 +1140,7 @@ namespace TownOfHost
                         break;
 
                     case "/dgm":
-                        if (DebugModeManager.EnableTOHkDebugMode.GetBool())
+                        if (DebugModeManager.EnableTOHTmDebugMode.GetBool())
                         {
                             canceled = true;
                             if (!GameStates.InGame)
@@ -1155,7 +1155,7 @@ namespace TownOfHost
 
                     case "/debug":
                         canceled = true;
-                        if (DebugModeManager.EnableTOHkDebugMode.GetBool())
+                        if (DebugModeManager.EnableTOHTmDebugMode.GetBool())
                         {
                             subArgs = args.Length < 2 ? "" : args[1];
                             switch (subArgs)

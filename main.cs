@@ -19,7 +19,7 @@ using System.IO;
 [assembly: AssemblyInformationalVersionAttribute(TownOfHost.Main.PluginVersion)]
 namespace TownOfHost
 {
-    [BepInPlugin(PluginGuid, "Town Of Host-K", PluginVersion)]
+    [BepInPlugin(PluginGuid, "Town Of Host-Temp", PluginVersion)]
     [BepInIncompatibility("jp.ykundesu.supernewrolesnext")]
     [BepInIncompatibility("jp.ykundesu.supernewroles")]
     [BepInIncompatibility("me.yukieiji.extremeroles")]
@@ -29,17 +29,17 @@ namespace TownOfHost
     {
         // == プログラム設定 / Program Config ==
         // modの名前 / Mod Name (Default: Town Of Host)
-        public static readonly string ModName = "Town Of Host-K";
+        public static readonly string ModName = "<#00c1ff>Town Of Host</color>-Temp";
         // modの色 / Mod Color (Default: #00bfff)
-        public static readonly string ModColor = "#00c1ff";
+        public static readonly string ModColor = "#ffeb99";
         // 公開ルームを許可する / Allow Public Room (Default: true)
         public static readonly bool AllowPublicRoom = true;
         // フォークID / ForkId (Default: OriginalTOH)
-        public static readonly string ForkId = "TOH-K";
+        public static readonly string ForkId = "TOH-Tm";
         // Discordボタンを表示するか / Show Discord Button (Default: true)
         public static readonly bool ShowDiscordButton = true;
         // Discordサーバーの招待リンク / Discord Server Invite URL (Default: https://discord.gg/W5ug6hXB9V)
-        public static readonly string DiscordInviteUrl = "https://discord.gg/5DPqH8seFq";
+        public static readonly string DiscordInviteUrl = "https://discord.gg/3tVdPVN65";
         // ==========
         public const string OriginalForkId = "OriginalTOH"; // Don't Change The Value. / この値を変更しないでください。
         // == 認証設定 / Authentication Config ==
@@ -58,13 +58,13 @@ namespace TownOfHost
 
         // ==========
         //Sorry for many Japanese comments.
-        public const string PluginGuid = "com.kymario.townofhost-k";
+        public const string PluginGuid = "com.nktmp.TownOfHost-Temp";
         public const string PluginVersion = "51.14.32.54";//ほんとはx.y.z表記にしたかったけどx.y.z.km.ks表記だと警告だされる
         public const string PluginShowVersion = "51.14.32.54";
         public const string ModVersion = ".14.32";//リリースver用バージョン変更
 
         /// 配布するデバッグ版なのであればtrue。リリース時にはfalseにすること。
-        public static bool DebugVersion = false;
+        public static bool DebugVersion = true;
 
         // サポートされている最低のAmongUsバージョン(Readmeも変える)
         public static readonly string LowestSupportedVersion = "2026.8.18";
@@ -173,14 +173,14 @@ namespace TownOfHost
         public static string BaseDirectory
             => Path.GetFullPath(Path.Combine(
                 string.IsNullOrEmpty(BepInEx.Paths.BepInExRootPath) ? Application.persistentDataPath : BepInEx.Paths.BepInExRootPath,
-                "../TOHK_DATA"));
+                "../TOHTm_DATA"));
         public override void Load()
         {
             GameCount = 0;
             Instance = this;
 
             //Client Options
-            HideName = Config.Bind("Client Options", "Hide Game Code Name", "Town Of Host-K");
+            HideName = Config.Bind("Client Options", "Hide Game Code Name", "Town Of Host-Temp");
             HideColor = Config.Bind("Client Options", "Hide Game Code Color", $"{ModColor}");
             ForceJapanese = Config.Bind("Client Options", "Force Japanese", false);
             JapaneseRoleName = Config.Bind("Client Options", "Japanese Role Name", true);
@@ -206,7 +206,7 @@ namespace TownOfHost
             DebugKeyInput = Config.Bind("Authentication", "Debug Key", "");
             ExplosionKeyInput = Config.Bind("Authentication", "Explosion Key", "");
 
-            Logger = BepInEx.Logging.Logger.CreateLogSource("TownOfHost-K");
+            Logger = BepInEx.Logging.Logger.CreateLogSource("TownOfHost-Temp");
             TownOfHost.Logger.Enable();
             TownOfHost.Logger.Disable("NotifyRoles");
             TownOfHost.Logger.Disable("SendRPC");
