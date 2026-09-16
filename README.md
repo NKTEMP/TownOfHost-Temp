@@ -6,7 +6,7 @@
 
 Town Of Host-Temp は、Among Us 向けの非公式MODです。
 
-Town Of Host-Tempをフォーク元とし、会議処理など一部の実装について TownOfHost-Temp を参考にしています。
+Town Of Host-Kをフォーク元とし、会議処理など一部の実装について TownOfHost-K を参考にしています。
 
 > [!WARNING]
 > このMODは非公式のファンメイドMODです。
