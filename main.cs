@@ -59,9 +59,11 @@ namespace TownOfHost
         // ==========
         //Sorry for many Japanese comments.
         public const string PluginGuid = "com.nktmp.TownOfHost-Temp";
-        public const string PluginVersion = "51.14.32.54";//ほんとはx.y.z表記にしたかったけどx.y.z.km.ks表記だと警告だされる
-        public const string PluginShowVersion = "51.14.32.54";
-        public const string ModVersion = ".14.32";//リリースver用バージョン変更
+        //バージョン名いったんこれで行かせて()
+        //(メインバージョン v4とかv5とか v3以上で).(サブバージョン.1 .2など).(Kの最新バージョン　32.54など)
+        public const string PluginVersion = "3.16.32.54";//ほんとはx.y.z表記にしたかったけどx.y.z.km.ks表記だと警告だされる
+        public const string PluginShowVersion = "3.16.32.54";
+        public const string ModVersion = ".32.54";//リリースver用バージョン変更
 
         /// 配布するデバッグ版なのであればtrue。リリース時にはfalseにすること。
         public static bool DebugVersion = true;

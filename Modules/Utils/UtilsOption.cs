@@ -919,7 +919,7 @@ namespace TownOfHost
                 case From.TownOfHost: Fromtext += $"<#00bfff>{from}</color>"; break;
                 case From.TownOfHost_Y: Fromtext += $"<#dddd00>TownOfHost_Y</color>"; break;
                 case From.TownOfHost_for_E: Fromtext += $"<#18e744>TownOfHost for E</color>"; break;
-                case From.TownOfHost_K: Fromtext += $"<#00bfff>Town Of Host-K</color>"; break;
+                case From.TownOfHost_K: Fromtext += $"<#00bfff>TownOfHost-K</color>"; break;
                 case From.Speyrp: Fromtext = $"<#7fffbf>From:Yoran★</color>"; break;
                 case From.TownOfHost_E: Fromtext += $"<#ffc0cb>TownOfHost E</color>"; break;
                 case From.RevolutionaryHostRoles: Fromtext += $"<#3cb371>RevolutionaryHostRoles</color>"; break;
