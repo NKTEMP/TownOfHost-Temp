@@ -4,8 +4,8 @@ using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSystem;
 using InnerNet;
-// Il2CppStructArray<byte>とbyte[]との間での暗黙的な変換の際に発生する重い計算を抑制するため，意図的にIl2CppSystemとIl2CppInterop.Runtime.InteropTypes.Arraysを使用します - Hyz-sui
 
+// Il2CppStructArray<byte>とbyte[]との間での暗黙的な変換の際に発生する重い計算を抑制するため，意図的にIl2CppSystemとIl2CppInterop.Runtime.InteropTypes.Arraysを使用します - Hyz-suin
 namespace TownOfHost.Modules
 {
     public abstract class GameOptionsSender
@@ -30,22 +30,33 @@ namespace TownOfHost.Modules
         public virtual void SendGameOptions()
         {
             var opt = BuildGameOptions();
-            var currentGameMode = AprilFoolsMode.IsAprilFoolsModeToggledOn //April fools mode toggled on by host
-                ? opt.AprilFoolsOnMode : opt.GameMode; //Change game mode, same as well as in "RpcSyncSettings()"
+            var currentGameMode = opt.GameMode; // temp the current game mode for further changes if necessary
 
+            //April fools mode toggled on by host
+            if (AprilFoolsMode.IsAprilFoolsModeToggledOn)
+            {
+                // if current game mode is classic
+                if (opt.GameMode == GameModes.Normal)
+                    currentGameMode = GameModes.NormalFools;
+
+                // if current game mode is vanilla HideNSeek
+                else if (opt.GameMode == GameModes.HideNSeek)
+                    currentGameMode = GameModes.SeekFools;
+            }
             // option => byte[]
             MessageWriter writer = MessageWriter.Get(SendOption.None);
             writer.Write(opt.Version);
             writer.StartMessage(0);
             writer.Write((byte)currentGameMode);
-            if (opt.TryCast<NormalGameOptionsV10>(out var normalOpt))
-                NormalGameOptionsV10.Serialize(writer, normalOpt);
-            else if (opt.TryCast<HideNSeekGameOptionsV10>(out var hnsOpt))
-                HideNSeekGameOptionsV10.Serialize(writer, hnsOpt);
+            if (opt.TryCast<NormalGameOptionsV11>(out var normalOpt))
+                NormalGameOptionsV11.Serialize(writer, normalOpt);
+            else if (opt.TryCast<HideNSeekGameOptionsV11>(out var hnsOpt))
+                HideNSeekGameOptionsV11.Serialize(writer, hnsOpt);
             else
             {
                 writer.Recycle();
                 Logger.Error("オプションのキャストに失敗しました", this.ToString());
+                return; // キャスト失敗時のクラッシュ防止
             }
             writer.EndMessage();
 
@@ -57,6 +68,7 @@ namespace TownOfHost.Modules
             SendOptionsArray(byteArray);
             writer.Recycle();
         }
+
         public virtual void SendOptionsArray(Il2CppStructArray<byte> optionArray)
         {
             for (byte i = 0; i < GameManager.Instance.LogicComponents.Count; i++)
@@ -67,6 +79,7 @@ namespace TownOfHost.Modules
                 }
             }
         }
+
         protected virtual void SendOptionsArray(Il2CppStructArray<byte> optionArray, byte LogicOptionsIndex, int targetClientId)
         {
             var writer = MessageWriter.Get(SendOption.Reliable);
@@ -91,8 +104,35 @@ namespace TownOfHost.Modules
             AmongUsClient.Instance.SendOrDisconnect(writer);
             writer.Recycle();
         }
+
         public abstract IGameOptions BuildGameOptions();
 
         public virtual bool AmValid() => true;
+
+        public static void RpcSendOptions()//SNR様参考
+        {
+            if (GameManager.Instance is null || AmongUsClient.Instance?.GameId is null
+            || GameManager.Instance?.LogicOptions?.gameOptionsFactory is null || GameOptionsManager.Instance is null) return;
+
+            if (AmongUsClient.Instance?.AmHost is not true) return;
+            GameManager gm = GameManager.Instance;
+            MessageWriter writer = MessageWriter.Get(SendOption.None);
+            writer.StartMessage(5);
+            writer.Write(AmongUsClient.Instance.GameId);
+            {
+                writer.StartMessage(1); //0x01 Data
+                {
+                    writer.WritePacked(gm.NetId);
+                    writer.StartMessage(4);
+                    writer.WriteBytesAndSize(gm.LogicOptions.gameOptionsFactory.ToBytes(GameOptionsManager.Instance.CurrentGameOptions, AprilFoolsMode.IsAprilFoolsModeToggledOn));
+                    writer.EndMessage();
+                }
+                writer.EndMessage();
+            }
+            writer.EndMessage();
+
+            AmongUsClient.Instance.SendOrDisconnect(writer);
+            writer.Recycle();
+        }
     }
 }

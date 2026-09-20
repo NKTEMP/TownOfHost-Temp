@@ -1,0 +1,47 @@
+{
+    "AllVersion": {
+        "Unavailable": false,
+        "NotAvailableOnline": false
+    },
+    "51.14.31": {
+        "Unavailable": true,
+        "NotAvailableOnline": false,
+        "AnnounceText": "<size=2.5>バニラサーバーを使用すると正常に動作しません...\nローカル or カスタムサーバーをご利用ください。"
+    },
+    "51.14.32": {
+        "Unavailable": false,
+        "NotAvailableOnline": false
+    },
+    "51.14.32.41": {
+        "Unavailable": false,
+        "NotAvailableOnline": false
+    },
+    "51.14.32.42": {
+        "Unavailable": false,
+        "NotAvailableOnline": false
+    },
+    "51.14.32.43": {
+        "Unavailable": false,
+        "NotAvailableOnline": false
+    },
+    "51.14.32.44": {
+        "Unavailable": false,
+        "NotAvailableOnline": false
+    },
+    "51.14.32.51": {
+        "Unavailable": false,
+        "NotAvailableOnline": false
+    },
+    "51.14.32.52": {
+        "Unavailable": false,
+        "NotAvailableOnline": false
+    },
+    "51.14.32.53": {
+        "Unavailable": false,
+        "NotAvailableOnline": false
+    },
+    "51.14.32.54": {
+        "Unavailable": false,
+        "NotAvailableOnline": false
+    }
+}

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Ff6jpFAzT24=",
+  "dgSpecHash": "04rar75ZjtQ=",
   "success": true,
-  "projectFilePath": "D:\\SteamLibrary\\steamapps\\common\\TownOfHost-main\\TownOfHost.csproj",
+  "projectFilePath": "D:\\Github\\TownOfHost-Temp\\TownOfHost.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\akito\\.nuget\\packages\\costura.fody\\6.2.0\\costura.fody.6.2.0.nupkg.sha512",
     "C:\\Users\\akito\\.nuget\\packages\\csv\\2.0.245\\csv.2.0.245.nupkg.sha512",

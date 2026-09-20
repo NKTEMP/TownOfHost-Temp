@@ -1,0 +1,7 @@
+bin/
+obj/
+bin/
+FodyWeavers.xsd
+memo.md
+.vs/
+*.csproj.user

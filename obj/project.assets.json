@@ -316,11 +316,11 @@
   "project": {
     "version": "5.1.14",
     "restore": {
-      "projectUniqueName": "D:\\SteamLibrary\\steamapps\\common\\TownOfHost-main\\TownOfHost.csproj",
+      "projectUniqueName": "D:\\Github\\TownOfHost-Temp\\TownOfHost.csproj",
       "projectName": "TownOfHost",
-      "projectPath": "D:\\SteamLibrary\\steamapps\\common\\TownOfHost-main\\TownOfHost.csproj",
+      "projectPath": "D:\\Github\\TownOfHost-Temp\\TownOfHost.csproj",
       "packagesPath": "C:\\Users\\akito\\.nuget\\packages\\",
-      "outputPath": "D:\\SteamLibrary\\steamapps\\common\\TownOfHost-main\\obj\\",
+      "outputPath": "D:\\Github\\TownOfHost-Temp\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
