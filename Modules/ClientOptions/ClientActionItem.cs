@@ -3,6 +3,7 @@ using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace TownOfHost.Modules.ClientOptions;
+
 public class ClientActionItem
 {
     public ToggleButtonBehaviour ToggleButton { get; private set; }
@@ -14,7 +15,8 @@ public class ClientActionItem
 
     protected ClientActionItem(
         string name,
-        OptionsMenuBehaviour optionsMenuBehaviour)
+        OptionsMenuBehaviour optionsMenuBehaviour,
+        bool showTooltip = false)
     {
         try
         {
@@ -66,8 +68,8 @@ public class ClientActionItem
 
                 ModOptionsButton = Object.Instantiate(mouseMoveToggle, generalTab);
                 ModOptionsButton.transform.localPosition = leaveButton?.transform?.localPosition ?? new(0f, -2.4f, 1f);
-                ModOptionsButton.name = "TOHOptions";
-                ModOptionsButton.Text.text = Translator.GetString("TOHOptions");
+                ModOptionsButton.name = "TOH-TmOptions";
+                ModOptionsButton.Text.text = Translator.GetString("TOH-TmOptions");
                 if (ColorUtility.TryParseHtmlString(Main.ModColor, out var modColor))
                 {
                     ModOptionsButton.Background.color = modColor;
@@ -101,6 +103,11 @@ public class ClientActionItem
             var passiveButton = ToggleButton.GetComponent<PassiveButton>();
             passiveButton.OnClick = new();
             passiveButton.OnClick.AddListener((Action)OnClick);
+            if (showTooltip)
+            {
+                passiveButton.OnMouseOver.AddListener((Action)(() => ToolTip.Show(passiveButton, Translator.GetString($"{name}Info"), null)));
+                passiveButton.OnMouseOut.AddListener((Action)ToolTip.Hide);
+            }
         }
         finally
         {
@@ -118,9 +125,10 @@ public class ClientActionItem
     public static ClientActionItem Create(
         string name,
         Action onClickAction,
-        OptionsMenuBehaviour optionsMenuBehaviour)
+        OptionsMenuBehaviour optionsMenuBehaviour,
+        bool showTooltip = false)
     {
-        return new(name, optionsMenuBehaviour)
+        return new(name, optionsMenuBehaviour, showTooltip)
         {
             OnClickAction = onClickAction
         };

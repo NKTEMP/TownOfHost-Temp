@@ -1,3 +1,4 @@
+
 namespace TownOfHost.Roles.Core.Interfaces;
 
 /// <summary>
@@ -19,4 +20,11 @@ public interface IDoubleTrigger
     /// <param name="target"></param>
     /// <returns>true:キルする false:キルしない</returns>
     public bool DoubleAction(PlayerControl killer, PlayerControl target);
+
+    /// <summary>
+    /// ダブルアクションの確認処理を行うか。<br/>
+    /// falseならdoubleTriggerがチェックされず、キルが通る。<br/>
+    /// この時、Single/Double Actinは処理されない。
+    /// </summary>
+    public bool CheckAction => true;
 }

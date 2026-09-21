@@ -1,4 +1,4 @@
-using HarmonyLib;
+/*using HarmonyLib;
 
 using TownOfHost.Roles.Core;
 
@@ -10,13 +10,14 @@ namespace TownOfHost
     {
         public static bool Prefix()
         {
+            多分GMが暗転しやすい原因ここなので一回スルー。
             if (PlayerControl.LocalPlayer.Is(CustomRoles.GM))
             {
                 RandomSpawn.AirshipSpawn(PlayerControl.LocalPlayer);
                 // GMは湧き画面をスキップ
-                return false;
+                return true;
             }
             return true;
         }
     }
-}
+}*/

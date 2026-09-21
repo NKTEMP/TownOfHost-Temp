@@ -45,7 +45,7 @@ namespace TownOfHost
                     ) continue;*/
 
                     TaskAddButton button = UnityEngine.Object.Instantiate<TaskAddButton>(__instance.RoleButton);
-                    button.Text.text = Utils.GetRoleName(cRole);
+                    button.Text.text = UtilsRoleText.GetRoleName(cRole);
                     __instance.AddFileAsChild(CustomRolesFolder, button, ref xCursor, ref yCursor, ref maxHeight);
                     var roleBehaviour = new RoleBehaviour
                     {
@@ -54,7 +54,7 @@ namespace TownOfHost
                     button.Role = roleBehaviour;
 
                     Color IconColor = Color.white;
-                    var roleColor = Utils.GetRoleColor(cRole);
+                    var roleColor = UtilsRoleText.GetRoleColor(cRole);
 
                     button.FileImage.color = roleColor;
                     button.RolloverHandler.OutColor = roleColor;

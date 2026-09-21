@@ -1,28 +1,32 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Hazel;
 using AmongUs.GameOptions;
 
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Core.Interfaces;
-using static TownOfHost.Translator;
-using Hazel;
+using TownOfHost.Modules;
 
 namespace TownOfHost.Roles.Neutral;
-public sealed class Arsonist : RoleBase, IKiller
+
+public sealed class Arsonist : RoleBase, IKiller, IUsePhantomButton
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
             typeof(Arsonist),
             player => new Arsonist(player),
             CustomRoles.Arsonist,
-            () => RoleTypes.Impostor,
+            () => Optionfire.GetBool() ? RoleTypes.Phantom : RoleTypes.Impostor,
             CustomRoleTypes.Neutral,
-            50500,
+            13800,
             SetupOptionItem,
             "ar",
             "#ff6633",
+            (3, 0),
             true,
-            introSound: () => GetIntroSound(RoleTypes.Crewmate)
+            introSound: () => GetIntroSound(RoleTypes.Crewmate),
+            from: From.TownOfUs,
+            Desc: () => string.Format(GetString("ArsonistDesc"), Optionfire.GetBool() ? GetString(StringNames.PhantomAbility) : GetString("Vent"))
         );
     public Arsonist(PlayerControl player)
     : base(
@@ -33,19 +37,26 @@ public sealed class Arsonist : RoleBase, IKiller
     {
         DouseTime = OptionDouseTime.GetFloat();
         DouseCooldown = OptionDouseCooldown.GetFloat();
+        if (OptionDouseCooldown.GetFloat() == 0) DouseCooldown = 0.00000000000000000001f;//0sでも塗れるように
+        Distance = OptionDistance.GetFloat();
 
         TargetInfo = null;
         IsDoused = new(GameData.Instance.PlayerCount);
     }
     private static OptionItem OptionDouseTime;
     private static OptionItem OptionDouseCooldown;
+    private static OptionItem OptionDistance;
+    private static OptionItem Optionfire;
+    private static OptionItem OptionCanUseVent;
+    private static OptionItem OptionCanSeeNowAlivePlayer;
 
     enum OptionName
     {
-        ArsonistDouseTime
+        ArsonistDouseTime, ArsonistRange, ArsonistFireOnclick, ArsonistCanSeeAllplayer
     }
     private static float DouseTime;
     private static float DouseCooldown;
+    private static float Distance;
 
     public class TimerInfo
     {
@@ -63,28 +74,47 @@ public sealed class Arsonist : RoleBase, IKiller
 
     private static void SetupOptionItem()
     {
-        OptionDouseTime = FloatOptionItem.Create(RoleInfo, 10, OptionName.ArsonistDouseTime, new(1f, 10f, 1f), 3f, false)
+        SoloWinOption.Create(RoleInfo, 15, defo: 1);
+        OptionCanSeeNowAlivePlayer = BooleanOptionItem.Create(RoleInfo, 8, OptionName.ArsonistCanSeeAllplayer, false, false);
+        OptionCanUseVent = BooleanOptionItem.Create(RoleInfo, 9, GeneralOption.CanVent, false, false);
+        OptionDouseTime = FloatOptionItem.Create(RoleInfo, 10, OptionName.ArsonistDouseTime, new(0.5f, 10f, 0.5f), 3f, false)
             .SetValueFormat(OptionFormat.Seconds);
-        OptionDouseCooldown = FloatOptionItem.Create(RoleInfo, 11, GeneralOption.Cooldown, new(5f, 100f, 1f), 10f, false)
+        OptionDouseCooldown = FloatOptionItem.Create(RoleInfo, 11, GeneralOption.Cooldown, new(0f, 180f, 1f), 10f, false)
             .SetValueFormat(OptionFormat.Seconds);
+        OptionDistance = FloatOptionItem.Create(RoleInfo, 12, OptionName.ArsonistRange, new(1.25f, 5f, 0.25f), 1.75f, false)
+        .SetValueFormat(OptionFormat.Multiplier);
+        OverrideKilldistance.Create(RoleInfo, 13);
+        Optionfire = BooleanOptionItem.Create(RoleInfo, 14, OptionName.ArsonistFireOnclick, false, false);
     }
     public override void Add()
     {
-        foreach (var ar in Main.AllPlayerControls)
+        foreach (var ar in PlayerCatch.AllPlayerControls)
+        {
             IsDoused.Add(ar.PlayerId, false);
+
+            if (SuddenDeathMode.NowSuddenDeathTemeMode)
+            {
+                if (SuddenDeathMode.IsSameteam(ar.PlayerId, Player.PlayerId))
+                    IsDoused[ar.PlayerId] = true;
+            }
+        }
     }
+    public override bool NotifyRolesCheckOtherName => true;
     public bool CanUseKillButton() => !IsDouseDone(Player);
-    public bool CanUseImpostorVentButton() => IsDouseDone(Player) && !Player.inVent;
+    public bool CanUseImpostorVentButton() => IsDouseDone(Player) || OptionCanUseVent.GetBool();
     public float CalculateKillCooldown() => DouseCooldown;
     public bool CanUseSabotageButton() => false;
-    public override string GetProgressText(bool comms = false)
+    public override string GetProgressText(bool comms = false, bool gamelog = false)
     {
         var doused = GetDousedPlayerCount();
-        return Utils.ColorString(RoleInfo.RoleColor.ShadeColor(0.25f), $"({doused.Item1}/{doused.Item2})");
+        var Denominator = "?";
+        if (OptionCanSeeNowAlivePlayer.GetBool() || GameStates.CalledMeeting) Denominator = $"{doused.Item2}";
+        return Utils.ColorString(RoleInfo.RoleColor.ShadeColor(0.25f), $"({doused.Item1}/{Denominator})");
     }
     public override void ApplyGameOptions(IGameOptions opt)
     {
         opt.SetVision(false);
+        AURoleOptions.PhantomCooldown = IsDouseDone(Player) ? 1f : 255f;
     }
     enum RPC_type
     {
@@ -123,7 +153,7 @@ public sealed class Arsonist : RoleBase, IKiller
         if (!IsDoused[target.PlayerId] && TargetInfo == null)
         {
             TargetInfo = new(target.PlayerId, 0f);
-            Utils.NotifyRoles(SpecifySeer: killer);
+            UtilsNotifyRoles.NotifyRoles(SpecifySeer: killer);
             SendRPC(RPC_type.SetCurrentDousingTarget, target.PlayerId);
         }
         info.DoKill = false;
@@ -141,12 +171,12 @@ public sealed class Arsonist : RoleBase, IKiller
             if (!Player.IsAlive())
             {
                 TargetInfo = null;
-                Utils.NotifyRoles(SpecifySeer: Player);
+                UtilsNotifyRoles.NotifyRoles(SpecifySeer: Player);
                 SendRPC(RPC_type.SetCurrentDousingTarget);
             }
             else
             {
-                var ar_target = Utils.GetPlayerById(TargetInfo.TargetId);//塗られる人
+                var ar_target = PlayerCatch.GetPlayerById(TargetInfo.TargetId);//塗られる人
                 var ar_time = TargetInfo.Timer;//塗った時間
                 if (!ar_target.IsAlive())
                 {
@@ -157,25 +187,29 @@ public sealed class Arsonist : RoleBase, IKiller
                     Player.SetKillCooldown();
                     TargetInfo = null;//塗が完了したのでTupleから削除
                     IsDoused[ar_target.PlayerId] = true;//塗り完了
+                    UtilsGameLog.AddGameLog("Arsonist", string.Format(GetString("ArsonistLogInfo"), ar_target.GetPlayerColor()));
                     SendRPC(RPC_type.SetDousedPlayer, ar_target.PlayerId, true);
-                    Utils.NotifyRoles();//名前変更
+                    UtilsNotifyRoles.NotifyRoles();//名前変更
                     SendRPC(RPC_type.SetCurrentDousingTarget);
+
+                    Player.RpcResetAbilityCooldown(Sync: true);
                 }
                 else
                 {
                     float dis;
                     dis = Vector2.Distance(Player.transform.position, ar_target.transform.position);//距離を出す
-                    if (dis <= 1.75f)//一定の距離にターゲットがいるならば時間をカウント
+                    if (dis <= Distance)//一定の距離にターゲットがいるならば時間をカウント
                     {
                         TargetInfo.Timer += Time.fixedDeltaTime;
                     }
                     else//それ以外は削除
                     {
                         TargetInfo = null;
-                        Utils.NotifyRoles(SpecifySeer: Player);
+                        UtilsNotifyRoles.NotifyRoles(SpecifySeer: Player);
+                        Player.SetKillCooldown(0.1f, force: true);
                         SendRPC(RPC_type.SetCurrentDousingTarget);
 
-                        Logger.Info($"Canceled: {Player.GetNameWithRole()}", "Arsonist");
+                        Logger.Info($"Canceled: {Player.GetNameWithRole().RemoveHtmlTags()}", "Arsonist");
                     }
                 }
             }
@@ -183,9 +217,9 @@ public sealed class Arsonist : RoleBase, IKiller
     }
     public override bool OnEnterVent(PlayerPhysics physics, int ventId)
     {
-        if (GameStates.IsInGame && IsDouseDone(Player))
+        if (GameStates.IsInGame && IsDouseDone(Player) && !Optionfire.GetBool())
         {
-            foreach (var pc in Main.AllAlivePlayerControls)
+            foreach (var pc in PlayerCatch.AllAlivePlayerControls)
             {
                 if (pc.PlayerId != Player.PlayerId)
                 {
@@ -199,18 +233,25 @@ public sealed class Arsonist : RoleBase, IKiller
                 else
                     RPC.PlaySoundRPC(pc.PlayerId, Sounds.KillSound);
             }
-            CustomWinnerHolder.ShiftWinnerAndSetWinner(CustomWinner.Arsonist); //焼殺で勝利した人も勝利させる
-            CustomWinnerHolder.WinnerIds.Add(Player.PlayerId);
-            return true;
+            if (CustomWinnerHolder.ResetAndSetAndChWinner(CustomWinner.Arsonist, Player.PlayerId))
+            {
+                CustomWinnerHolder.NeutralWinnerIds.Add(Player.PlayerId);
+            }
+
+            return false;
         }
-        return false;
+        return OptionCanUseVent.GetBool();
     }
     public bool OverrideKillButtonText(out string text)
     {
         text = GetString("ArsonistDouseButtonText");
         return true;
     }
-
+    public bool OverrideKillButton(out string text)
+    {
+        text = "Arsonist_Kill";
+        return true;
+    }
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
         //seenが省略の場合seer
@@ -231,7 +272,7 @@ public sealed class Arsonist : RoleBase, IKiller
         //seeおよびseenが自分である場合以外は関係なし
         if (!Is(seer) || !Is(seen)) return "";
 
-        return IsDouseDone(Player) ? Utils.ColorString(RoleInfo.RoleColor, GetString("EnterVentToWin")) : "";
+        return IsDouseDone(Player) ? Utils.ColorString(RoleInfo.RoleColor, GetString(Optionfire.GetBool() ? "UseOnclick" : "EnterVentToWin")) : "";
     }
     public bool IsDousedPlayer(byte targetId) => IsDoused.TryGetValue(targetId, out bool isDoused) && isDoused;
     public static bool IsDouseDone(PlayerControl player)
@@ -244,7 +285,7 @@ public sealed class Arsonist : RoleBase, IKiller
     {
         int doused = 0, all = 0;
         //多分この方がMain.isDousedでforeachするより他のアーソニストの分ループ数少なくて済む
-        foreach (var pc in Main.AllAlivePlayerControls)
+        foreach (var pc in PlayerCatch.AllAlivePlayerControls)
         {
             if (pc.PlayerId == Player.PlayerId) continue; //アーソニストは除外
 
@@ -255,5 +296,45 @@ public sealed class Arsonist : RoleBase, IKiller
         }
 
         return (doused, all);
+    }
+    void IUsePhantomButton.OnClick(ref bool AdjustKillCooldown, ref bool? ResetCooldown)
+    {
+        if (GameStates.IsInGame && IsDouseDone(Player) && Optionfire.GetBool())
+        {
+            var i = 0;
+            foreach (var pc in PlayerCatch.AllAlivePlayerControls)
+            {
+                if (pc.PlayerId != Player.PlayerId)
+                {
+                    i++;
+                    //生存者は焼殺
+                    pc.SetRealKiller(Player);
+                    pc.RpcMurderPlayer(pc);
+                    var state = PlayerState.GetByPlayerId(pc.PlayerId);
+                    state.DeathReason = CustomDeathReason.Torched;
+                    state.SetDead();
+                }
+                else
+                    RPC.PlaySoundRPC(pc.PlayerId, Sounds.KillSound);
+            }
+            if (CustomWinnerHolder.ResetAndSetAndChWinner(CustomWinner.Arsonist, Player.PlayerId))
+            {
+                CustomWinnerHolder.NeutralWinnerIds.Add(Player.PlayerId);
+            }
+            Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
+            if (10 <= i) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[1]);
+            return;
+        }
+        ResetCooldown = true;
+        AdjustKillCooldown = true;
+    }
+    public static Dictionary<int, Achievement> achievements = new();
+    [Attributes.PluginModuleInitializer]
+    public static void Load()
+    {
+        var n1 = new Achievement(RoleInfo, 0, 1, 0, 0);
+        var sp1 = new Achievement(RoleInfo, 1, 1, 0, 2);
+        achievements.Add(0, n1);
+        achievements.Add(1, sp1);
     }
 }

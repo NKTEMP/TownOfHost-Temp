@@ -11,12 +11,13 @@ public sealed class Crewmate : RoleBase
             typeof(Crewmate),
             player => new Crewmate(player),
             RoleTypes.Crewmate,
+            null,
             "#8cffff",
             assignInfo: new RoleAssignInfo(CustomRoles.Crewmate, CustomRoleTypes.Crewmate)
             {
                 IsInitiallyAssignableCallBack =
                     () => false
-            }
+            }, from: From.AmongUs
         );
     public Crewmate(PlayerControl player)
     : base(

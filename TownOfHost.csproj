@@ -1,63 +1,111 @@
-<Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
-		<GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-		<GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
-		<Description>Town Of Host</Description>
-		<Authors>tukasa0001(EmptyBottle), integral0131</Authors>
-		<langVersion>preview</langVersion>
-		<NoWarn>MSB3246</NoWarn>
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+    <Description>fork by Town Of Host</Description>
+    <Authors>tukasa0001(EmptyBottle), integral0131</Authors>
+    <langVersion>preview</langVersion>
+    <AssemblyName>TownOfHost-Temp</AssemblyName>
+    <NoWarn>MSB3246</NoWarn>
+	<AmongUs>D:\SteamLibrary\steamapps\common\TOH-T</AmongUs>
+	<GitInfo>false</GitInfo>
+	<GenerateGitInfo>false</GenerateGitInfo>
+  </PropertyGroup>
 
-		<!-- バージョン固定とGitInfoの完全停止設定 -->
-		<Version>5.1.14</Version>
-		<PackageVersion>5.1.14</PackageVersion>
-		<InformationalVersion>5.1.14</InformationalVersion>
-		<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
-		<GitInfoReportNotRepository>false</GitInfoReportNotRepository>
-		<GitBranch></GitBranch>
-		<GitCommit></GitCommit>
-		<GitSha></GitSha>
-		<GitBaseVersionLabel></GitBaseVersionLabel>
-		<GitSemVerLabel></GitSemVerLabel>
-
-		<!-- Mod環境のパス -->
-		<AmongUs>D:\SteamLibrary\steamapps\common\TeU</AmongUs>
-	</PropertyGroup>
-
-	<!-- BepInEx 6.x のみ（v5.xを除外してピンポイント指定） -->
-	<ItemGroup>
-		<Reference Include="$(AmongUs)\BepInEx\core\BepInEx.Core.dll" />
-		<Reference Include="$(AmongUs)\BepInEx\core\BepInEx.Unity.IL2CPP.dll" />
-		<Reference Include="$(AmongUs)\BepInEx\core\BepInEx.Unity.Common.dll" />
-		<Reference Include="$(AmongUs)\BepInEx\core\0Harmony.dll" />
-		<Reference Include="$(AmongUs)\BepInEx\core\Il2CppInterop.Common.dll" />
-		<Reference Include="$(AmongUs)\BepInEx\core\Il2CppInterop.Runtime.dll" />
-		<Reference Include="$(AmongUs)\BepInEx\core\Il2CppInterop.HarmonySupport.dll" />
-
-		<!-- ゲーム本体側の生成アセンブリ -->
-		<Reference Include="$(AmongUs)\BepInEx\interop\*.dll" />
-
-		<!-- リソース -->
-		<EmbeddedResource Include=".\Resources\*.png" />
-		<EmbeddedResource Include=".\Resources\string.csv" />
-	</ItemGroup>
+  <ItemGroup>
+    <Reference Include="$(AmongUs)\BepInEx\core\*.dll" />
+    <Reference Include="$(AmongUs)\BepInEx\interop\*.dll" />
+    <EmbeddedResource Include=".\Resources\**" />
+  </ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Costura.Fody" Version="6.2.0">
+		<PackageReference Include="Costura.Fody" Version="5.7.0">
 			<IncludeAssets>runtime; compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
-		<PackageReference Include="csv" Version="2.0.245" />
-		<PackageReference Include="GitInfo" Version="3.6.1">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>none</IncludeAssets>
-		</PackageReference>
+		<PackageReference Include="csv" Version="2.0.87" />
+		<!--
+    <PackageReference Include="GitInfo" Version="2.0.20">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    -->
 	</ItemGroup>
 
-	<Target Name="Copy" AfterTargets="Build" Condition="'$(AmongUs)' != ''">
-		<Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(AmongUs)/BepInEx/plugins/" Condition="'$(Configuration)' == 'Debug'" />
-	</Target>
+	<ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>..\TeU\BepInEx\core\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TLSModule">
+      <HintPath>..\TeU\BepInEx\interop\UnityEngine.TLSModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>..\TeU\BepInEx\interop\UnityEngine.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIElementsModule">
+      <HintPath>..\TeU\BepInEx\interop\UnityEngine.UIElementsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>..\TeU\BepInEx\interop\UnityEngine.UIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UmbraModule">
+      <HintPath>..\TeU\BepInEx\interop\UnityEngine.UmbraModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityAnalyticsCommonModule">
+      <HintPath>..\TeU\BepInEx\interop\UnityEngine.UnityAnalyticsCommonModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityAnalyticsModule">
+      <HintPath>..\TeU\BepInEx\interop\UnityEngine.UnityAnalyticsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityConnectModule">
+      <HintPath>..\TeU\BepInEx\interop\UnityEngine.UnityConnectModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityCurlModule">
+      <HintPath>..\TeU\BepInEx\interop\UnityEngine.UnityCurlModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityTestProtocolModule">
+      <HintPath>..\TeU\BepInEx\interop\UnityEngine.UnityTestProtocolModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestAssetBundleModule">
+      <HintPath>..\TeU\BepInEx\interop\UnityEngine.UnityWebRequestAssetBundleModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestAudioModule">
+      <HintPath>..\TeU\BepInEx\interop\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestModule">
+      <HintPath>..\TeU\BepInEx\interop\UnityEngine.UnityWebRequestModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestTextureModule">
+      <HintPath>..\TeU\BepInEx\interop\UnityEngine.UnityWebRequestTextureModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestWWWModule">
+      <HintPath>..\TeU\BepInEx\interop\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VehiclesModule">
+      <HintPath>..\TeU\BepInEx\interop\UnityEngine.VehiclesModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VFXModule">
+      <HintPath>..\TeU\BepInEx\interop\UnityEngine.VFXModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VideoModule">
+      <HintPath>..\TeU\BepInEx\interop\UnityEngine.VideoModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VirtualTexturingModule">
+      <HintPath>..\TeU\BepInEx\interop\UnityEngine.VirtualTexturingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VRModule">
+      <HintPath>..\TeU\BepInEx\interop\UnityEngine.VRModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.WindModule">
+      <HintPath>..\TeU\BepInEx\interop\UnityEngine.WindModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.XRModule">
+      <HintPath>..\TeU\BepInEx\interop\UnityEngine.XRModule.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 
-	<Target Name="GitInfo" />
-	<Target Name="GitVersion" />
+  <Target Name="Copy" AfterTargets="Build" Condition="'$(AmongUs)' != ''">
+    <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(AmongUs)/BepInEx/plugins/" />
+  </Target>
 </Project>

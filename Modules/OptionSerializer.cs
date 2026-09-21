@@ -11,12 +11,12 @@ namespace TownOfHost.Modules;
 public static class OptionSerializer
 {
     private static LogHandler logger = Logger.Handler(nameof(OptionSerializer));
-    private const string Header = "%TOHOptions%", Footer = "%End%";
-    private static readonly DirectoryInfo exportDir = new("./TOH_DATA/OptionOutputs");
+    private const string Header = "%TOH-TmOptions%", Footer = "%End%";
+    private static readonly DirectoryInfo exportDir = new(Main.BaseDirectory + "/OptionOutputs");
     public static void SaveToClipboard()
     {
         GUIUtility.systemCopyBuffer = GenerateOptionsString();
-        Logger.SendInGame(Utils.ColorString(Color.green, Translator.GetString("Message.CopiedOptions")));
+        Logger.seeingame(Utils.ColorString(Color.green, Translator.GetString("Message.CopiedOptions")));
     }
     public static void SaveToFile()
     {
@@ -26,8 +26,8 @@ public static class OptionSerializer
         }
         var output = $"{exportDir.FullName}/Preset{OptionItem.CurrentPreset}_{DateTime.Now.Ticks}.txt";
         File.WriteAllText(output, GenerateOptionsString());
-        Utils.OpenDirectory(exportDir.FullName);
-        Logger.SendInGame(Utils.ColorString(Color.green, Translator.GetString("Message.ExportedOptions")));
+        UtilsOutputLog.OpenDirectory(exportDir.FullName);
+        Logger.seeingame(Utils.ColorString(Color.green, Translator.GetString("Message.ExportedOptions")));
     }
     public static void LoadFromClipboard()
     {
@@ -42,6 +42,8 @@ public static class OptionSerializer
     public static string GenerateOptionsString()
     {
         var builder = new StringBuilder(Header, 1024);
+        builder.Append(OptionSaver.Version);
+        builder.Append('|');
         builder.Append(GenerateModOptionsString());
         builder.Append('&');
         builder.Append(GenerateVanillaOptionsString());
@@ -94,7 +96,7 @@ public static class OptionSerializer
     {
         if (!AmongUsClient.Instance.AmHost)
         {
-            Logger.SendInGame(Translator.GetString("Message.OnlyHostCanLoadOptions"));
+            Logger.seeingame(Translator.GetString("Message.OnlyHostCanLoadOptions"));
             return;
         }
 
@@ -119,12 +121,29 @@ public static class OptionSerializer
         // ヘッダ以前とフッタ以降を削除
         source = source[(headerAt + Header.Length)..footerAt];
 
+        var versionAt = source.IndexOf('|');
+        if (versionAt < 0)
+        {
+            logger.Info("バージョン情報がありません");
+            goto Failed;
+        }
+
+        var version = source[0..versionAt];
+        if (version != $"{OptionSaver.Version}")
+        {
+            logger.Info($"バージョン{version}との互換性がありません。");
+            goto Failed;
+        }
+
+        // バージョンを削除
+        source = source[(versionAt + 1)..];
+
         try
         {
             var entries = source.Split('&');
             LoadModOptionsString(entries[0]);
             LoadVanillaOptionsString(entries[1]);
-            Logger.SendInGame(Utils.ColorString(Color.green, Translator.GetString("Message.LoadedOptions")));
+            Logger.seeingame(Utils.ColorString(Color.green, Translator.GetString("Message.LoadedOptions")));
         }
         catch (Exception ex)
         {
@@ -134,7 +153,7 @@ public static class OptionSerializer
         return;
 
     Failed:
-        Logger.SendInGame(Translator.GetString("Message.FailedToLoadOptions"));
+        Logger.seeingame(Translator.GetString("Message.FailedToLoadOptions"));
     }
     /// <summary>
     /// <see cref="GenerateModOptionsString"/>で生成された形式の文字列を読み込んで現在のプリセットを上書きします
@@ -159,7 +178,9 @@ public static class OptionSerializer
             {
                 continue;
             }
-            option.SetValue(parsedModOptions.TryGetValue(option.Id, out var value) ? value : 0, false);
+            var optionvalue = parsedModOptions.TryGetValue(option.Id, out var value) ? value : 0;
+            if (option.GetValue() == optionvalue) continue;
+            option.SetValue(optionvalue, false);
         }
         OptionItem.SyncAllOptions();
     }

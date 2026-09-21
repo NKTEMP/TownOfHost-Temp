@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using HarmonyLib;
-using TownOfHost.Attributes;
 using UnityEngine;
 
 namespace TownOfHost
@@ -8,10 +7,12 @@ namespace TownOfHost
     public class FallFromLadder
     {
         public static Dictionary<byte, Vector3> TargetLadderData;
-        private static int Chance => (Options.LadderDeathChance as StringOptionItem).GetChance();
-        [GameModuleInitializer]
+        public static bool IsActiveLadderDeath;
+        public static int Chance => (Options.LadderDeathChance as StringOptionItem).GetChance();
+        [Attributes.GameModuleInitializer]
         public static void Reset()
         {
+            IsActiveLadderDeath = Options.LadderDeath.GetBool();
             TargetLadderData = new();
         }
         public static void OnClimbLadder(PlayerPhysics player, Ladder source)
@@ -44,18 +45,18 @@ namespace TownOfHost
                         Vector2 targetPos = (Vector2)TargetLadderData[player.PlayerId] + new Vector2(0.1f, 0f);
                         ushort num = (ushort)(NetHelpers.XRange.ReverseLerp(targetPos.x) * 65535f);
                         ushort num2 = (ushort)(NetHelpers.YRange.ReverseLerp(targetPos.y) * 65535f);
-                        CustomRpcSender sender = CustomRpcSender.Create("LadderFallRpc", sendOption: Hazel.SendOption.Reliable);
+                        CustomRpcSender sender = CustomRpcSender.Create("LadderFallRpc", sendOption: Hazel.SendOption.None);
                         sender.AutoStartRpc(player.NetTransform.NetId, (byte)RpcCalls.SnapTo)
-                                .Write(num)
-                                .Write(num2)
-                        .EndRpc();
+                            .Write(num)
+                            .Write(num2)
+                            .EndRpc();
                         sender.AutoStartRpc(player.NetId, (byte)RpcCalls.MurderPlayer)
-                                .WriteNetObject(player)
-                                .Write((int)ExtendedPlayerControl.SucceededFlags)
-                        .EndRpc();
+                            .WriteNetObject(player)
+                            .Write((int)ExtendedPlayerControl.SuccessFlags)
+                            .EndRpc();
                         sender.SendMessage();
                         player.NetTransform.SnapTo(targetPos);
-                        player.MurderPlayer(player);
+                        player.MurderPlayer(player, ExtendedPlayerControl.SuccessFlags);
                         var state = PlayerState.GetByPlayerId(player.PlayerId);
                         state.DeathReason = CustomDeathReason.Fall;
                         state.SetDead();

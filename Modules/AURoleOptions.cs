@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using UnityEngine;
 
 namespace TownOfHost
 {
@@ -6,10 +7,16 @@ namespace TownOfHost
     {
         private static IGameOptions Opt;
         public static void SetOpt(IGameOptions opt) => Opt = opt;
+        public static float ElectricalCrewVision => Mathf.Clamp(Main.SabotageActivetimer, 0.5f, 5f);
         public static float KillCooldown
         {
             get => Opt.GetFloat(FloatOptionNames.KillCooldown);
             set => Opt.SetFloat(FloatOptionNames.KillCooldown, value);
+        }
+        public static int KillDistance
+        {
+            get => Opt.GetInt(Int32OptionNames.KillDistance);
+            set => Opt.SetInt(Int32OptionNames.KillDistance, value);
         }
         public static float PlayerSpeedMod
         {
@@ -35,6 +42,46 @@ namespace TownOfHost
         {
             get => Opt.GetFloat(FloatOptionNames.EngineerInVentMaxTime);
             set => Opt.SetFloat(FloatOptionNames.EngineerInVentMaxTime, value);
+        }
+        public static float TrackerCooldown
+        {
+            get => Opt.GetFloat(FloatOptionNames.TrackerCooldown);
+            set => Opt.SetFloat(FloatOptionNames.TrackerCooldown, value);
+        }
+        public static float TrackerDelay
+        {
+            get => Opt.GetFloat(FloatOptionNames.TrackerDelay);
+            set => Opt.SetFloat(FloatOptionNames.TrackerDelay, value);
+        }
+        public static float TrackerDuration
+        {
+            get => Opt.GetFloat(FloatOptionNames.TrackerDuration);
+            set => Opt.SetFloat(FloatOptionNames.TrackerDuration, value);
+        }
+        public static float NoisemakerAlertDuration
+        {
+            get => Opt.GetFloat(FloatOptionNames.NoisemakerAlertDuration);
+            set => Opt.SetFloat(FloatOptionNames.NoisemakerAlertDuration, value);
+        }
+        public static bool NoisemakerImpostorAlert
+        {
+            get => Opt.GetBool(BoolOptionNames.NoisemakerImpostorAlert);
+            set => Opt.SetBool(BoolOptionNames.NoisemakerImpostorAlert, value);
+        }
+        public static float JudgeTaskRequirementPercentage
+        {
+            get => Opt.GetFloat(FloatOptionNames.JudgeTaskRequirementPercentage);
+            set => Opt.SetFloat(FloatOptionNames.JudgeTaskRequirementPercentage, value);
+        }
+        public static float PhantomCooldown
+        {
+            get => Opt.GetFloat(FloatOptionNames.PhantomCooldown);
+            set => Opt.SetFloat(FloatOptionNames.PhantomCooldown, value);
+        }
+        public static float PhantomDuration
+        {
+            get => Opt.GetFloat(FloatOptionNames.PhantomDuration);
+            set => Opt.SetFloat(FloatOptionNames.PhantomDuration, value);
         }
         public static float GuardianAngelCooldown
         {
@@ -66,11 +113,6 @@ namespace TownOfHost
             get => Opt.GetBool(BoolOptionNames.ShapeshifterLeaveSkin);
             set => Opt.SetBool(BoolOptionNames.ShapeshifterLeaveSkin, value);
         }
-        public static bool NoisemakerImpostorAlert
-        {
-            get => Opt.GetBool(BoolOptionNames.NoisemakerImpostorAlert);
-            set => Opt.SetBool(BoolOptionNames.NoisemakerImpostorAlert, value);
-        }
         public static float DetectiveSuspectLimit
         {
             get => Opt.GetFloat(FloatOptionNames.DetectiveSuspectLimit);
@@ -81,5 +123,6 @@ namespace TownOfHost
             get => Opt.GetFloat(FloatOptionNames.ViperDissolveTime);
             set => Opt.SetFloat(FloatOptionNames.ViperDissolveTime, value);
         }
+
     }
 }

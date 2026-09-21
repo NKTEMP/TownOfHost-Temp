@@ -16,10 +16,12 @@ public sealed class MadSnitch : RoleBase, IKillFlashSeeable, IDeathReasonSeeable
             CustomRoles.MadSnitch,
             () => OptionCanVent.GetBool() ? RoleTypes.Engineer : RoleTypes.Crewmate,
             CustomRoleTypes.Madmate,
-            10200,
+            7500,
             SetupOptionItem,
             "msn",
-            introSound: () => GetIntroSound(RoleTypes.Impostor)
+            OptionSort: (1, 1),
+            introSound: () => GetIntroSound(RoleTypes.Impostor),
+            from: From.TownOfHost
         );
     public MadSnitch(PlayerControl player)
     : base(
@@ -30,10 +32,10 @@ public sealed class MadSnitch : RoleBase, IKillFlashSeeable, IDeathReasonSeeable
         canSeeKillFlash = Options.MadmateCanSeeKillFlash.GetBool();
         canSeeDeathReason = Options.MadmateCanSeeDeathReason.GetBool();
 
-        canVent = OptionCanVent.GetBool();
         canAlsoBeExposedToImpostor = OptionCanAlsoBeExposedToImpostor.GetBool();
         TaskTrigger = OptionTaskTrigger.GetInt();
 
+        MyTaskState.NeedTaskCount = OptionTaskTrigger.GetInt();
         CustomRoleManager.MarkOthers.Add(GetMarkOthers);
     }
 
@@ -41,26 +43,24 @@ public sealed class MadSnitch : RoleBase, IKillFlashSeeable, IDeathReasonSeeable
     private static OptionItem OptionCanAlsoBeExposedToImpostor;
     /// <summary>能力発動タスク数</summary>
     private static OptionItem OptionTaskTrigger;
-    private static Options.OverrideTasksData Tasks;
+    private static OverrideTasksData Tasks;
     enum OptionName
     {
-        CanVent,
-        MadSnitchCanAlsoBeExposedToImpostor,
-        MadSnitchTaskTrigger,
+        MadSnitchCanAlsoBeExposedToImpostor
     }
 
     private static bool canSeeKillFlash;
     private static bool canSeeDeathReason;
-    private static bool canVent;
     private static bool canAlsoBeExposedToImpostor;
     private static int TaskTrigger;
 
     public static void SetupOptionItem()
     {
-        OptionCanVent = BooleanOptionItem.Create(RoleInfo, 10, OptionName.CanVent, false, false);
+        OptionCanVent = BooleanOptionItem.Create(RoleInfo, 10, GeneralOption.CanVent, false, false);
         OptionCanAlsoBeExposedToImpostor = BooleanOptionItem.Create(RoleInfo, 11, OptionName.MadSnitchCanAlsoBeExposedToImpostor, false, false);
-        OptionTaskTrigger = IntegerOptionItem.Create(RoleInfo, 12, OptionName.MadSnitchTaskTrigger, new(0, 99, 1), 1, false).SetValueFormat(OptionFormat.Pieces);
-        Tasks = Options.OverrideTasksData.Create(RoleInfo, 20);
+        OptionTaskTrigger = IntegerOptionItem.Create(RoleInfo, 12, GeneralOption.TaskTrigger, new(0, 99, 1), 1, false).SetValueFormat(OptionFormat.Pieces);
+        Tasks = OverrideTasksData.Create(RoleInfo, 20);
+        RoleAddAddons.Create(RoleInfo, 25);
     }
 
     private bool KnowsImpostor()
@@ -71,9 +71,9 @@ public sealed class MadSnitch : RoleBase, IKillFlashSeeable, IDeathReasonSeeable
     {
         if (!KnowsImpostor()) return;
 
-        foreach (var impostor in Main.AllPlayerControls.Where(player => player.Is(CustomRoleTypes.Impostor)))
+        foreach (var impostor in PlayerCatch.AllPlayerControls.Where(player => player.Is(CustomRoleTypes.Impostor) || player.Is(CustomRoles.WolfBoy)))
         {
-            NameColorManager.Add(Player.PlayerId, impostor.PlayerId, impostor.GetRoleColorCode());
+            NameColorManager.Add(Player.PlayerId, impostor.PlayerId, Player.GetRoleColorCode());
         }
     }
 
@@ -81,7 +81,7 @@ public sealed class MadSnitch : RoleBase, IKillFlashSeeable, IDeathReasonSeeable
     {
         CheckAndAddNameColorToImpostors();
     }
-    public override bool OnCompleteTask()
+    public override bool OnCompleteTask(uint taskid)
     {
         CheckAndAddNameColorToImpostors();
         return true;
@@ -94,6 +94,9 @@ public sealed class MadSnitch : RoleBase, IKillFlashSeeable, IDeathReasonSeeable
             !canAlsoBeExposedToImpostor ||
             // インポスター→MadSnitchではない
             !seer.Is(CustomRoleTypes.Impostor) ||
+            //  狼少年の場合は除く
+            seer.Is(CustomRoles.WolfBoy) ||
+
             seen.GetRoleClass() is not MadSnitch madSnitch ||
             // マッドスニッチがまだインポスターを知らない
             !madSnitch.KnowsImpostor())
@@ -101,9 +104,10 @@ public sealed class MadSnitch : RoleBase, IKillFlashSeeable, IDeathReasonSeeable
             return string.Empty;
         }
 
-        return Utils.ColorString(Utils.GetRoleColor(CustomRoles.MadSnitch), "★");
+        return Utils.ColorString(UtilsRoleText.GetRoleColor(CustomRoles.MadSnitch), "★");
     }
 
-    public bool CheckKillFlash(MurderInfo info) => canSeeKillFlash;
-    public bool CheckSeeDeathReason(PlayerControl seen) => canSeeDeathReason;
+    public bool? CheckKillFlash(MurderInfo info) => canSeeKillFlash;
+    public bool? CheckSeeDeathReason(PlayerControl seen) => canSeeDeathReason;
+    public override CustomRoles TellResults(PlayerControl player) => Options.MadTellOpt();
 }

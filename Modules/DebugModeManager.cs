@@ -1,3 +1,4 @@
+using Epic.OnlineServices.Stats;
 using UnityEngine;
 
 namespace TownOfHost
@@ -16,24 +17,42 @@ namespace TownOfHost
         public static bool IsDebugMode => AmDebugger && EnableDebugMode != null && EnableDebugMode.GetBool();
 
         public static OptionItem EnableDebugMode;
+        public static OptionItem EnableTOHTmDebugMode;
+        public static OptionItem Spawndummy;
+        public static OptionItem DummyAssignRole;
 
         public static void Auth(HashAuth auth, string input)
         {
             // AmDebugger = デバッグビルドである || デバッグキー認証が通った
             AmDebugger = AmDebugger || auth.CheckString(input);
         }
+        public static bool AuthBool(HashAuth auth, string input)
+        {
+            return auth.CheckString(input);
+        }
         public static void SetupCustomOption()
         {
             EnableDebugMode = BooleanOptionItem.Create(2, "EnableDebugMode", false, TabGroup.MainSettings, true)
                 .SetColor(Color.green)
-                .SetHidden(!AmDebugger)
-                .RegisterUpdateValueEvent((obj, args) =>
+                .SetHidden(!AmDebugger);
+            /*.RegisterUpdateValueEvent((obj, args) =>
+            {
+                if (DestroyableSingleton<GameStartManager>.InstanceExists && Main.NormalOptions.NumImpostors == 0 && AmongUsClient.Instance.AmHost && !EnableDebugMode.GetBool())
                 {
-                    if (DestroyableSingleton<GameStartManager>.InstanceExists && Main.NormalOptions.NumImpostors == 0 && AmongUsClient.Instance.AmHost && !EnableDebugMode.GetBool())
-                    {
-                        Main.NormalOptions.NumImpostors = 1;
-                    }
-                });
+                    Main.NormalOptions.NumImpostors = 1;
+                }
+            });*/
+            EnableTOHTmDebugMode = BooleanOptionItem.Create(3, "EnableTOHTmDebugMode", false, TabGroup.MainSettings, true)
+                .SetColor(Color.green)
+                .SetHidden(!AmDebugger);
+            Spawndummy = IntegerOptionItem.Create(5, "Spawndummy", new(0, 14, 1), 0, TabGroup.MainSettings, true)
+                .SetColor(Color.green)
+                .SetZeroNotation(OptionZeroNotation.Off)
+                .SetHidden(!AmDebugger)
+                .SetParent(EnableTOHTmDebugMode);
+            DummyAssignRole = BooleanOptionItem.Create(6, "DummyAssignRole", false, TabGroup.MainSettings, true)
+                .SetHidden(!AmDebugger)
+                .SetParent(Spawndummy);
         }
     }
 }

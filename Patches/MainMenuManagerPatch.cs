@@ -1,7 +1,16 @@
 using System;
+using System.Text.RegularExpressions;
+
+using TMPro;
 using HarmonyLib;
-using TownOfHost.Templates;
 using UnityEngine;
+using AmongUs.Data;
+using Assets.InnerNet;
+
+using TownOfHost.Templates;
+using Object = UnityEngine.Object;
+using TownOfHost.Modules;
+using System.Linq;
 
 namespace TownOfHost
 {
@@ -9,19 +18,45 @@ namespace TownOfHost
     public class MainMenuManagerPatch
     {
         private static SimpleButton discordButton;
+        private static SimpleButton StatisticsButton;
+        private static GameObject Statistics_ScrollStuff;
         public static SimpleButton UpdateButton { get; private set; }
+        public static SimpleButton UpdateDetailsButton { get; private set; }
         private static SimpleButton gitHubButton;
+        private static SimpleButton TwitterXButton;
+        private static SimpleButton TOHTmBOTButton;
+        private static SimpleButton RoleInfoButton;
+        //private static SimpleButton VersionChangeButton;
+        private static SimpleButton betaversionchange;
+        public static TextMeshPro Statistics_TMP;
+        public static GameObject VersionMenu;
+        public static GameObject betaVersionMenu;
+        public static AnnouncementPopUp UpdateDetailsPopup;
 
         [HarmonyPatch(nameof(MainMenuManager.Start)), HarmonyPostfix, HarmonyPriority(Priority.Normal)]
         public static void StartPostfix(MainMenuManager __instance)
         {
             SimpleButton.SetBase(__instance.quitButton);
+            if (SimpleButton.IsNullOrDestroyed(RoleInfoButton))
+            {
+                RoleInfoButton = CreateButton(
+                    "RoleInfoButton",
+                    new(2.4f, 1, 1f),
+                    new Color32(51, 156, 126, byte.MaxValue),
+                    new Color32(103, 224, 190, byte.MaxValue),
+                    () =>
+                    {
+                        RoleInfoShower.CreateMenu(__instance);
+                    },
+                    "Role/Achivement"
+                );
+            }
             //Discordボタンを生成
             if (SimpleButton.IsNullOrDestroyed(discordButton))
             {
                 discordButton = CreateButton(
                     "DiscordButton",
-                    new(-1f, -1f, 1f),
+                    new(-2.5f, -1f, 1f),
                     new(88, 101, 242, byte.MaxValue),
                     new(148, 161, byte.MaxValue, byte.MaxValue),
                     () => Application.OpenURL(Main.DiscordInviteUrl),
@@ -34,15 +69,75 @@ namespace TownOfHost
             {
                 gitHubButton = CreateButton(
                     "GitHubButton",
-                    new(1f, -1f, 1f),
+                    new(-0.8f, -1f, 1f),//-1f
                     new(153, 153, 153, byte.MaxValue),
                     new(209, 209, 209, byte.MaxValue),
                     () => Application.OpenURL("https://github.com/NKTEMP/TownOfHost-Temp"),
                     "GitHub");
             }
 
+            // TwitterXボタンを生成
+            if (SimpleButton.IsNullOrDestroyed(TwitterXButton))
+            {
+                TwitterXButton = CreateButton(
+                    "TwitterXButton",
+                    new(0.9f, -1f, 1f),
+                    new(0, 202, 255, byte.MaxValue),
+                    new(60, 255, 255, byte.MaxValue),
+                    () => Application.OpenURL("https://twitter.com/TOHTmserver_k"),
+                    "Twitter(X)");
+            }
+            // TOHTmBOTボタンを生成
+            if (SimpleButton.IsNullOrDestroyed(TOHTmBOTButton))
+            {
+                TOHTmBOTButton = CreateButton(
+                    "TOHTmBOTButton",
+                    new(2.6f, -1f, 1f),
+                    new(0, 201, 87, byte.MaxValue),
+                    new(60, 201, 87, byte.MaxValue),
+                    () => Application.OpenURL("https://discord.com/api/oauth2/authorize?client_id=1198276538563567716&permissions=8&scope=bot"),
+                    "TOHTmBOT");
+            }
+            if (SimpleButton.IsNullOrDestroyed(StatisticsButton))
+            {
+                StatisticsButton = CreateButton(
+                    "StatisticsButton",
+                    new Vector3(0, -2.6963f, -5f),
+                    new(255, 242, 104, byte.MaxValue),
+                    new(255, 248, 173, byte.MaxValue),
+                    () =>
+                    {
+                        CredentialsPatch.TOHTmLogo.gameObject.SetActive(false);
+                        __instance.screenTint.enabled = true;
+                        Statistics_TMP.gameObject.SetActive(true);
+                        Statistics_TMP.text = $"<size=60%>{SaveStatistics.ShowText()}";
+                        Statistics_ScrollStuff.gameObject.SetActive(true);
+                        var St_Scroller = Statistics_ScrollStuff.transform.GetChild(0);
+                        Statistics_TMP.transform.parent = St_Scroller.GetChild(3).transform;
+                        St_Scroller.GetChild(1).gameObject.SetActive(false);
+                        St_Scroller.GetChild(2).gameObject.SetActive(false);
+                        St_Scroller.localPosition = new(3.18f, -5.45f, 0.1473f);
+                        St_Scroller.GetChild(0).localPosition = new(2.1f, 2.6f, 2f);
+                        St_Scroller.GetChild(0).localScale = new Vector3(0.7f, 1, 0);
+                        St_Scroller.GetChild(3).SetLocalY(0);
+                        var ages = Statistics_TMP.text.Split("\n").Count();
+                        St_Scroller.GetComponentInParent<Scroller>().ContentYBounds.max = ages > 16 ? (ages - 16) * 0.25f : 0;
+                    },
+                    Translator.GetString("Statistics")
+                    );
+            }
+
+            if (Statistics_ScrollStuff == null || Statistics_ScrollStuff.gameObject == null)
+            {
+                var sc = GameObject.Find("StoreMenu/Background/Scroll Stuff");
+                Statistics_ScrollStuff = Object.Instantiate(sc, __instance.transform);
+                Statistics_ScrollStuff.gameObject.name = "stscroll";
+                var Scroller = Statistics_ScrollStuff.transform.GetChild(0);
+                Scroller.GetChild(3).DestroyChildren();//inner全削除
+                Statistics_ScrollStuff.gameObject.SetActive(false);
+            }
+
             //Updateボタンを生成
-            /*
             if (SimpleButton.IsNullOrDestroyed(UpdateButton))
             {
                 UpdateButton = CreateButton(
@@ -52,24 +147,131 @@ namespace TownOfHost
                     new(60, 255, 255, byte.MaxValue),
                     () =>
                     {
+                        //if (!Main.AllowPublicRoom)
+                        //{
                         UpdateButton.Button.gameObject.SetActive(false);
                         ModUpdater.StartUpdate(ModUpdater.downloadUrl);
+                        //}
+                        /*else
+                        {
+                            UpdateButton.Button.gameObject.SetActive(false);
+                            ModUpdater.GoGithub();
+                        }*/
                     },
                     $"{Translator.GetString("updateButton")}\n{ModUpdater.latestTitle}",
                     new(2.5f, 1f),
                     isActive: false);
             }
-            */
-#if RELEASE
+            // アップデート(詳細)ボタンを生成
+            if (SimpleButton.IsNullOrDestroyed(UpdateDetailsButton))
+            {
+                UpdateDetailsButton = CreateButton(
+                    "UpdateDetailsButton",
+                    new(1.3f, -1.9f, 1f),
+                    new(153, 153, 153, byte.MaxValue),
+                    new(209, 209, 209, byte.MaxValue),
+                    () =>
+                    {
+                        if (UpdateDetailsPopup == null)
+                        {
+                            UpdateDetailsPopup = Object.Instantiate(__instance.announcementPopUp);
+                        }
+                        UpdateDetailsPopup.name = "Update Detail";
+                        UpdateDetailsPopup.gameObject.SetActive(true);
+                        UpdateDetailsPopup.AnnouncementListSlider.SetActive(false);
+                        UpdateDetailsPopup.Title.text = "TOH-Tm " + ModUpdater.latestTitle;
+                        UpdateDetailsPopup.AnnouncementBodyText.text = Regex.Replace(ModUpdater.body.Replace("#", "").Replace("**", ""), @"\[(.*?)\]\(.*?\)", "$1");
+                        UpdateDetailsPopup.DateString.text = "Latest Release";
+                        UpdateDetailsPopup.SubTitle.text = "";
+                        UpdateDetailsPopup.ListScroller.gameObject.SetActive(false);
+                    },
+                    "▽",
+                    new(0.5f, 0.5f),
+                    isActive: false,
+                    toolTip: "UpdateDetailsButtonInfo");
+            }
+            //同じバージョンの 安定ver,デバッグバージョンの切り替えの奴
+            if (SimpleButton.IsNullOrDestroyed(betaversionchange))
+            {
+                betaversionchange = CreateButton(
+                    "betaversionchange",
+                    new(-2.3f, -2.6963f, 1f),
+                    new(0, 255, 183, byte.MaxValue),
+                    new(60, 255, 183, byte.MaxValue),
+                    () =>
+                    {
+                        CredentialsPatch.TOHTmLogo.gameObject.SetActive(false);
+                        __instance.screenTint.enabled = true;
+                        if (betaVersionMenu != null)
+                        {
+                            betaVersionMenu.SetActive(true);
+                            return;
+                        }
+                        betaVersionMenu = new GameObject("verPanel");
+                        betaVersionMenu.transform.parent = __instance.gameModeButtons.transform.parent;
+                        betaVersionMenu.transform.localPosition = new(-0.0964f, 0.1378f, 1f);
+                        betaVersionMenu.SetActive(true);
+                        ModUpdater.CheckRelease(all: true).GetAwaiter().GetResult();
+                        int i = 0;
+                        if (ModUpdater.snapshots.Count == 0) return;
+
+                        foreach (var release in ModUpdater.snapshots)
+                        {
+                            int column = i % 4;
+                            int row = i / 4;
+                            // X 座標と Y 座標を計算
+                            float x = -1.6891f + (1.6891f * column);
+                            float y = 0.8709f - (0.3927f * row);
+                            var button2 = new SimpleButton(
+                            betaVersionMenu.transform,
+                            release.TagName,
+                            new(x, y, 1f),
+                            release.TagName.Contains("S") ? new(0, 255, 183, byte.MaxValue) : new(0, 202, 255, byte.MaxValue),
+                            release.TagName.Contains("S") ? new(60, 255, 183, byte.MaxValue) : new(60, 255, 255, byte.MaxValue),
+                            () =>
+                            {
+                                if (release.DownloadUrl != null)
+                                    ModUpdater.StartUpdate(release.DownloadUrl, release.OpenURL);
+                            },
+                            "v" + release.TagName.TrimStart('v').Trim('S').Trim('s') + (release.DownloadUrl == null ? "(ERROR)" : ""));
+                            i++;
+                            button2.Button.OnMouseOver.AddListener((Action)(() => ToolTip.Show(button2.Button, release.Info, null)));
+                            button2.Button.OnMouseOut.AddListener((Action)ToolTip.Hide);
+                        }
+                    },
+                    Translator.GetString("versionchangebutton"));
+                betaversionchange.FontSize = 2;
+            }
+            CreateStreameMenu.CreateMenu(__instance);
+
             // フリープレイの無効化
             var howToPlayButton = __instance.howToPlayButton;
             var freeplayButton = howToPlayButton.transform.parent.Find("FreePlayButton");
+#if RELEASE
             if (freeplayButton != null)
             {
-                freeplayButton.gameObject.SetActive(false);
+                var textm = freeplayButton.transform.FindChild("Text_TMP").GetComponent<TextMeshPro>();
+                textm.DestroyTranslator();
+                textm.text = Translator.GetString("EditCSp");
+
+                freeplayButton.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() => CustomSpawnEditor.ActiveEditMode = true));
             }
-            // フリープレイが消えるのでHowToPlayをセンタリング
-            howToPlayButton.transform.SetLocalX(0);
+            // フリープレイが消えるのでHowToPlayをセンタリング | 消えないのでしません☆
+            //howToPlayButton.transform.SetLocalX(0);
+#endif
+#if DEBUG
+            var csbutton = GameObject.Instantiate(freeplayButton, freeplayButton.parent);
+            var textm = csbutton.transform.FindChild("Text_TMP").GetComponent<TextMeshPro>();
+            textm.DestroyTranslator();
+            textm.text = Translator.GetString("EditCSp");
+
+            csbutton.transform.localPosition = new Vector3(2.8704f, -1.9916f);
+            csbutton.transform.localScale = new Vector3(0.6f, 0.6f);
+            var pb = csbutton.GetComponent<PassiveButton>();
+            pb.inactiveSprites.GetComponent<SpriteRenderer>().color = new(88, 101, 242, byte.MaxValue);
+            pb.activeSprites.GetComponent<SpriteRenderer>().color = new(148, 161, byte.MaxValue, byte.MaxValue);
+            pb.OnClick.AddListener((Action)(() => CustomSpawnEditor.ActiveEditMode = true));
+            freeplayButton.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() => CustomSpawnEditor.ActiveEditMode = false));//ボタンを生成
 #endif
         }
 
@@ -80,7 +282,7 @@ namespace TownOfHost
         /// <param name="action">押したときに発火するアクション</param>
         /// <param name="label">ボタンのテキスト</param>
         /// <param name="scale">ボタンのサイズ 変更しないなら不要</param>
-        private static SimpleButton CreateButton(
+        public static SimpleButton CreateButton(
             string name,
             Vector3 localPosition,
             Color32 normalColor,
@@ -88,55 +290,261 @@ namespace TownOfHost
             Action action,
             string label,
             Vector2? scale = null,
-            bool isActive = true)
+            bool isActive = true,
+            Transform transform = null,
+            string toolTip = null)
         {
-            var button = new SimpleButton(CredentialsPatch.TohLogo.transform, name, localPosition, normalColor, hoverColor, action, label, isActive);
+            var button = new SimpleButton(transform == null ? CredentialsPatch.TOHTmLogo.transform : transform, name, localPosition, normalColor, hoverColor, action, label, isActive);
             if (scale.HasValue)
             {
                 button.Scale = scale.Value;
             }
+            if (toolTip != null)
+            {
+                button.Button.OnMouseOver.AddListener((Action)(() =>
+                {
+                    var pos = ToolTip.GetMoucePos(new(-1.8f, -0.2f, -30)); //ejectボタンに隠れないように
+                    ToolTip.Show(button.Button, Translator.GetString(toolTip), pos);
+                }));
+                button.Button.OnMouseOut.AddListener((Action)ToolTip.Hide);
+            }
             return button;
         }
 
+        [HarmonyPatch(nameof(MainMenuManager.OpenFindGame))]
+        [HarmonyPrefix]
+        public static bool ClickFindGame()
+        {
+            return !(VersionInfoManager.version == null || VersionInfoManager.allversion.DisableMM
+            || (VersionInfoManager.allversion != null && VersionInfoManager.allversion.DisableMM));
+        }
+        [HarmonyPatch(nameof(MainMenuManager.OpenEnterCodeMenu))]
+        [HarmonyPrefix]
+        public static bool ClickOpenEnterCodeMenu()
+        {
+            return !(VersionInfoManager.version != null && VersionInfoManager.version.DisableRoomJoin == true
+            && VersionInfoManager.allversion != null && VersionInfoManager.allversion.DisableRoomJoin == true);
+        }
+        [HarmonyPatch(nameof(MainMenuManager.ClickBackOnline))]
+        [HarmonyPostfix]
+        public static void ClickBackOnline(MainMenuManager __instance)
+        {
+            __instance.ResetScreen();
+        }
         // プレイメニュー，アカウントメニュー，クレジット画面が開かれたらロゴとボタンを消す
         [HarmonyPatch(nameof(MainMenuManager.OpenGameModeMenu))]
-        [HarmonyPatch(nameof(MainMenuManager.OpenOnlineMenu))]
-        [HarmonyPatch(nameof(MainMenuManager.OpenEnterCodeMenu))]
-        [HarmonyPatch(nameof(MainMenuManager.ClickBackOnline))]
         [HarmonyPatch(nameof(MainMenuManager.OpenAccountMenu))]
         [HarmonyPatch(nameof(MainMenuManager.OpenCredits))]
+        [HarmonyPatch(nameof(MainMenuManager.OpenOnlineMenu))]
+        [HarmonyPatch(nameof(MainMenuManager.GoBackCreateGame))]
+        [HarmonyPatch(nameof(MainMenuManager.OpenEnterCodeMenu))]
         [HarmonyPostfix]
-        public static void OpenMenuPostfix()
+        public static void OpenMenuPostfix(MainMenuManager __instance)
         {
-            if (CredentialsPatch.TohLogo != null)
+            CreateStreameMenu.CloseMenu();
+            var Findbuttongo = GameObject.Find("MainMenuManager/MainUI/AspectScaler/RightPanel/MaskedBlackScreen/OnlineButtons/AspectSize/Scaler/Find Game Button");
+
+            var codebuttongo = GameObject.Find("MainMenuManager/MainUI/AspectScaler/RightPanel/MaskedBlackScreen/OnlineButtons/AspectSize/Scaler/Enter Code Button");
+            var Codebutton = codebuttongo.transform.GetComponent<PassiveButton>();
+
+            var createbuttongameobject = GameObject.Find("MainMenuManager/MainUI/AspectScaler/RightPanel/MaskedBlackScreen/OnlineButtons/AspectSize/Scaler/Create Lobby Button");
+            var createbutton = createbuttongameobject.transform.GetComponent<PassiveButton>();
+
+            var version = VersionInfoManager.version;
+            var allVersion = VersionInfoManager.allversion;
+
+            if (Findbuttongo)
             {
-                CredentialsPatch.TohLogo.gameObject.SetActive(false);
+                // var disable = version == null || version.DisableMM || (allVersion != null && allVersion.DisableMM);
+                //Findbuttongo.SetActive(!disable);
+                Findbuttongo.SetActive(false);
             }
+            if (Codebutton && ((VersionInfoManager.version != null && VersionInfoManager.version.DisableRoomJoin == true) ||
+            VersionInfoManager.allversion != null && VersionInfoManager.allversion.DisableRoomJoin == true))
+            {
+                var buttonCollider = Codebutton.GetComponent<BoxCollider2D>();
+                buttonCollider.offset = new(100f, 100f);
+            }
+            if (Main.IsAndroid())
+            {
+                //    createbutton.GetComponent<BoxCollider2D>().offset = new(100f, 100);
+            }
+
+            if (CredentialsPatch.TOHTmLogo != null)
+            {
+                CredentialsPatch.TOHTmLogo.gameObject.SetActive(false);
+            }
+            if (VersionMenu != null)
+                VersionMenu.SetActive(false);
+            if (betaVersionMenu != null)
+                betaVersionMenu.SetActive(false);
+            if (Statistics_TMP?.gameObject != null)
+                Statistics_TMP?.gameObject.SetActive(false);
+            if (Statistics_ScrollStuff?.gameObject != null)
+                Statistics_ScrollStuff?.gameObject.SetActive(false);
+
+            {
+                var warning = GameObject.Find("MainMenuManager/MainUI/AspectScaler/RightPanel/MaskedBlackScreen/OnlineButtons/AspectSize/CrossplayWarning");
+                warning.SetActive(true);
+                var TMPobjct = GameObject.Find("MainMenuManager/MainUI/AspectScaler/RightPanel/MaskedBlackScreen/OnlineButtons/AspectSize/CrossplayWarning/CrossPlayText/Text_TMP");
+
+                var TMP = TMPobjct.transform.GetComponent<TextMeshPro>();
+                var cantJoin = VersionInfoManager.version != null && VersionInfoManager.version.DisableRoomJoin == true;
+                cantJoin |= VersionInfoManager.allversion != null && VersionInfoManager.allversion.DisableRoomJoin == true;
+                var text = Main.IsAndroid() ? Translator.GetString("CantAndroidCreateGame") : cantJoin ? Translator.GetString("CantPublickAndJoin") : "";
+                TMP.SetText(text);
+                _ = new LateTask(() => TMP.SetText(text), 0.05f, "Set", true);
+                if (text == "") warning.SetActive(false);
+            }
+            OptionsMenuBehaviourStartPatch.Instance = null;
         }
         [HarmonyPatch(nameof(MainMenuManager.ResetScreen)), HarmonyPostfix]
-        public static void ResetScreenPostfix()
+        public static void ResetScreenPostfix(MainMenuManager __instance)
         {
-            if (CredentialsPatch.TohLogo != null)
+            if (CredentialsPatch.TOHTmLogo != null)
             {
-                CredentialsPatch.TohLogo.gameObject.SetActive(true);
+                CredentialsPatch.TOHTmLogo?.gameObject?.SetActive(true);
             }
+            if (VersionMenu != null)
+                VersionMenu.SetActive(false);
+            if (betaVersionMenu != null)
+                betaVersionMenu.SetActive(false);
+            if (Statistics_TMP != null)
+                Statistics_TMP?.gameObject.SetActive(false);
+            if (Statistics_ScrollStuff != null)
+                Statistics_ScrollStuff?.gameObject.SetActive(false);
+            CreateStreameMenu.CloseMenu();
+            _ = new LateTask(() =>
+            {
+                __instance.ejectMenu?.ejectButton?.gameObject?.SetActive(true);
+            }, 0.5f, "ShowButton", true);
         }
-        [HarmonyPatch(nameof(MainMenuManager.OpenOnlineMenu)), HarmonyPostfix]
-        public static void FindGameButtonDisable(MainMenuManager __instance)
+        public static void DestroyButton()
         {
-            __instance.findGameButton.gameObject.SetActive(false);
-            //中央Lineを消す
-            var line = __instance.findGameButton.gameObject.transform.parent.Find("Line");
-            if (line != null)
+            VersionMenu = null;
+            betaVersionMenu = null;
+        }
+    }
+    public class ModNews
+    {
+        public int Number;
+        public int BeforeNumber;
+        public string Title;
+        public string SubTitle;
+        public string ShortTitle;
+        public string Text;
+        public string Date;
+
+        public Announcement ToAnnouncement()
+        {
+            var result = new Announcement
             {
-                line.gameObject.SetActive(false);
+                Number = Number,
+                Title = Title,
+                SubTitle = SubTitle,
+                ShortTitle = ShortTitle,
+                Text = Text,
+                Language = (uint)DataManager.Settings.Language.CurrentLanguage,
+                Date = Date,
+                Id = "ModNews"
+            };
+
+            return result;
+        }
+    }
+    public class JsonModNews
+    {
+        public JsonModNews(int Number, string Title, string SubTitle, string ShortTitle,
+            string Text, string Date)
+        {
+            var news = new ModNews
+            {
+                Number = Number,
+                Title = Title,
+                SubTitle = SubTitle,
+                ShortTitle = ShortTitle,
+                Text = Text,
+                Date = Date
+            };
+            ModNewsHistory.JsonAndAllModNews.Add(news);
+        }
+    }
+
+    [HarmonyPatch(typeof(EjectMainMenu), nameof(EjectMainMenu.EjectCrewmate))]
+    class EjectMainMenuEjectCrewmatePatch
+    {
+        public static int i = 0;
+        public static bool Prefix(EjectMainMenu __instance)
+        {
+            //クールダウン処理を消したver  // pressStateがnullになっていてエラーが発生していたためエラーを発生させないためにっ
+            PlayerParticle playerParticle = __instance.pool.Get<PlayerParticle>();
+            PlayerMaterial.SetColors(IRandom.Instance.Next(0, 18), (Renderer)(object)playerParticle.myRend); // (0~17)
+            __instance.PlacePlayer(playerParticle, initial: false);
+            return false;
+        }
+        public static void Postfix(EjectMainMenu __instance)
+        {
+            try
+            {
+                i++;
+                __instance.pressState?.SetActive(false);
+                __instance.ejectButton?.SetActive(true);
+                __instance.onCooldown = false;
+                if (10 < i && i < 60)
+                {
+                    __instance.EjectCrewmate();
+                }
+                if (80 < i)
+                {
+                    i = 0;
+                }
+
+                if (IRandom.Instance.Next(3) is 1)
+                {
+                    __instance.EjectCrewmate();
+                }
             }
-            //ロビー作成、コード入力ボタンを中央に移動
-            __instance.createGameButton.transform.SetLocalX(0);
-            var enterCodeButton = __instance.createGameButton.transform.parent.Find("Enter Code Button");
-            if (enterCodeButton != null)
+            catch { }
+        }
+    }
+    [HarmonyPatch(typeof(EjectMainMenu), nameof(EjectMainMenu.PlacePlayer))]
+    class EjectMainMenuEjectPlacePlayerPatch
+    {
+        public static Shader Shader = null;
+        public static void Postfix(EjectMainMenu __instance, PlayerParticle part)
+        {
+            var chance = IRandom.Instance.Next(3);
+            var size = 30 + IRandom.Instance.Next(50);
+            if (Shader is null)
             {
-                enterCodeButton.gameObject.transform.SetLocalX(0);
+                Shader = part.myRend.material.shader;
+            }
+            part.myRend.material.shader = Shader;
+            part.myRend.sharedMaterial.shader = Shader;
+            Shader shader = Shader.Find("Sprites/Default");
+            if (chance is 1)
+            {
+                var allrole = CustomRolesHelper.AllStandardRoles;
+                var role = allrole[IRandom.Instance.Next(allrole.Count())];
+                var sprite = UtilsSprite.LoadSprite($"TownOfHost.Resources.TOHTm.Label.{role}.png", size);
+                if (sprite is null) return;
+                part.myRend.material.shader = shader;
+                part.myRend.sharedMaterial.shader = shader;
+                part.myRend.sprite = sprite;
+            }
+            if (chance is 2)
+            {
+                var allrole = CustomRolesHelper.AllRoles;
+                var role = allrole[IRandom.Instance.Next(allrole.Count())];
+                var sprite = UtilsSprite.LoadSprite($"TownOfHost.Resources.TOHTm.Button.{role}_Ability.png", size);
+                if (sprite is null)
+                    sprite = UtilsSprite.LoadSprite($"TownOfHost.Resources.TOHTm.Button.{role}_Kill.png", size);
+                if (sprite is null)
+                    sprite = UtilsSprite.LoadSprite($"TownOfHost.Resources.TOHTm.Button.{role}_Vent.png", size);
+                if (sprite is null) return;
+                part.myRend.material.shader = shader;
+                part.myRend.sharedMaterial.shader = shader;
+                part.myRend.sprite = sprite;
             }
         }
     }

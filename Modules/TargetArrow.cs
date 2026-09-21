@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using TownOfHost.Attributes;
 using UnityEngine;
 
 namespace TownOfHost
@@ -40,7 +39,7 @@ namespace TownOfHost
             "・"
         };
 
-        [GameModuleInitializer]
+        [Attributes.GameModuleInitializer]
         public static void Init()
         {
             TargetArrows.Clear();
@@ -66,9 +65,9 @@ namespace TownOfHost
         {
             var arrowInfo = new ArrowInfo(seer, target);
             var removeList = new List<ArrowInfo>(TargetArrows.Keys.Where(k => k.Equals(arrowInfo)));
-            foreach (var a in removeList)
+            foreach (var arrow in removeList)
             {
-                TargetArrows.Remove(a);
+                TargetArrows.Remove(arrow);
             }
         }
         /// <summary>
@@ -116,7 +115,7 @@ namespace TownOfHost
             foreach (var arrowInfo in arrowList)
             {
                 var targetId = arrowInfo.To;
-                var target = Utils.GetPlayerById(targetId);
+                var target = PlayerCatch.GetPlayerById(targetId);
                 if (seerIsDead || !target.IsAlive())
                 {
                     TargetArrows.Remove(arrowInfo);
@@ -149,7 +148,151 @@ namespace TownOfHost
             }
             if (update)
             {
-                Utils.NotifyRoles(SpecifySeer: seer);
+                UtilsNotifyRoles.NotifyRoles(OnlyMeName: true, SpecifySeer: seer);
+            }
+        }
+    }
+    static class GetArrow
+    {
+        class ArrowInfo
+        {
+            public byte From;
+            public Vector3 To;
+            public ArrowInfo(byte from, Vector3 to)
+            {
+                From = from;
+                To = to;
+            }
+            public bool Equals(ArrowInfo obj)
+            {
+                return From == obj.From && To == obj.To;
+            }
+            public override string ToString()
+            {
+                return $"(From:{From} To:{To})";
+            }
+        }
+
+        static Dictionary<ArrowInfo, string> TargetArrows = new();
+        static readonly string[] Arrows = {
+            "↑",
+            "↗",
+            "→",
+            "↘",
+            "↓",
+            "↙",
+            "←",
+            "↖",
+            "・"
+        };
+
+        [Attributes.GameModuleInitializer]
+        public static void Init()
+        {
+            TargetArrows.Clear();
+        }
+        /// <summary>
+        /// 新たにターゲット矢印対象を登録
+        /// </summary>
+        /// <param name="seer"></param>
+        /// <param name="position"></param>
+        /// <param name="coloredArrow"></param>
+        public static void Add(byte seer, Vector3 position)
+        {
+            var arrowInfo = new ArrowInfo(seer, position);
+            if (!TargetArrows.Any(a => a.Key.Equals(arrowInfo)))
+                TargetArrows[arrowInfo] = "・";
+        }
+        /// <summary>
+        /// ターゲットの削除
+        /// </summary>
+        /// <param name="seer"></param>
+        /// <param name="position"></param>
+        public static void Remove(byte seer, Vector3 position)
+        {
+            var arrowInfo = new ArrowInfo(seer, position);
+            var removeList = new List<ArrowInfo>(TargetArrows.Keys.Where(k => k.Equals(arrowInfo)));
+            foreach (var arrow in removeList)
+            {
+                TargetArrows.Remove(arrow);
+            }
+        }
+        /// <summary>
+        /// タイプの同じターゲットの全削除
+        /// </summary>
+        /// <param name="seer"></param>
+        public static void RemoveAllTarget(byte seer)
+        {
+            var removeList = new List<ArrowInfo>(TargetArrows.Keys.Where(k => k.From == seer));
+            foreach (var arrowInfo in removeList)
+            {
+                TargetArrows.Remove(arrowInfo);
+            }
+        }
+        /// <summary>
+        /// 見ることのできるすべてのターゲット矢印を取得
+        /// </summary>
+        /// <param name="seer"></param>
+        /// <returns></returns>
+        public static string GetArrows(PlayerControl seer, params Vector3[] position)
+        {
+            var arrows = "";
+            foreach (var arrowInfo in TargetArrows.Keys.Where(ai => ai.From == seer.PlayerId && position.Contains(ai.To)))
+            {
+                arrows += TargetArrows[arrowInfo];
+            }
+            return arrows;
+        }
+        /// <summary>
+        /// FixedUpdate毎にターゲット矢印を確認
+        /// 更新があったらNotifyRolesを発行
+        /// </summary>
+        /// <param name="seer"></param>
+        public static void OnFixedUpdate(PlayerControl seer)
+        {
+            if (!GameStates.IsInTask) return;
+
+            var seerId = seer.PlayerId;
+            var seerIsDead = !seer.IsAlive();
+
+            var arrowList = new List<ArrowInfo>(TargetArrows.Keys.Where(a => a.From == seer.PlayerId));
+            if (arrowList.Count == 0) return;
+
+            var update = false;
+            foreach (var arrowInfo in arrowList)
+            {
+                var position = arrowInfo.To;
+                position.z = 0;
+                var seerpos = seer.transform.position;
+                seerpos.z = 0;
+
+                //対象の方角ベクトルを取る
+                var dir = position - seerpos;
+                int index;
+                if (dir.magnitude < 2)
+                {
+                    //近い時はドット表示
+                    index = 8;
+                }
+                else
+                {
+                    //-22.5～22.5度を0とするindexに変換
+                    // 下が0度、左側が+180まで右側が-180まで
+                    // 180度足すことで上が0度の時計回り
+                    // 45度単位のindexにするため45/2を加算
+                    var angle = Vector3.SignedAngle(Vector3.down, dir, Vector3.back) + 180 + 22.5;
+                    index = ((int)(angle / 45)) % 8;
+                }
+                var arrow = Arrows[index];
+                if (TargetArrows[arrowInfo] != arrow)
+                {
+                    TargetArrows[arrowInfo] = arrow;
+                    update = true;
+                }
+            }
+            if (update)
+            {
+                UtilsNotifyRoles.NotifyRoles(OnlyMeName: true, SpecifySeer: seer);
             }
         }
     }

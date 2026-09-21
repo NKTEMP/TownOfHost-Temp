@@ -1,5 +1,6 @@
 using System.Collections.Generic;
-using TownOfHost.Attributes;
+using System.Linq;
+using TownOfHost.Roles.Core;
 
 namespace TownOfHost
 {
@@ -36,7 +37,6 @@ namespace TownOfHost
         public static bool IsCamouflage;
         public static Dictionary<byte, NetworkedPlayerInfo.PlayerOutfit> PlayerSkins = new();
 
-        [GameModuleInitializer]
         public static void Init()
         {
             IsCamouflage = false;
@@ -48,31 +48,42 @@ namespace TownOfHost
 
             var oldIsCamouflage = IsCamouflage;
 
-            IsCamouflage = Utils.IsActive(SystemTypes.Comms);
+            IsCamouflage = false;//Utils.IsActive(SystemTypes.Comms);
 
             if (oldIsCamouflage != IsCamouflage)
             {
-                foreach (var pc in Main.AllPlayerControls)
+                foreach (var pc in PlayerCatch.AllPlayerControls)
                 {
                     RpcSetSkin(pc);
-
                     // The code is intended to remove pets at dead players to combat a vanilla bug
                     if (!IsCamouflage && !pc.IsAlive())
                     {
-                        pc.RpcSetPet("");
+                        return;
+                        //pc.RpcSetPet("");
                     }
                 }
-                Utils.NotifyRoles(NoCache: true);
+                UtilsNotifyRoles.NotifyRoles(NoCache: true);
+                if (!IsCamouflage)
+                {
+                    foreach (var role in CustomRoleManager.AllActiveRoles.Values)
+                    {
+                        role.ChangeColor();
+                    }
+                }
             }
         }
-        public static void RpcSetSkin(PlayerControl target, bool ForceRevert = false, bool RevertToDefault = false)
+        public static List<byte> ventplayr = new();
+        public static void RpcSetSkin(PlayerControl target, bool ForceRevert = false, bool RevertToDefault = false, bool? force = false)
         {
-            if (!(AmongUsClient.Instance.AmHost && Options.CommsCamouflage.GetBool())) return;
-            if (target == null) return;
+            if ((!AmongUsClient.Instance.AmHost && !(Options.CommsCamouflage.GetBool() || (force is null or true)))
+            || (GameStates.IsLobby)
+            || (target == null)) return;
+
+            if (Options.CurrentGameMode != CustomGameMode.Standard) return;
 
             var id = target.PlayerId;
 
-            if (IsCamouflage)
+            if (IsCamouflage && force is true)
             {
                 //コミュサボ中
 
@@ -82,11 +93,11 @@ namespace TownOfHost
 
             var newOutfit = CamouflageOutfit;
 
-            if (!IsCamouflage || ForceRevert)
+            if (!IsCamouflage || ForceRevert || force is true)
             {
                 //コミュサボ解除または強制解除
 
-                if (Main.CheckShapeshift.TryGetValue(id, out var shapeshifting) && shapeshifting && !RevertToDefault)
+                if (Main.CheckShapeshift.TryGetValue(id, out var shapeshifting) && shapeshifting && !RevertToDefault && force is not null)
                 {
                     //シェイプシフターなら今の姿のidに変更
                     id = Main.ShapeshiftTarget[id];
@@ -95,12 +106,21 @@ namespace TownOfHost
                 newOutfit = PlayerSkins[id];
             }
 
+            if (target.inVent)
+            {
+                if (force is not null)
+                {
+                    ventplayr.Add(target.PlayerId);
+                    Logger.Info($"{target.Data.GetLogPlayerName()} : invent", "camouflague");
+                    return;
+                }
+            }
 
-            if (newOutfit.Compare(target.Data.DefaultOutfit)) return;
+            if (newOutfit.Compare(target.Data.DefaultOutfit) && force is false) return;
 
-            Logger.Info($"newOutfit={newOutfit.GetString()}", "RpcSetSkin");
+            //Logger.Info($"newOutfit={newOutfit.GetString()}", "RpcSetSkin");
 
-            var sender = CustomRpcSender.Create(name: $"Camouflage.RpcSetSkin({target.Data.PlayerName})");
+            var sender = CustomRpcSender.Create(name: $"Camouflage.RpcSetSkin({target.Data.GetLogPlayerName()})");
 
             target.SetColor(newOutfit.ColorId);
             sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetColor)
@@ -108,6 +128,7 @@ namespace TownOfHost
                 .Write(newOutfit.ColorId)
                 .EndRpc();
 
+            /*
             target.SetHat(newOutfit.HatId, newOutfit.ColorId);
             sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetHatStr)
                 .Write(newOutfit.HatId)
@@ -125,14 +146,10 @@ namespace TownOfHost
                 .Write(newOutfit.VisorId)
                 .Write(target.GetNextRpcSequenceId(RpcCalls.SetVisorStr))
                 .EndRpc();
-
-            target.SetPet(newOutfit.PetId);
-            sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetPetStr)
-                .Write(newOutfit.PetId)
-                .Write(target.GetNextRpcSequenceId(RpcCalls.SetPetStr))
-                .EndRpc();
+                */
 
             sender.SendMessage();
+            if (ventplayr.Contains(target.PlayerId)) ventplayr.Remove(target.PlayerId);
         }
     }
 }

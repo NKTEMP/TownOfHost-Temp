@@ -2,10 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
+using TownOfHost.Modules;
 using UnityEngine;
-
-using TownOfHost.Roles.Core;
-using Hazel;
 
 namespace TownOfHost
 {
@@ -17,7 +15,7 @@ namespace TownOfHost
             //ここより上、全員が実行する
             if (!AmongUsClient.Instance.AmHost) return;
             //ここより下、ホストのみが実行する
-            if ((Options.CurrentGameMode == CustomGameMode.HideAndSeek || Options.IsStandardHAS) && Main.isFirstTurn)
+            if ((Options.CurrentGameMode == CustomGameMode.HideAndSeek || Options.IsStandardHAS) && GameStates.introDestroyed)
             {
                 if (Options.HideAndSeekKillDelayTimer > 0)
                 {
@@ -25,7 +23,7 @@ namespace TownOfHost
                 }
                 else if (!float.IsNaN(Options.HideAndSeekKillDelayTimer))
                 {
-                    Utils.MarkEveryoneDirtySettings();
+                    UtilsOption.MarkEveryoneDirtySettings();
                     Options.HideAndSeekKillDelayTimer = float.NaN;
                     Logger.Info("キル能力解禁", "HideAndSeek");
                 }
@@ -42,11 +40,15 @@ namespace TownOfHost
         {
             if (systemType != SystemTypes.Sabotage)
             {
-                Logger.Info("SystemType: " + systemType.ToString() + ", PlayerName: " + player.GetNameWithRole() + ", amount: " + amount, "UpdateSystem");
+                Logger.Info("SystemType: " + systemType.ToString() + ", PlayerName: " + player.GetNameWithRole().RemoveHtmlTags() + ", amount: " + amount, "UpdateSystem");
+            }
+            else
+            {
+                DisableDevice.DesyncComms.Clear();
             }
             if (RepairSender.enabled && AmongUsClient.Instance.NetworkMode != NetworkModes.OnlineGame)
             {
-                Logger.SendInGame("SystemType: " + systemType.ToString() + ", PlayerName: " + player.GetNameWithRole() + ", amount: " + amount);
+                Logger.seeingame("SystemType: " + systemType.ToString() + ", PlayerName: " + player.GetNameWithRole().RemoveHtmlTags() + ", amount: " + amount);
             }
         }
         public static void CheckAndOpenDoorsRange(ShipStatus __instance, int amount, int min, int max)
@@ -61,9 +63,9 @@ namespace TownOfHost
         private static void CheckAndOpenDoors(ShipStatus __instance, int amount, params int[] DoorIds)
         {
             if (DoorIds.Contains(amount)) foreach (var id in DoorIds)
-                {
-                    __instance.RpcUpdateSystem(SystemTypes.Doors, (byte)id);
-                }
+            {
+                __instance.RpcUpdateSystem(SystemTypes.Doors, (byte)id);
+            }
         }
     }
     [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.CloseDoorsOfType))]
@@ -71,7 +73,15 @@ namespace TownOfHost
     {
         public static bool Prefix(ShipStatus __instance)
         {
-            return !(Options.CurrentGameMode == CustomGameMode.HideAndSeek || Options.IsStandardHAS) || Options.AllowCloseDoors.GetBool();
+            if (Options.CurrentGameMode is CustomGameMode.HideAndSeek or CustomGameMode.StandardHAS or CustomGameMode.SuddenDeath or CustomGameMode.MurderMystery) return false;
+            if (Options.CurrentGameMode != CustomGameMode.Standard || SuddenDeathMode.NowSuddenDeathMode) return false;
+
+            if (Options.AfterTurnCantCloseDoor.GetBool())
+            {
+                if (GameStates.turntimer < Options.AfterTurnCantCloseDoor.GetFloat()) return false;
+            }
+
+            return !Options.AllowCloseDoors.GetBool();
         }
     }
     [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.Start))]
@@ -81,8 +91,25 @@ namespace TownOfHost
         {
             Logger.CurrentMethod();
             Logger.Info("-----------ゲーム開始-----------", "Phase");
+            if (GameStates.IsFreePlay && CustomSpawnEditor.ActiveEditMode) return;
 
-            Utils.CountAlivePlayers(true);
+            if (GameStates.IsModHost && Main.UseWebHook.Value) UtilsWebHook.WH_ShowActiveRoles();
+            PlayerCatch.CountAlivePlayers(true);
+            TaskBattle.IsRTAMode = Options.CurrentGameMode == CustomGameMode.TaskBattle && PlayerCatch.AllPlayerControls.Count() == (Options.EnableGM.GetBool() ? 2 : 1);
+            //RTAモードじゃないならLateTaskを作らない
+            if (!TaskBattle.IsRTAMode) return;
+            _ = new LateTask(() =>
+            {
+                var playerRTA = Options.EnableGM.GetBool() ? PlayerCatch.AllAlivePlayerControls.First(p => p.PlayerId != PlayerControl.LocalPlayer.PlayerId) : PlayerControl.LocalPlayer;
+                if (playerRTA == null)
+                {
+                    Logger.Warn("[TR] プレイヤーがnullです", "TaskBattle RTA");
+                    return;
+                }
+                TaskBattle.IsAllMapMode = TaskBattle.AllMapMode.GetBool();
+                TaskBattle.RTAPlayerId = playerRTA.PlayerId;
+                HudManagerPatch.TaskBattleTimer = 0f;
+            }, 1f, "TaskBattle TimerReset");
         }
     }
     [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.StartMeeting))]

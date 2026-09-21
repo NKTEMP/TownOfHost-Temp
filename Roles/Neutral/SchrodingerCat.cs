@@ -1,14 +1,16 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using Hazel;
 using UnityEngine;
 
 using AmongUs.GameOptions;
-using Hazel;
 
 using TownOfHost.Modules;
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Core.Interfaces;
+using TownOfHost.Roles.Crewmate;
+using static TownOfHost.Roles.Core.Interfaces.ISchrodingerCatOwner;
 
 namespace TownOfHost.Roles.Neutral;
 
@@ -22,11 +24,13 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
             CustomRoles.SchrodingerCat,
             () => RoleTypes.Crewmate,
             CustomRoleTypes.Neutral,
-            50400,
+            15600,
             SetupOptionItem,
             "sc",
             "#696969",
-            introSound: () => GetIntroSound(RoleTypes.Impostor)
+            (7, 2),
+            introSound: () => GetIntroSound(RoleTypes.Impostor),
+            from: From.TOR_GM_Haoming_Edition
         );
     public SchrodingerCat(PlayerControl player)
     : base(
@@ -89,14 +93,7 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
     /// </summary>
     public static void ApplyMadCatOptions(IGameOptions opt)
     {
-        if (Options.MadmateHasImpostorVision.GetBool())
-        {
-            opt.SetVision(true);
-        }
-        if (Options.MadmateCanSeeOtherVotes.GetBool())
-        {
-            opt.SetBool(BoolOptionNames.AnonymousVotes, false);
-        }
+        opt.SetVision(true);
     }
     public override bool OnCheckMurderAsTarget(MurderInfo info)
     {
@@ -104,19 +101,25 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
 
         //自殺ならスルー
         if (info.IsSuicide) return true;
+        if (killer.GetRoleClass() is not ISchrodingerCatOwner) return true;
 
-        if (Team == TeamType.None)
+        if (killer.Is(CustomRoles.GrimReaper) || killer.Is(CustomRoles.BakeCat))
         {
-            info.CanKill = false;
-            ChangeTeamOnKill(killer);
-            return false;
+            return true;
         }
+        else
+            if (Team == TeamType.None)
+            {
+                info.CanKill = false;
+                ChangeTeamOnKill(killer);
+                return false;
+            }
         return true;
     }
     /// <summary>
     /// キルしてきた人に応じて陣営の状態を変える
     /// </summary>
-    private void ChangeTeamOnKill(PlayerControl killer)
+    public void ChangeTeamOnKill(PlayerControl killer)
     {
         killer.RpcProtectedMurderPlayer(Player);
         if (killer.GetRoleClass() is ISchrodingerCatOwner catOwner)
@@ -127,13 +130,13 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
         }
         else
         {
-            logger.Warn($"未知のキル役職からのキル: {killer.GetNameWithRole()}");
+            logger.Warn($"未知のキル役職からのキル: {killer.GetNameWithRole().RemoveHtmlTags()}");
         }
 
         RevealNameColors(killer);
 
-        Utils.NotifyRoles();
-        Utils.MarkEveryoneDirtySettings();
+        UtilsNotifyRoles.NotifyRoles();
+        UtilsOption.MarkEveryoneDirtySettings();
     }
     /// <summary>
     /// キルしてきた人とオプションに応じて名前の色を開示する
@@ -143,18 +146,31 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
         if (CanSeeKillableTeammate)
         {
             var killerRoleId = killer.GetCustomRole();
-            var killerTeam = Main.AllPlayerControls.Where(player => (AmMadmate && player.Is(CustomRoleTypes.Impostor)) || player.Is(killerRoleId));
+            var killerTeam = PlayerCatch.AllPlayerControls.Where(player => (AmMadmate && (player.Is(CustomRoleTypes.Impostor) || player.Is(CustomRoles.WolfBoy))) || player.Is(killerRoleId));
             foreach (var member in killerTeam)
             {
-                NameColorManager.Add(member.PlayerId, Player.PlayerId, RoleInfo.RoleColorCode);
+                if (member.GetCustomRole().IsMadmate()) continue;
+                var rolecolor = RoleInfo.RoleColorCode;
+                if (member.Is(CustomRoles.WolfBoy))
+                {
+                    if (killerRoleId is not CustomRoles.WolfBoy) continue;
+                    rolecolor = WolfBoy.Shurenekodotti.GetBool() ? UtilsRoleText.GetRoleColorCode(CustomRoles.Impostor) : "#ffffff";
+                }
+                NameColorManager.Add(member.PlayerId, Player.PlayerId, rolecolor);
                 NameColorManager.Add(Player.PlayerId, member.PlayerId);
             }
         }
         else
         {
-            NameColorManager.Add(killer.PlayerId, Player.PlayerId, RoleInfo.RoleColorCode);
+            var rolecolor = RoleInfo.RoleColorCode;
+            if (killer.Is(CustomRoles.WolfBoy))
+            {
+                rolecolor = WolfBoy.Shurenekodotti.GetBool() ? UtilsRoleText.GetRoleColorCode(CustomRoles.Impostor) : "#ffffff";
+            }
+            NameColorManager.Add(killer.PlayerId, Player.PlayerId, rolecolor);
             NameColorManager.Add(Player.PlayerId, killer.PlayerId);
         }
+        UtilsGameLog.AddGameLog($"SchrodingerCat", UtilsName.GetPlayerColor(Player) + ":  " + string.Format(GetString("SchrodingerCat.Ch"), UtilsName.GetPlayerColor(killer, true) + $"(<b>{UtilsRoleText.GetTrueRoleName(killer.PlayerId, false)}</b>)"));
     }
     public override void OverrideTrueRoleName(ref Color roleColor, ref string roleText)
     {
@@ -188,7 +204,7 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
         {
             candidates.Add(TeamType.Egoist);
         }
-        if (CustomRoles.Jackal.IsPresent())
+        if (CustomRoles.Jackal.IsPresent() || CustomRoles.JackalMafia.IsPresent() || CustomRoles.JackalAlien.IsPresent() || CustomRoles.JackalWolf.IsPresent())
         {
             candidates.Add(TeamType.Jackal);
         }
@@ -199,17 +215,26 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
     {
         bool? won = Team switch
         {
-            TeamType.None => CustomWinnerHolder.WinnerTeam == CustomWinner.Crewmate && CanWinTheCrewmateBeforeChange,
-            TeamType.Mad => CustomWinnerHolder.WinnerTeam == CustomWinner.Impostor,
-            TeamType.Crew => CustomWinnerHolder.WinnerTeam == CustomWinner.Crewmate,
-            TeamType.Jackal => CustomWinnerHolder.WinnerTeam == CustomWinner.Jackal,
-            TeamType.Egoist => CustomWinnerHolder.WinnerTeam == CustomWinner.Egoist,
+            TeamType.None => CustomWinnerHolder.winners.Contains(CustomWinner.Crewmate) && CanWinTheCrewmateBeforeChange,
+            TeamType.Mad => CustomWinnerHolder.winners.Contains(CustomWinner.Impostor),
+            TeamType.Crew => CustomWinnerHolder.winners.Contains(CustomWinner.Crewmate),
+            TeamType.Jackal => CustomWinnerHolder.winners.Contains(CustomWinner.Jackal),
+            TeamType.Egoist => CustomWinnerHolder.winners.Contains(CustomWinner.Egoist),
+            TeamType.CountKiller => CustomWinnerHolder.winners.Contains(CustomWinner.CountKiller),
+            TeamType.Remotekiller => CustomWinnerHolder.winners.Contains(CustomWinner.Remotekiller),
+            TeamType.DoppelGanger => CustomWinnerHolder.winners.Contains(CustomWinner.DoppelGanger),
+            TeamType.MilkyWay => CustomWinnerHolder.winners.Contains(CustomWinner.MilkyWay),
+            TeamType.Betrayer => CustomWinnerHolder.winners.Contains(CustomWinner.MadBetrayer),
             _ => null,
         };
         if (!won.HasValue)
         {
             logger.Warn($"不明な猫の勝利チェック: {Team}");
             return false;
+        }
+        if (won.Value && Player.IsAlive())
+        {
+            Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
         }
         return won.Value;
     }
@@ -230,57 +255,48 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
     // マッド属性化までの間マッド状態時に特別扱いするための応急処置的個別実装
     // マッドが属性化したらマッド状態のシュレ猫にマッド属性を付与することで削除
     // 上にあるApplyMadCatOptions，MeetingHudPatchにある道連れ処理，ShipStatusPatchにあるサボ直しキャンセル処理も同様 - Hyz-sui
-    public bool CheckSeeDeathReason(PlayerControl seen) => AmMadmate && Options.MadmateCanSeeDeathReason.GetBool();
-    public bool CheckKillFlash(MurderInfo info) => AmMadmate && Options.MadmateCanSeeKillFlash.GetBool();
+    public bool? CheckSeeDeathReason(PlayerControl seen) => AmMadmate && Options.MadmateCanSeeDeathReason.GetBool();
+    public bool? CheckKillFlash(MurderInfo info) => AmMadmate && Options.MadmateCanSeeKillFlash.GetBool();
 
-    /// <summary>
-    /// 陣営状態
-    /// </summary>
-    public enum TeamType : byte
-    {
-        /// <summary>
-        /// どこの陣営にも属していない状態
-        /// </summary>
-        None = 0,
-
-        // 10-49 シェリフキルオプションを作成しない変化先
-
-        /// <summary>
-        /// インポスター陣営に所属する状態
-        /// </summary>
-        Mad = 10,
-        /// <summary>
-        /// クルー陣営に所属する状態
-        /// </summary>
-        Crew,
-
-        // 50- シェリフキルオプションを作成する変化先
-
-        /// <summary>
-        /// ジャッカル陣営に所属する状態
-        /// </summary>
-        Jackal = 50,
-        /// <summary>
-        /// エゴイスト陣営に所属する状態
-        /// </summary>
-        Egoist,
-    }
     public static Color GetCatColor(TeamType catType)
     {
         Color? color = catType switch
         {
             TeamType.None => RoleInfo.RoleColor,
-            TeamType.Mad => Utils.GetRoleColor(CustomRoles.Madmate),
-            TeamType.Crew => Utils.GetRoleColor(CustomRoles.Crewmate),
-            TeamType.Jackal => Utils.GetRoleColor(CustomRoles.Jackal),
-            TeamType.Egoist => Utils.GetRoleColor(CustomRoles.Egoist),
+            TeamType.Mad => UtilsRoleText.GetRoleColor(CustomRoles.Madmate),
+            TeamType.Crew => UtilsRoleText.GetRoleColor(CustomRoles.Crewmate),
+            TeamType.Jackal => UtilsRoleText.GetRoleColor(CustomRoles.Jackal),
+            TeamType.Egoist => UtilsRoleText.GetRoleColor(CustomRoles.Egoist),
+            TeamType.Remotekiller => UtilsRoleText.GetRoleColor(CustomRoles.Remotekiller),
+            TeamType.CountKiller => UtilsRoleText.GetRoleColor(CustomRoles.CountKiller),
+            TeamType.DoppelGanger => UtilsRoleText.GetRoleColor(CustomRoles.DoppelGanger),
+            TeamType.MilkyWay => StringHelper.CodeColor(Vega.TeamColor),
+            TeamType.Betrayer => UtilsRoleText.GetRoleColor(CustomRoles.MadBetrayer),
             _ => null,
         };
         if (!color.HasValue)
         {
             logger.Warn($"不明な猫に対する色の取得: {catType}");
-            return Utils.GetRoleColor(CustomRoles.Crewmate);
+            return UtilsRoleText.GetRoleColor(CustomRoles.Crewmate);
         }
         return color.Value;
+    }
+    public override void CheckWinner(GameOverReason reason)
+    {
+        if (reason is GameOverReason.ImpostorsBySabotage && Team is TeamType.Mad
+            && Main.SabotageType is SystemTypes.Reactor or SystemTypes.Laboratory
+            && CustomWinnerHolder.winners.Contains(CustomWinner.Impostor))
+        {
+            Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[1]);
+        }
+    }
+    public static Dictionary<int, Achievement> achievements = new();
+    [Attributes.PluginModuleInitializer]
+    public static void Load()
+    {
+        var n1 = new Achievement(RoleInfo, 0, 1, 0, 0);
+        var sp = new Achievement(RoleInfo, 1, 1, 0, 2, true);
+        achievements.Add(0, n1);
+        achievements.Add(1, sp);
     }
 }

@@ -1,7 +1,10 @@
-using System.Linq;
 using AmongUs.GameOptions;
-
+using System.Linq;
+using TownOfHost.Roles;
+using TownOfHost.Roles.AddOns.Impostor;
+using TownOfHost.Roles.AddOns.Neutral;
 using TownOfHost.Roles.Core;
+using TownOfHost.Roles.Madmate;
 
 namespace TownOfHost
 {
@@ -12,7 +15,7 @@ namespace TownOfHost
         /// <summary>すべての属性</summary>
         public static readonly CustomRoles[] AllAddOns = EnumHelper.GetAllValues<CustomRoles>().Where(role => role > CustomRoles.NotAssigned).ToArray();
         /// <summary>スタンダードモードで出現できるすべての役職</summary>
-        public static readonly CustomRoles[] AllStandardRoles = AllRoles.Where(role => role is not (CustomRoles.HASFox or CustomRoles.HASTroll)).ToArray();
+        public static readonly CustomRoles[] AllStandardRoles = AllRoles.Where(role => role is not (CustomRoles.HASFox or CustomRoles.HASTroll or CustomRoles.TaskPlayerB)).ToArray();
         /// <summary>HASモードで出現できるすべての役職</summary>
         public static readonly CustomRoles[] AllHASRoles = { CustomRoles.HASFox, CustomRoles.HASTroll };
         public static readonly CustomRoleTypes[] AllRoleTypes = EnumHelper.GetAllValues<CustomRoleTypes>();
@@ -27,6 +30,7 @@ namespace TownOfHost
         }
         public static bool IsMadmate(this CustomRoles role)
         {
+            if (role is CustomRoles.MadBetrayer) return MadBetrayer.IsMadmate();
             var roleInfo = role.GetRoleInfo();
             if (roleInfo != null)
                 return roleInfo.CustomRoleType == CustomRoleTypes.Madmate;
@@ -35,32 +39,244 @@ namespace TownOfHost
         public static bool IsImpostorTeam(this CustomRoles role) => role.IsImpostor() || role.IsMadmate();
         public static bool IsNeutral(this CustomRoles role)
         {
+            if (role is CustomRoles.MadBetrayer) return MadBetrayer.IsMadmate() is false;
             var roleInfo = role.GetRoleInfo();
             if (roleInfo != null)
-                return roleInfo.CustomRoleType == CustomRoleTypes.Neutral;
-            return role is CustomRoles.HASTroll or CustomRoles.HASFox;
+                return roleInfo.CustomRoleType == CustomRoleTypes.Neutral || role == CustomRoles.Jackaldoll;
+            return role is CustomRoles.HASTroll or CustomRoles.HASFox or CustomRoles.Emptiness;
         }
-        public static bool IsCrewmate(this CustomRoles role) => role.GetRoleInfo()?.CustomRoleType == CustomRoleTypes.Crewmate || (!role.IsImpostorTeam() && !role.IsNeutral());
+        public static bool IsCrewmate(this CustomRoles role) => role.GetRoleInfo()?.CustomRoleType == CustomRoleTypes.Crewmate || (role is not CustomRoles.Amanojaku and not CustomRoles.GM and not CustomRoles.Twins and not CustomRoles.Faction && !role.IsImpostorTeam() && role > 0 && !role.IsAddOn() && !role.IsGhostRole() && !role.IsLovers() && !role.IsNeutral());
         public static bool IsVanilla(this CustomRoles role)
         {
             return
                 role is CustomRoles.Crewmate or
                 CustomRoles.Engineer or
                 CustomRoles.Scientist or
-                CustomRoles.Tracker or
                 CustomRoles.Noisemaker or
+                CustomRoles.Tracker or
                 CustomRoles.Detective or
-                CustomRoles.GuardianAngel or
+                //CustomRoles.GuardianAngel or幽霊役職でやったからちょっと不都合になる
                 CustomRoles.Impostor or
                 CustomRoles.Shapeshifter or
                 CustomRoles.Phantom or
-                CustomRoles.Viper;
+                CustomRoles.Viper or
+                CustomRoles.Judge;
         }
+        public static bool IsAddOn(this CustomRoles roles)
+        {
+            return
+                roles is
+                //ラスト系
+                CustomRoles.LastImpostor or
+                CustomRoles.LastNeutral or
+                CustomRoles.Workhorse or
+                CustomRoles.OneWolf or
+                CustomRoles.Stack or
+                //バフ
+                CustomRoles.Moon or
+                CustomRoles.Guesser or
+                CustomRoles.Speeding or
+                CustomRoles.Guarding or
+                CustomRoles.Watching or
+                CustomRoles.Lighting or
+                CustomRoles.Management or
+                CustomRoles.Connecting or
+                CustomRoles.Serial or
+                CustomRoles.PlusVote or
+                CustomRoles.Opener or
+                //CustomRoles.AntiTeleporter or
+                CustomRoles.Seeing or
+                CustomRoles.Revenger or
+                CustomRoles.Autopsy or
+                CustomRoles.Tiebreaker or
+                CustomRoles.MagicHand or
+                CustomRoles.Powerful or
+                CustomRoles.Absorb or
+                //デバフ
+                CustomRoles.NonReport or
+                CustomRoles.Notvoter or
+                CustomRoles.Elector or
+                CustomRoles.Water or
+                CustomRoles.Slacker or
+                CustomRoles.Transparent or
+                CustomRoles.Amnesia or
+                CustomRoles.Clumsy or
+                CustomRoles.SlowStarter or
+                CustomRoles.InfoPoor or
+                CustomRoles.News or
+                CustomRoles.Sunglasses
+                ;
+        }
+        public static bool IsBuffAddon(this CustomRoles roles)
+        {
+            return roles is
+                CustomRoles.Moon or
+                CustomRoles.Guesser or
+                CustomRoles.Speeding or
+                CustomRoles.Guarding or
+                CustomRoles.Watching or
+                CustomRoles.Lighting or
+                CustomRoles.Management or
+                CustomRoles.Connecting or
+                CustomRoles.Serial or
+                CustomRoles.PlusVote or
+                CustomRoles.Opener or
+                //CustomRoles.AntiTeleporter or
+                CustomRoles.Seeing or
+                CustomRoles.Revenger or
+                CustomRoles.Autopsy or
+                CustomRoles.Tiebreaker or
+                CustomRoles.MagicHand or
+                CustomRoles.Powerful or
+                CustomRoles.Absorb
+                ;
+        }
+        public static bool IsDebuffAddon(this CustomRoles roles)
+        {
+            return roles is
+                CustomRoles.NonReport or
+                CustomRoles.Notvoter or
+                CustomRoles.Elector or
+                CustomRoles.Water or
+                CustomRoles.Slacker or
+                CustomRoles.Transparent or
+                CustomRoles.Amnesia or
+                CustomRoles.Clumsy or
+                CustomRoles.SlowStarter or
+                CustomRoles.InfoPoor or
+                CustomRoles.News or
+                CustomRoles.Sunglasses
+                ;
+        }
+        public static bool IsCombinationRole(this CustomRoles role) => role is
+        CustomRoles.Assassin or CustomRoles.Merlin or
+        CustomRoles.Driver or CustomRoles.Braid or
+        CustomRoles.Vega or CustomRoles.Altair or
+        CustomRoles.Fool or CustomRoles.Nue;
+        public static CustomRoles GetCombination(this CustomRoles role)
+        {
+            if (role.IsCombinationRole() is false) return CustomRoles.NotAssigned;
 
+            switch (role)
+            {
+                case CustomRoles.Assassin: return CustomRoles.Merlin;
+                case CustomRoles.Merlin: return CustomRoles.Assassin;
+                case CustomRoles.Driver: return CustomRoles.Braid;
+                case CustomRoles.Braid: return CustomRoles.Driver;
+                case CustomRoles.Vega: return CustomRoles.Altair;
+                case CustomRoles.Altair: return CustomRoles.Vega;
+                case CustomRoles.Fool: return CustomRoles.Nue;
+                case CustomRoles.Nue: return CustomRoles.Fool;
+            }
+            return CustomRoles.NotAssigned;
+        }
+        public static bool IsMainRole(this CustomRoles role) => role < CustomRoles.NotAssigned;
+        public static bool IsCrewmate(this RoleTypes role) =>
+            role is RoleTypes.Crewmate or RoleTypes.CrewmateGhost or
+                    RoleTypes.Engineer or RoleTypes.GuardianAngel or
+                    RoleTypes.Noisemaker or RoleTypes.Scientist or RoleTypes.Tracker or RoleTypes.Detective or RoleTypes.Judge;
+        public static bool IsSubRole(this CustomRoles role) => role.IsAddOn() || role.IsLovers() || role.IsGhostRole() || role is CustomRoles.Amanojaku or CustomRoles.Twins or CustomRoles.Faction;
+        public static bool IsLovers(this CustomRoles roles, bool checkonelover = true)
+        {
+            if (roles is CustomRoles.OneLove && checkonelover) return true;
+            return roles is
+            CustomRoles.Lovers or
+            CustomRoles.RedLovers or
+            CustomRoles.YellowLovers or
+            CustomRoles.BlueLovers or
+            CustomRoles.GreenLovers or
+            CustomRoles.WhiteLovers or
+            CustomRoles.PurpleLovers or
+            CustomRoles.MadonnaLovers;
+        }
+        public static bool IsLovers(this PlayerControl pc, bool checkonelover = true)
+        {
+            return pc.Is(CustomRoles.Lovers) || pc.Is(CustomRoles.RedLovers) ||
+            pc.Is(CustomRoles.YellowLovers) || pc.Is(CustomRoles.BlueLovers) ||
+            pc.Is(CustomRoles.GreenLovers) || pc.Is(CustomRoles.WhiteLovers) ||
+            pc.Is(CustomRoles.PurpleLovers) || pc.Is(CustomRoles.MadonnaLovers) ||
+            (pc.Is(CustomRoles.OneLove) && checkonelover);
+        }
+        public static bool IsLovers(this CustomWinner winner)
+        {
+            return winner is CustomWinner.Lovers or
+                            CustomWinner.RedLovers or
+                            CustomWinner.BlueLovers or
+                            CustomWinner.YellowLovers or
+                            CustomWinner.GreenLovers or
+                            CustomWinner.WhiteLovers or
+                            CustomWinner.PurpleLovers or
+                            CustomWinner.MadonnaLovers or
+                            CustomWinner.OneLove;
+        }
+        public static CustomRoles GetLoverRole(this PlayerControl pc)
+        {
+            if (pc == null) return CustomRoles.NotAssigned;
+            var state = PlayerState.GetByPlayerId(pc.PlayerId);
+            foreach (var sub in state.SubRoles)
+                switch (sub)
+                {
+                    case CustomRoles.Lovers: return CustomRoles.Lovers;
+                    case CustomRoles.RedLovers: return CustomRoles.RedLovers;
+                    case CustomRoles.YellowLovers: return CustomRoles.YellowLovers;
+                    case CustomRoles.BlueLovers: return CustomRoles.BlueLovers;
+                    case CustomRoles.GreenLovers: return CustomRoles.GreenLovers;
+                    case CustomRoles.WhiteLovers: return CustomRoles.WhiteLovers;
+                    case CustomRoles.PurpleLovers: return CustomRoles.PurpleLovers;
+                    case CustomRoles.OneLove: return CustomRoles.OneLove;
+                    case CustomRoles.MadonnaLovers: return CustomRoles.MadonnaLovers;
+                }
+            return CustomRoles.NotAssigned;
+        }
+        public static bool IsWhiteCrew(this CustomRoles roles)
+        {
+            return
+                roles is
+                CustomRoles.UltraStar or
+                CustomRoles.TaskStar;
+        }
+        public static bool IsGhostRole(this PlayerControl pc) => PlayerState.GetByPlayerId(pc.PlayerId)?.GhostRole.IsGhostRole() ?? false;
+        public static bool IsGhostRole(this CustomRoles role)
+        {
+            return role is CustomRoles.GuardianAngel
+                        or CustomRoles.Ghostbuttoner
+                        or CustomRoles.GhostNoiseSender
+                        or CustomRoles.GhostReseter
+                        or CustomRoles.GhostRumour
+                        or CustomRoles.DemonicTracker
+                        or CustomRoles.DemonicVenter
+                        or CustomRoles.DemonicCrusher
+                        or CustomRoles.DemonicSupporter
+                        or CustomRoles.AsistingAngel
+                        ;
+        }
+        public static bool IsStartedRole(this CustomRoles role) => role is not
+            CustomRoles.NotAssigned and not CustomRoles.TaskPlayerB and not CustomRoles.HASFox and not
+             CustomRoles.HASTroll and not CustomRoles.MMArcher;
+        static System.Collections.Generic.List<CustomRoles> GiveGuesserrole =
+        [
+            CustomRoles.Cakeshop,
+            CustomRoles.SantaClaus,
+            CustomRoles.Fortuner
+        ];
+        public static bool CheckGuesser()
+        {
+            foreach (var role in AllStandardRoles.Where(r => r.IsEnable()))
+            {
+                if (GiveGuesserrole.Contains(role)) return true;
+                if (RoleAddAddons.GetRoleAddon(role, out var op, subrole: CustomRoles.Guesser))
+                    if (op.GiveGuesser.GetBool()) return true;
+            }
+            if (CustomRoles.LastImpostor.IsPresent() && LastImpostor.giveguesser) return true;
+            if (CustomRoles.LastNeutral.IsPresent() && LastNeutral.GiveGuesser.GetBool()) return true;
+
+            return false;
+        }
         public static CustomRoleTypes GetCustomRoleTypes(this CustomRoles role)
         {
             CustomRoleTypes type = CustomRoleTypes.Crewmate;
 
+            if (role is CustomRoles.MadBetrayer) return MadBetrayer.IsMadmate() ? type = CustomRoleTypes.Madmate : CustomRoleTypes.Neutral;
             var roleInfo = role.GetRoleInfo();
             if (roleInfo != null)
                 return roleInfo.CustomRoleType;
@@ -74,20 +290,13 @@ namespace TownOfHost
         {
             if (role.IsVanilla())
             {
-                var roleOpt = Main.NormalOptions.RoleOptions;
+                var roleOpt = Main.NormalOptions?.RoleOptions;
+                if (roleOpt is null) return 0;
                 return role switch
                 {
-                    CustomRoles.Engineer => roleOpt.GetNumPerGame(RoleTypes.Engineer),
-                    CustomRoles.Scientist => roleOpt.GetNumPerGame(RoleTypes.Scientist),
-                    CustomRoles.Tracker => roleOpt.GetNumPerGame(RoleTypes.Tracker),
-                    CustomRoles.Noisemaker => roleOpt.GetNumPerGame(RoleTypes.Noisemaker),
-                    CustomRoles.Detective => roleOpt.GetNumPerGame(RoleTypes.Detective),
-                    CustomRoles.Shapeshifter => roleOpt.GetNumPerGame(RoleTypes.Shapeshifter),
-                    CustomRoles.Phantom => roleOpt.GetNumPerGame(RoleTypes.Phantom),
-                    CustomRoles.Viper => roleOpt.GetNumPerGame(RoleTypes.Viper),
                     CustomRoles.GuardianAngel => roleOpt.GetNumPerGame(RoleTypes.GuardianAngel),
                     CustomRoles.Crewmate => roleOpt.GetNumPerGame(RoleTypes.Crewmate),
-                    _ => 0
+                    _ => Options.GetRoleCount(role)
                 };
             }
             else
@@ -102,17 +311,9 @@ namespace TownOfHost
                 var roleOpt = Main.NormalOptions.RoleOptions;
                 return role switch
                 {
-                    CustomRoles.Engineer => roleOpt.GetChancePerGame(RoleTypes.Engineer),
-                    CustomRoles.Scientist => roleOpt.GetChancePerGame(RoleTypes.Scientist),
-                    CustomRoles.Noisemaker => roleOpt.GetChancePerGame(RoleTypes.Noisemaker),
-                    CustomRoles.Tracker => roleOpt.GetChancePerGame(RoleTypes.Tracker),
-                    CustomRoles.Detective => roleOpt.GetChancePerGame(RoleTypes.Detective),
-                    CustomRoles.Shapeshifter => roleOpt.GetChancePerGame(RoleTypes.Shapeshifter),
-                    CustomRoles.Phantom => roleOpt.GetChancePerGame(RoleTypes.Phantom),
-                    CustomRoles.Viper => roleOpt.GetChancePerGame(RoleTypes.Viper),
                     CustomRoles.GuardianAngel => roleOpt.GetChancePerGame(RoleTypes.GuardianAngel),
                     CustomRoles.Crewmate => roleOpt.GetChancePerGame(RoleTypes.Crewmate),
-                    _ => 0
+                    _ => Options.GetRoleChance(role)
                 };
             }
             else
@@ -128,16 +329,22 @@ namespace TownOfHost
                 return info.CanMakeMadmate;
             }
 
-            return false;
+            return role is CustomRoles.EvilMaker;
         }
         public static RoleTypes GetRoleTypes(this CustomRoles role)
         {
             var roleInfo = role.GetRoleInfo();
             if (roleInfo != null)
                 return roleInfo.BaseRoleType.Invoke();
+
+            if (Options.CurrentGameMode == CustomGameMode.TaskBattle && TaskBattle.TaskBattleCanVent.GetBool() && role is CustomRoles.TaskPlayerB)
+                return RoleTypes.Engineer;
+
             return role switch
             {
                 CustomRoles.GM => RoleTypes.GuardianAngel,
+                CustomRoles.Emptiness => RoleTypes.CrewmateGhost,
+                CustomRoles.SKMadmate => Options.SkMadCanUseVent.GetBool() ? RoleTypes.Engineer : RoleTypes.Crewmate,
 
                 _ => role.IsImpostor() ? RoleTypes.Impostor : RoleTypes.Crewmate,
             };
@@ -150,5 +357,10 @@ namespace TownOfHost
         Crew,
         Impostor,
         Jackal,
+        Remotekiller,
+        TaskPlayer,
+        GrimReaper,
+        Fox,
+        MilkyWay
     }
 }

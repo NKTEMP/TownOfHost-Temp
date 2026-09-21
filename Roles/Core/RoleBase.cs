@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
 using Hazel;
 using AmongUs.GameOptions;
-using static TownOfHost.Translator;
 
 namespace TownOfHost.Roles.Core;
 
@@ -34,7 +34,7 @@ public abstract class RoleBase : IDisposable
     /// <summary>
     /// アビリティボタンで発動する能力を持っているか
     /// </summary>
-    public bool HasAbility { get; private set; }
+    public bool HasAbility;
     public RoleBase(
         SimpleRoleInfo roleInfo,
         PlayerControl player,
@@ -50,6 +50,7 @@ public abstract class RoleBase : IDisposable
             RoleTypes.Engineer or
             RoleTypes.Scientist or
             RoleTypes.Tracker or
+            RoleTypes.Detective or
             RoleTypes.GuardianAngel or
             RoleTypes.CrewmateGhost or
             RoleTypes.ImpostorGhost;
@@ -57,7 +58,7 @@ public abstract class RoleBase : IDisposable
         MyState = PlayerState.GetByPlayerId(player.PlayerId);
         MyTaskState = MyState.GetTaskState();
 
-        CustomRoleManager.AllActiveRoles.Add(Player.PlayerId, this);
+        CustomRoleManager.AllActiveRoles.TryAdd(Player.PlayerId, this);
     }
 #pragma warning disable CA1816
     public void Dispose()
@@ -77,6 +78,11 @@ public abstract class RoleBase : IDisposable
     public virtual void Add()
     { }
     /// <summary>
+    /// ゲーム開始後にインスタンス作成された時に呼ばれる関数
+    /// </summary>
+    public virtual void ChengeRoleAdd()
+    { }
+    /// <summary>
     /// ロールベースが破棄されるときに呼ばれる関数
     /// </summary>
     public virtual void OnDestroy()
@@ -90,11 +96,16 @@ public abstract class RoleBase : IDisposable
         public MessageWriter Writer;
         public RoleRPCSender(RoleBase role)
         {
-            Writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.CustomRoleSync, SendOption.Reliable, -1);
+            Writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.CustomRoleSync, SendOption.None, -1);
             Writer.Write(role.Player.PlayerId);
         }
         public void Dispose()
         {
+            if (!PlayerCatch.AnyModClient())
+            {
+                Writer.Recycle();
+                return;
+            }
             AmongUsClient.Instance.FinishRpcImmediately(Writer);
         }
     }
@@ -113,10 +124,12 @@ public abstract class RoleBase : IDisposable
     /// RoleRPCSenderで送信されたPlayerIdは削除されて渡されるため意識しなくてもよい。
     /// </summary>
     /// <param name="reader">届いたRPCの情報</param>
+    /// <param name="rpcType">届いたCustomRPC</param>
     public virtual void ReceiveRPC(MessageReader reader)
     { }
     /// <summary>
     /// 能力ボタンを使えるかどうか
+    /// [全クライアント]
     /// </summary>
     /// <returns>trueを返した場合、能力ボタンを使える</returns>
     public virtual bool CanUseAbilityButton() => true;
@@ -131,6 +144,7 @@ public abstract class RoleBase : IDisposable
     /// キラーより先に判定
     /// キル出来ない状態(無敵など)はinfo.CanKill=falseとしてtrueを返す
     /// キル行為自体をなかったことにする場合はfalseを返す。
+    /// [ホストのみ]
     /// </summary>
     /// <param name="info">キル関係者情報</param>
     /// <returns>false:キル行為を起こさせない</returns>
@@ -138,9 +152,26 @@ public abstract class RoleBase : IDisposable
 
     /// <summary>
     /// ターゲットとしてのMurderPlayer処理
+    /// [ホストのみ]
     /// </summary>
     /// <param name="info">キル関係者情報</param>
     public virtual void OnMurderPlayerAsTarget(MurderInfo info)
+    { }
+
+    /// <summary>
+    /// 誰かが死亡した時に呼ばれる関数。
+    /// </summary>
+    /// <param name="player">死亡した人</param>
+    public virtual void OnDead(PlayerControl player)
+    { }
+
+    /// <summary>
+    /// シェイプシフト時に呼ばれる関数
+    /// 自分自身について呼ばれるため本人確認不要
+    /// [全クライアント]
+    /// </summary>
+    /// <param name="target">変身先</param>
+    public virtual void OnShapeshift(PlayerControl target)
     { }
 
     /// <summary>
@@ -150,23 +181,23 @@ public abstract class RoleBase : IDisposable
     public virtual bool CanDesyncShapeshift => false;
 
     /// <summary>
-    /// シェイプシフトチェック時に呼ばれる
-    /// 自分自身が変身したときのみ呼ばれる
-    /// animateを操作して変身アニメーションのカットも可能
+    /// シェイプシフトされる前に呼ばれる関数
+    /// falseを返すとシェイプシフトをなかったことにできる
+    /// 自分自身について呼ばれるため本人確認不要
+    /// [ホストのみ]
     /// </summary>
     /// <param name="target">変身先</param>
-    /// <param name="animate">アニメーションを再生するかどうか</param>
-    /// <returns>falseを返すと変身がキャンセルされる</returns>
-    public virtual bool OnCheckShapeshift(PlayerControl target, ref bool animate) => true;
+    /// <param name="shouldAnimate">アニメーションを再生するか</param>
+    public virtual bool CheckShapeshift(PlayerControl target, ref bool shouldAnimate) => true;
 
     /// <summary>
-    /// シェイプシフト時に呼ばれる関数
+    /// 透明化 発動前に呼ばれる関数
+    /// falseを返すと透明化をなかったことにできる
     /// 自分自身について呼ばれるため本人確認不要
     /// Host以外も呼ばれるので注意
     /// </summary>
-    /// <param name="target">変身先</param>
-    public virtual void OnShapeshift(PlayerControl target)
-    { }
+    /// <returns>cancelするならfalse</returns>
+    public virtual bool CheckVanish() => true;
 
     /// <summary>
     /// タスクターンに常時呼ばれる関数
@@ -174,6 +205,7 @@ public abstract class RoleBase : IDisposable
     /// Host以外も呼ばれるので注意
     /// playerが自分以外であるときに処理したい場合は同じ引数でstaticとして実装し
     /// CustomRoleManager.OnFixedUpdateOthersに登録する
+    /// [全クライアント]
     /// </summary>
     /// <param name="player">対象プレイヤー</param>
     public virtual void OnFixedUpdate(PlayerControl player)
@@ -182,39 +214,64 @@ public abstract class RoleBase : IDisposable
     /// <summary>
     /// 通報時，会議が呼ばれることが確定してから呼ばれる関数<br/>
     /// 通報に関係ないプレイヤーも呼ばれる
+    /// [ホストのみ]
     /// </summary>
     /// <param name="reporter">通報したプレイヤー</param>
     /// <param name="target">通報されたプレイヤー</param>
     public virtual void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     { }
+    /// <summary>
+    /// ベントボタンがそもそも押せるか
+    /// </summary>
+    public virtual bool CanClickUseVentButton => true;
 
     /// <summary>
     /// <para>ベントに入ったときに呼ばれる関数</para>
     /// <para>キャンセル可</para>
+    /// [ホストのみ]
     /// </summary>
     /// <param name="physics"></param>
     /// <param name="id"></param>
-    /// <returns>falseを返すとベントから追い出されます</returns>
+    /// <returns>falseを返すとベントから追い出され、他人からアニメーションも見られません</returns>
     public virtual bool OnEnterVent(PlayerPhysics physics, int ventId) => true;
-
+    /// <summary>
+    /// ベント移動を封じるかの関数。<br/>
+    /// OnEnterVentの方が速く呼ばれる。<br/>
+    /// 基本的に移動を封じる時のみ使う。
+    /// [ホストのみ]
+    /// </summary>
+    /// <param name="physics"></param>
+    /// <param name="Id"></param>
+    /// <returns>falseを返すとベント移動が出来ません。</returns>
+    public virtual bool CanVentMoving(PlayerPhysics physics, int ventId) => true;
     /// <summary>
     /// ミーティングが始まった時に呼ばれる関数
+    /// [全クライアント]
     /// </summary>
     public virtual void OnStartMeeting()
     { }
+    /// <summary>
+    /// ミーティングが始まった時同数などと一緒に表示されるメッセージ
+    /// [全クライアント] / [return: ホストのみ]
+    /// </summary>
+    /// <returns></returns>
+    public virtual string MeetingAddMessage() => "";
 
     /// <summary>
     /// 自分が投票した瞬間，票がカウントされる前に呼ばれる<br/>
     /// falseを返すと投票行動自体をなかったことにし，再度投票できるようになる<br/>
     /// 投票行動自体は取り消さず，票だけカウントさせない場合は<see cref="ModifyVote"/>を使用し，doVoteをfalseにする
+    /// [ホストのみ]
     /// </summary>
     /// <param name="votedForId">投票先</param>
+    /// <param name="voter">投票した人</param>
     /// <returns>falseを返すと投票自体がなかったことになり，投票者自身以外には投票したことがバレません</returns>
-    public virtual bool CheckVoteAsVoter(PlayerControl votedFor) => true;
+    public virtual bool CheckVoteAsVoter(byte votedForId, PlayerControl voter) => true;
 
     /// <summary>
     /// 誰かが投票した瞬間に呼ばれ，票を書き換えることができる<br/>
     /// 投票行動自体をなかったことにしたい場合は<see cref="CheckVoteAsVoter"/>を使用する
+    /// [ホストのみ]
     /// </summary>
     /// <param name="voterId">投票した人のID</param>
     /// <param name="sourceVotedForId">投票された人のID</param>
@@ -223,6 +280,7 @@ public abstract class RoleBase : IDisposable
 
     /// <summary>
     /// 追放後に行われる処理
+    /// [ホストのみ]
     /// </summary>
     /// <param name="exiled">追放されるプレイヤー</param>
     /// <param name="DecidedWinner">勝者を確定させるか</param>
@@ -230,29 +288,47 @@ public abstract class RoleBase : IDisposable
     { }
 
     /// <summary>
-    /// タスクターンが始まる直前に毎回呼ばれる関数
+    /// タスクターンが始まる直前に毎回呼ばれる関数<br/>
+    /// 日数更新直前に呼ばれる。<br/>
+    /// [全クライアント]
     /// </summary>
     public virtual void AfterMeetingTasks()
     { }
     /// <summary>
     /// タスクターンにスポーンした時に呼ばれる関数
     /// 実行後必ず、SyncSettings()、RpcResetAbilityCooldown()が呼ばれる
+    /// [ホストのみ]
     /// </summary>
     /// <param name="initialState">ゲーム最初のスポーンかどうか</param>
     public virtual void OnSpawn(bool initialState = false)
-    {
+    { }
+    /// <summary>
+    /// ゲーム開始のイントロ後に呼ばれる関数。
+    /// ※アムネシア制御効かないので個別で処理
+    /// [ホストのみ]
+    /// </summary>
+    public virtual void StartGameTasks()
+    { }
+    /// <summary>
+    /// モノクラー等に使う。シェイプ後,イントロ後,タスクターン始めに呼ばれる。
+    /// ※アムネシア制御効かないので個別で処理
+    /// [全クライアント]
+    /// </summary>
+    public virtual void ChangeColor()
+    { }
 
-    }
     /// <summary>
     /// タスクが一個完了するごとに呼ばれる関数
+    /// [全クライアント]
     /// </summary>
     /// <returns>falseを返すとバニラ処理をキャンセルする</returns>
-    public virtual bool OnCompleteTask() => true;
+    public virtual bool OnCompleteTask(uint taskid) => true;
 
     // == Sabotage関連処理 ==
     /// <summary>
-    /// 自身がサボタージュを発生させたときに発火する
+    /// サボタージュを起すことが出来るか判定する。
     /// ドア閉めには関与できない
+    /// ※アムネシア制御効かないので個別で処理
     /// </summary>
     /// <param name="systemType">サボタージュの種類</param>
     /// <returns>falseでサボタージュをキャンセル</returns>
@@ -260,11 +336,22 @@ public abstract class RoleBase : IDisposable
 
     /// <summary>
     /// 誰かがサボタージュを発生させたときに呼ばれる
+    /// ※アムネシア制御効かないので個別で処理
     /// </summary>
     /// <param name="player">アクションを起こしたプレイヤー</param>
     /// <param name="systemType">サボタージュの種類</param>
     /// <returns>falseでサボタージュのキャンセル</returns>
     public virtual bool OnSabotage(PlayerControl player, SystemTypes systemType) => true;
+
+    /// 誰かがサボタージュ修復するときに呼ばれる関数。
+    /// 修復可能かのチェックは ISystemTypeUpdateHookの方を使う。
+    public virtual void OnFixSabotage(PlayerControl player, SystemTypes systemTypes, byte amount) { }
+
+
+    /// <summary>
+    /// サボタージュ後に行われる処理
+    /// </summary>
+    public virtual void AfterSabotage(SystemTypes systemType) { }
 
     // NameSystem
     // 名前は下記の構成で表示される
@@ -276,23 +363,24 @@ public abstract class RoleBase : IDisposable
     // Lower:役職用追加文字情報。Modの場合画面下に表示される。
     // Suffix:ターゲット矢印などの追加情報。
 
+    public virtual bool NotifyRolesCheckOtherName => false;
     /// <summary>
-    /// seenによる表示上のRoleNameの書き換え
+    /// seenによる表示上のRoleNameの書き換え。つまりみてみて～!!ってこと。
     /// </summary>
     /// <param name="seer">見る側</param>
     /// <param name="enabled">RoleNameを表示するかどうか</param>
     /// <param name="roleColor">RoleNameの色</param>
     /// <param name="roleText">RoleNameのテキスト</param>
-    public virtual void OverrideDisplayRoleNameAsSeen(PlayerControl seer, ref bool enabled, ref Color roleColor, ref string roleText)
+    public virtual void OverrideDisplayRoleNameAsSeen(PlayerControl seer, ref bool enabled, ref Color roleColor, ref string roleText, ref bool addon)
     { }
     /// <summary>
-    /// seerによる表示上のRoleNameの書き換え
+    /// seerによる表示上のRoleNameの書き換え。つまり見ちゃうぞ!!ってこと。
     /// </summary>
     /// <param name="seen">見られる側</param>
     /// <param name="enabled">RoleNameを表示するかどうか</param>
     /// <param name="roleColor">RoleNameの色</param>
     /// <param name="roleText">RoleNameのテキスト</param>
-    public virtual void OverrideDisplayRoleNameAsSeer(PlayerControl seen, ref bool enabled, ref Color roleColor, ref string roleText)
+    public virtual void OverrideDisplayRoleNameAsSeer(PlayerControl seen, ref bool enabled, ref Color roleColor, ref string roleText, ref bool addon)
     { }
     /// <summary>
     /// 本来の役職名の書き換え
@@ -310,10 +398,18 @@ public abstract class RoleBase : IDisposable
     public virtual void OverrideProgressTextAsSeer(PlayerControl seen, ref bool enabled, ref string text)
     { }
     /// <summary>
+    /// seenによるProgressTextの書き換え
+    /// </summary>
+    /// <param name="seer">見る側</param>
+    /// <param name="enabled">ProgressTextを表示するかどうか</param>
+    /// <param name="text">ProgressTextのテキスト</param>
+    public virtual void OverrideProgressTextAsSeen(PlayerControl seer, ref bool enabled, ref string text)
+    { }
+    /// <summary>
     /// 役職名の横に出るテキスト
     /// </summary>
     /// <param name="comms">コミュサボ中扱いするかどうか</param>
-    public virtual string GetProgressText(bool comms = false) => "";
+    public virtual string GetProgressText(bool comms = false, bool GameLog = false) => "";
     /// <summary>
     /// seerが自分であるときのMark
     /// seer,seenともに自分以外であるときに表示したい場合は同じ引数でstaticとして実装し
@@ -346,28 +442,140 @@ public abstract class RoleBase : IDisposable
     /// <returns>構築したMark</returns>
     public virtual string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => "";
 
+    public virtual bool AllEnabledColor => false;
     /// <summary>
-    /// シェイプシフトボタンのテキストを変更します
+    /// アビリティボタンのテキストを変更します
     /// </summary>
     public virtual string GetAbilityButtonText()
     {
-        StringNames? str = Player.Data.Role.Role switch
+        StringNames? str = Player?.Data?.Role?.Role switch
         {
-            RoleTypes.Phantom => Player.Data.Role.TryCast<PhantomRole>(out var phantomRole) ? (phantomRole.IsInvisible ? StringNames.PhantomAbilityUndo : StringNames.PhantomAbility) : null,
-            RoleTypes.Tracker => Player.Data.Role.TryCast<TrackerRole>(out var trackerRole) ? (trackerRole.isTrackingActive ? StringNames.TrackerAbilityUndo : StringNames.TrackerAbility) : null,
             RoleTypes.Engineer => StringNames.VentAbility,
             RoleTypes.Scientist => StringNames.VitalsAbility,
+            RoleTypes.Tracker => StringNames.TrackerAbility,
             RoleTypes.Shapeshifter => StringNames.ShapeshiftAbility,
+            RoleTypes.Phantom => StringNames.PhantomAbility,
             RoleTypes.GuardianAngel => StringNames.ProtectAbility,
+            RoleTypes.Detective => StringNames.DetectiveAbilityNotes,
+            //RoleTypes.Judge => StringNames.Judge,
             RoleTypes.ImpostorGhost or RoleTypes.CrewmateGhost => StringNames.HauntAbilityName,
-            _ => null
+            _ => null//アプデ対応用
         };
-        return str.HasValue ? GetString(str.Value) : "Invalid";
+        return str.HasValue ? Translator.GetString(str.Value) : "Invalid";
     }
+    /// <summary>
+    /// アビリティボタンの画像を変更します。
+    /// </summary>
+    /// <param name="text"></param>
+    /// <returns></returns>
+    public virtual bool OverrideAbilityButton(out string text)
+    {
+        text = default;
+        return false;
+    }
+    /// <summary>
+    /// 会議をキャンセルするために使う<br/>
+    /// <see cref="OnReportDeadBody"/>より先に呼ばれる、キャンセルした場合は呼ばれない<br/>
+    /// trueを返すとキャンセルされる
+    /// [ホストのみ]
+    /// </summary>
+    public virtual bool CancelReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target, ref DontReportreson reason) => false;
 
+    /// <summary>
+    /// 占い結果で表示される役職を変更することができる<br/>
+    /// NotAssignedを返すと変更されない
+    /// [全クライアント]
+    /// </summary>
+    public virtual CustomRoles TellResults(PlayerControl player) => CustomRoles.NotAssigned;
+
+    /// <summary>
+    /// 投票結果を返す<br/>
+    /// trueを返すと追放の「ランダム追放」「全員追放」などが実行されない
+    /// [ホストのみ]
+    /// </summary>
+    public virtual bool VotingResults(ref NetworkedPlayerInfo Exiled, ref bool IsTie, Dictionary<byte, int> vote, byte[] mostVotedPlayers, bool ClearAndExile) => false;
+
+    /// <summary>
+    /// ベントの出入り、移動で呼び出される
+    /// </summary>
+    public virtual void OnVentilationSystemUpdate(PlayerControl user, VentilationSystem.Operation Operation, int ventId)
+    { }
+
+    /// <summary>
+    /// 名前を一時的に変更する時に使う<br/>
+    /// NotifyRoles時に呼び出される
+    /// </summary>
+    /// <param name = "name" > 変更する名前 </param>
+    /// <param name = "NoMarker" > マーカーや追加情報を表示しない </param>
+    /// <param name = "isForMeeting" > 会議中か否か </param>
+    /// <returns>名前を変更するかどうか</returns>
+    public virtual bool GetTemporaryName(ref string name, ref bool NoMarker, bool isForMeeting, PlayerControl seer, PlayerControl seen = null) => false;
+
+    /// <summary>
+    /// 回線切断者が起こった時に呼ばれる関数
+    /// [全クライアント]
+    /// </summary>
+    /// <param name="player"></param>
+    public virtual void OnLeftPlayer(PlayerControl player) { }
+
+    /// <summary>
+    /// 自身がゲッサーされそうになった時に呼ばれる関数
+    /// falseを返すと返り討ち。
+    /// nullなら流す 
+    /// [ホストのみ]
+    /// </summary>
+    /// <param name="killer"></param>
+    /// <returns></returns>
+    public virtual bool? CheckGuess(PlayerControl killer) => true;
+
+    /// <summary>
+    /// Host用。
+    /// タスクが出来るか。
+    /// falseだとできない。
+    /// [全クライアント]
+    /// </summary>
+    /// <returns></returns>
+    public virtual bool CanTask() => UtilsTask.HasTasks(PlayerControl.LocalPlayer.Data, false);
+    /// <summary>
+    /// 会議後の置き換え役職の変更。<br/>
+    /// 生存中しか適応されない
+    /// </summary>
+    public virtual RoleTypes? AfterMeetingRole => null;
+
+    /// <summary>
+    /// 勝利処理がほぼ終わった後に処理される<br/>
+    /// [ホストのみ]
+    /// </summary>
+    public virtual void CheckWinner(GameOverReason reason)
+    { }
+    /// <summary>
+    /// ジャッジの役職能力が呼ばれたときに処理。<br/>
+    /// 無かったことにするならfalse。
+    /// </summary>
+    /// <returns></returns>
+    public virtual bool CallJudgeVote(PlayerControl voter, PlayerControl votefor, ref byte ExilePlayerid) => true;
+
+    /// <summary>
+    /// 追加で役職を持っているのか。<br/>
+    /// /mなどで表示されるようになる
+    /// </summary>
+    /// <returns></returns>
+    public virtual CustomRoles HaveAddRole() => CustomRoles.NotAssigned;
+    /// <summary>
+    /// 自身を別役職だと思い込む。
+    /// [全クライアント]
+    /// </summary>
+    public virtual CustomRoles Misidentify() => CustomRoles.NotAssigned;
     protected static AudioClip GetIntroSound(RoleTypes roleType) =>
         RoleManager.Instance.AllRoles.ToArray().Where((role) => role.Role == roleType).FirstOrDefault().IntroSound;
+    public static AudioClip GetIntrosound(RoleTypes roleType) =>
+        RoleManager.Instance.AllRoles.ToArray().Where((role) => role.Role == roleType).FirstOrDefault().IntroSound;
+    public static FloatValueRule OptionBaseCoolTime => new(0, 180, 0.5f);
 
+    //一々Translator参照戦でいいから多分楽 
+    public static string GetString(StringNames stringName)
+            => DestroyableSingleton<TranslationController>.Instance.GetString(stringName, new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Il2CppSystem.Object>(0));
+    public static string GetString(string str, Dictionary<string, string> replacementDic = null) => Translator.GetString(str, replacementDic);
     protected enum GeneralOption
     {
         Cooldown,
@@ -375,6 +583,28 @@ public abstract class RoleBase : IDisposable
         CanVent,
         ImpostorVision,
         CanUseSabotage,
-        CanCreateMadmate,
+        CanCreateSideKick,
+        Duration,
+        cantaskcount,
+        MeetingMaxTime,
+        PlayShapeAnimate,
+        TaskAwakening,
+        AwakeningTaskcount,
+        AbilityAwakening,
+        OptionCount,
+        EngineerInVentCooldown,
+        TaskTrigger,
+        CanUseActiveComms
+    }
+    public enum DontReportreson
+    {
+        None,
+        wait,
+        NonReport,
+        Transparent,
+        CantUseButton,
+        Eat,
+        Other,
+        Impostor,
     }
 }

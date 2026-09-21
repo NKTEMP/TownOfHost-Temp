@@ -13,13 +13,13 @@ namespace TownOfHost
 {
     public static class TemplateManager
     {
-        private static readonly string TEMPLATE_FILE_PATH = "./TOH_DATA/template.txt";
+        private static readonly string TEMPLATE_FILE_PATH = Main.BaseDirectory + "/template.txt";
         private static Dictionary<string, Func<string>> _replaceDictionary = new()
         {
             ["RoomCode"] = () => InnerNet.GameCode.IntToGameName(AmongUsClient.Instance.GameId),
             ["PlayerName"] = () => DataManager.Player.Customization.Name,
             ["AmongUsVersion"] = () => UnityEngine.Application.version,
-            ["ModVersion"] = () => Main.PluginVersion,
+            ["ModVersion"] = () => Main.PluginShowVersion + (Main.DebugVersion ? $"☆{GetString("Debug")}☆" : ""),
             ["Map"] = () => Constants.MapNames[Main.NormalOptions.MapId],
             ["NumEmergencyMeetings"] = () => Main.NormalOptions.NumEmergencyMeetings.ToString(),
             ["EmergencyCooldown"] = () => Main.NormalOptions.EmergencyCooldown.ToString(),
@@ -32,8 +32,18 @@ namespace TownOfHost
             ["NumCommonTasks"] = () => Main.NormalOptions.NumCommonTasks.ToString(),
             ["NumLongTasks"] = () => Main.NormalOptions.NumLongTasks.ToString(),
             ["NumShortTasks"] = () => Main.NormalOptions.NumShortTasks.ToString(),
+            ["NumImpostors"] = () => Main.NormalOptions.NumImpostors.ToString(),
             ["Date"] = () => DateTime.Now.ToShortDateString(),
-            ["Time"] = () => DateTime.Now.ToShortTimeString(),
+            ["Roles"] = () => UtilsShowOption.GetActiveRoleText(byte.MaxValue),
+            ["Timer"] = () => Utils.GetTimer(),
+            ["ModColor"] = () => Main.ModColor,
+            ["NumImpostorRoles"] = () => UtilsShowOption.GetRoleTypesCountInt(true).imp.ToString(),
+            ["NumCrewmateRoles"] = () => UtilsShowOption.GetRoleTypesCountInt().crew.ToString(),
+            ["NumMadmateRoles"] = () => UtilsShowOption.GetRoleTypesCountInt().mad.ToString(),
+            ["NumNeutralRoles"] = () => UtilsShowOption.GetRoleTypesCountInt().neutral.ToString(),
+            ["NumAddonRoles"] = () => UtilsShowOption.GetRoleTypesCountInt().addon.ToString(),
+            ["NumLoverRoles"] = () => UtilsShowOption.GetRoleTypesCountInt().lovers.ToString(),
+            ["NumGhostRoles"] = () => UtilsShowOption.GetRoleTypesCountInt().ghost.ToString(),
         };
 
         [PluginModuleInitializer]
@@ -48,7 +58,7 @@ namespace TownOfHost
             {
                 try
                 {
-                    if (!Directory.Exists(@"TOH_DATA")) Directory.CreateDirectory(@"TOH_DATA");
+                    if (!Directory.Exists(Main.BaseDirectory)) Directory.CreateDirectory(Main.BaseDirectory);
                     if (File.Exists(@"./template.txt"))
                     {
                         File.Move(@"./template.txt", TEMPLATE_FILE_PATH);
@@ -86,10 +96,41 @@ namespace TownOfHost
             if (sendList.Count == 0 && !noErr)
             {
                 if (playerId == 0xff)
-                    HudManager.Instance.Chat.AddChat(PlayerControl.LocalPlayer, string.Format(GetString("Message.TemplateNotFoundHost"), str, tags.Join(delimiter: ", ")));
+                    Utils.SendMessage(string.Format(GetString("Message.TemplateNotFoundHost"), str, tags.Join(delimiter: ", ")), PlayerControl.LocalPlayer.PlayerId);
                 else Utils.SendMessage(string.Format(GetString("Message.TemplateNotFoundClient"), str), playerId);
             }
-            else for (int i = 0; i < sendList.Count; i++) Utils.SendMessage(ApplyReplaceDictionary(sendList[i]), playerId);
+            else for (int i = 0; i < sendList.Count; i++) Utils.SendMessage(ApplyReplaceDictionary(sendList[i]), playerId, str == "welcome" ? $"<{Main.ModColor}>【This Room Use \"Town Of Host-Temp\"】" : "");
+        }
+        public static string GetTemplate(string str = "")
+        {
+            CreateIfNotExists();
+            using StreamReader sr = new(TEMPLATE_FILE_PATH, Encoding.GetEncoding("UTF-8"));
+            string text;
+            string[] tmp = Array.Empty<string>();
+            List<string> sendList = new();
+            HashSet<string> tags = new();
+            while ((text = sr.ReadLine()) != null)
+            {
+                tmp = text.Split(":");
+                if (tmp.Length > 1 && tmp[1] != "")
+                {
+                    tags.Add(tmp[0]);
+                    if (tmp[0].ToLower() == str.ToLower()) sendList.Add(tmp.Skip(1).Join(delimiter: ":").Replace("\\n", "\n"));
+                }
+            }
+            if (sendList.Count == 0)
+            {
+                return "";
+            }
+            else
+            {
+                var rtext = "";
+                for (int i = 0; i < sendList.Count; i++)
+                {
+                    rtext += ApplyReplaceDictionary(sendList[i]);
+                }
+                return rtext;
+            }
         }
 
         private static string ApplyReplaceDictionary(string text)

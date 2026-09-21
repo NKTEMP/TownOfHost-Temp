@@ -6,9 +6,10 @@ using AmongUs.GameOptions;
 
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Core.Interfaces;
-using static TownOfHost.Translator;
+using TownOfHost.Modules;
 
 namespace TownOfHost.Roles.Impostor;
+
 public sealed class Sniper : RoleBase, IImpostor
 {
     public static readonly SimpleRoleInfo RoleInfo =
@@ -18,9 +19,20 @@ public sealed class Sniper : RoleBase, IImpostor
             CustomRoles.Sniper,
             () => RoleTypes.Shapeshifter,
             CustomRoleTypes.Impostor,
-            1800,
+            6200,
             SetupOptionItem,
-            "snp"
+            "snp",
+            OptionSort: (3, 10),
+            from: From.NebulaontheShip,
+            Desc: () =>
+            {
+                var adddesc = "";
+                if (SniperAimAssist.GetBool()) adddesc += GetString("SniperDescAimAssist");
+                if (OpShowArrowTime.GetBool()) adddesc += string.Format(GetString("SniperDescArrow"), OpShowArrowTime.GetFloat());
+                if (OpCankill.GetBool() is false) adddesc += GetString("SniperDescCantKill");
+
+                return string.Format(GetString("SniperDesc"), SniperBulletCount.GetInt()) + adddesc;
+            }
         );
     public Sniper(PlayerControl player)
     : base(
@@ -32,8 +44,12 @@ public sealed class Sniper : RoleBase, IImpostor
         PrecisionShooting = SniperPrecisionShooting.GetBool();
         AimAssist = SniperAimAssist.GetBool();
         AimAssistOneshot = SniperAimAssistOnshot.GetBool();
+        Cankill = OpCankill.GetBool();
+        CanNomalShape = OpCanShape.GetBool();
+        ShapeCooldown = OpShapeCool.GetFloat();
+        ShapeDuration = OpShapeDuration.GetFloat();
 
-        CustomRoleManager.MarkOthers.Add(GetMarkOthers);
+        CustomRoleManager.SuffixOthers.Add(GetMarkOthers);
     }
 
     public override void OnDestroy()
@@ -44,12 +60,22 @@ public sealed class Sniper : RoleBase, IImpostor
     static OptionItem SniperPrecisionShooting;
     static OptionItem SniperAimAssist;
     static OptionItem SniperAimAssistOnshot;
+    static OptionItem OpCanShape;
+    static OptionItem OpCankill;
+    static OptionItem OpShapeDuration;
+    static OptionItem OpShapeCool;
+    static OptionItem OpShowArrowTime;
+    static OptionItem OpFriendlyFire;
     enum OptionName
     {
         SniperBulletCount,
         SniperPrecisionShooting,
         SniperAimAssist,
-        SniperAimAssistOneshot
+        SniperAimAssistOneshot,
+        SniperCanKill,
+        SniperCanShapeshift,
+        SniperShowArrowTime,
+        SniperFriendlyFire
     }
     Vector3 SnipeBasePosition;
     Vector3 LastPosition;
@@ -57,6 +83,7 @@ public sealed class Sniper : RoleBase, IImpostor
     List<byte> ShotNotify = new();
     bool IsAim;
     float AimTime;
+    float ShowArrowTime;
 
     static HashSet<Sniper> Snipers = new();
 
@@ -64,15 +91,29 @@ public sealed class Sniper : RoleBase, IImpostor
     bool PrecisionShooting;
     bool AimAssist;
     bool AimAssistOneshot;
-
+    bool Cankill;
+    bool CanNomalShape;
+    float ShapeCooldown;
+    float ShapeDuration;
     bool MeetingReset;
     public static void SetupOptionItem()
     {
-        SniperBulletCount = IntegerOptionItem.Create(RoleInfo, 10, OptionName.SniperBulletCount, new(1, 5, 1), 2, false)
+        SniperBulletCount = IntegerOptionItem.Create(RoleInfo, 10, OptionName.SniperBulletCount, new(1, 99, 1), 2, false)
             .SetValueFormat(OptionFormat.Pieces);
-        SniperPrecisionShooting = BooleanOptionItem.Create(RoleInfo, 11, OptionName.SniperPrecisionShooting, false, false);
-        SniperAimAssist = BooleanOptionItem.Create(RoleInfo, 12, OptionName.SniperAimAssist, false, false);
-        SniperAimAssistOnshot = BooleanOptionItem.Create(RoleInfo, 13, OptionName.SniperAimAssistOneshot, false, false, SniperAimAssist);
+        OpShapeCool = FloatOptionItem.Create(RoleInfo, 11, GeneralOption.Cooldown, new(0f, 180f, 0.5f), 40f, false).SetValueFormat(OptionFormat.Seconds);
+        OpShapeDuration = FloatOptionItem.Create(RoleInfo, 12, GeneralOption.Duration, new(0f, 180f, 0.5f), 10f, false).SetZeroNotation(OptionZeroNotation.Infinity).SetValueFormat(OptionFormat.Seconds);
+        SniperPrecisionShooting = BooleanOptionItem.Create(RoleInfo, 13, OptionName.SniperPrecisionShooting, false, false);
+        SniperAimAssist = BooleanOptionItem.Create(RoleInfo, 14, OptionName.SniperAimAssist, false, false);
+        SniperAimAssistOnshot = BooleanOptionItem.Create(RoleInfo, 15, OptionName.SniperAimAssistOneshot, false, false, SniperAimAssist);
+        OpCanShape = BooleanOptionItem.Create(RoleInfo, 16, OptionName.SniperCanShapeshift, false, false);
+        OpCankill = BooleanOptionItem.Create(RoleInfo, 17, OptionName.SniperCanKill, true, false);
+        OpShowArrowTime = FloatOptionItem.Create(RoleInfo, 18, OptionName.SniperShowArrowTime, new(0f, 60f, 1f), 10f, false).SetZeroNotation(OptionZeroNotation.Off).SetValueFormat(OptionFormat.Seconds);
+        OpFriendlyFire = BooleanOptionItem.Create(RoleInfo, 19, OptionName.SniperFriendlyFire, true, false);
+    }
+    public override void ApplyGameOptions(IGameOptions opt)
+    {
+        AURoleOptions.ShapeshifterDuration = ShapeDuration;
+        AURoleOptions.ShapeshifterCooldown = ShapeCooldown;
     }
     public override void Add()
     {
@@ -85,12 +126,13 @@ public sealed class Sniper : RoleBase, IImpostor
         IsAim = false;
         AimTime = 0f;
         MeetingReset = false;
+        ShowArrowTime = 0f;
 
         Snipers.Add(this);
     }
     private void SendRPC()
     {
-        Logger.Info($"{Player.GetNameWithRole()}:SendRPC", "Sniper");
+        Logger.Info($"{Player.GetNameWithRole().RemoveHtmlTags()}:SendRPC", "Sniper");
         using var sender = CreateSender();
 
         var snList = ShotNotify;
@@ -110,11 +152,18 @@ public sealed class Sniper : RoleBase, IImpostor
             ShotNotify.Add(reader.ReadByte());
             count--;
         }
-        Logger.Info($"{Player.GetNameWithRole()}:ReceiveRPC", "Sniper");
+        Logger.Info($"{Player.GetNameWithRole().RemoveHtmlTags()}:ReceiveRPC", "Sniper");
     }
     public bool CanUseKillButton()
     {
-        return Player.IsAlive() && BulletCount <= 0;
+        if (!Player.IsAlive()) return false;
+        if (Cankill) return true;
+        return BulletCount <= 0;
+    }
+    public override bool CheckShapeshift(PlayerControl target, ref bool animate)
+    {
+        if (!Player.IsAlive() || (BulletCount <= 0 && !CanNomalShape)) return false;
+        return true;
     }
     /// <summary>
     /// 狙撃の場合死因設定
@@ -142,10 +191,14 @@ public sealed class Sniper : RoleBase, IImpostor
         //至近距離で外す対策に一歩後ろから判定を開始する
         snipePos -= dir;
 
-        foreach (var target in Main.AllAlivePlayerControls)
+        foreach (var target in PlayerCatch.AllAlivePlayerControls)
         {
             //自分には当たらない
             if (target.PlayerId == Player.PlayerId) continue;
+            //FriendlyFireがOFFかつサドンデスモードでないならImpostorを除外
+            if (!OpFriendlyFire.GetBool() && target.IsTeammate(Player) && !SuddenDeathMode.NowSuddenDeathMode) continue;
+            //FriendlyFireがOffかつ、チームかつ、同陣営なら
+            if (!OpFriendlyFire.GetBool() && SuddenDeathMode.NowSuddenDeathTemeMode && SuddenDeathMode.IsSameteam(target.PlayerId, Player.PlayerId)) continue;
             //死んでいない対象の方角ベクトル作成
             var target_pos = target.transform.position - snipePos;
             //自分より後ろの場合はあたらない
@@ -154,7 +207,7 @@ public sealed class Sniper : RoleBase, IImpostor
             var target_dir = target_pos.normalized;
             //内積を取る
             var target_dot = Vector3.Dot(dir, target_dir);
-            Logger.Info($"{target?.Data?.PlayerName}:pos={target_pos} dir={target_dir}", "Sniper");
+            Logger.Info($"{target?.Data?.GetLogPlayerName()}:pos={target_pos} dir={target_dir}", "Sniper");
             Logger.Info($"  Dot={target_dot}", "Sniper");
 
             //ある程度正確なら登録
@@ -228,13 +281,23 @@ public sealed class Sniper : RoleBase, IImpostor
         {
             //一番正確な対象がターゲット
             var snipedTarget = targets.OrderBy(c => c.Value).First().Key;
-            CustomRoleManager.OnCheckMurder(
+
+            Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[1]);
+            if (25 <= Vector2.Distance(snipedTarget.GetTruePosition(), Player.GetTruePosition()))
+                Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[2]);
+
+            if (CustomRoleManager.OnCheckMurder(
                 Player, snipedTarget,       // sniperがsnipedTargetを打ち抜く
-                snipedTarget, snipedTarget  // 表示上はsnipedTargetの自爆
-            );
+                snipedTarget, snipedTarget, true, Killpower: 1 // 表示上はsnipedTargetの自爆
+            ))
+            {
+                if (snipedTarget.IsTeammate(Player))
+                    Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[3]);
+            }
 
             //あたった通知
-            Player.RpcProtectedMurderPlayer();
+            if (CanUseKillButton()) Player.SetKillCooldown();
+            else Player.RpcProtectedMurderPlayer(target);
 
             //スナイプが起きたことを聞こえそうな対象に通知したい
             targets.Remove(snipedTarget);
@@ -243,39 +306,62 @@ public sealed class Sniper : RoleBase, IImpostor
             foreach (var otherPc in targets.Keys)
             {
                 snList.Add(otherPc.PlayerId);
-                Utils.NotifyRoles(SpecifySeer: otherPc);
+                UtilsNotifyRoles.NotifyRoles(OnlyMeName: true, SpecifySeer: otherPc);
             }
             SendRPC();
-            _ = new LateTask(
-                () =>
+            _ = new LateTask(() =>
                 {
                     snList.Clear();
                     if (targets.Count != 0)
                     {
                         foreach (var otherPc in targets.Keys)
                         {
-                            Utils.NotifyRoles(SpecifySeer: otherPc);
+                            UtilsNotifyRoles.NotifyRoles(OnlyMeName: true, SpecifySeer: otherPc);
                         }
                         SendRPC();
                     }
                 },
-                0.5f, "Sniper shot Notify"
-                );
+                0.5f, "Sniper shot Notify");
         }
+        else
+        {
+            Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
+        }
+        _ = new LateTask(() =>
+        {
+            foreach (var pc in PlayerCatch.AllPlayerControls)
+            {
+                GetArrow.Add(pc.PlayerId, SnipeBasePosition);
+                ShowArrowTime = OpShowArrowTime.GetFloat();
+            }
+        }, Main.LagTime, "", true);
     }
     public override void OnFixedUpdate(PlayerControl player)
     {
         if (!Player.IsAlive()) return;
 
+        if (ShowArrowTime > 0 && !GameStates.CalledMeeting)
+        {
+            ShowArrowTime -= Time.fixedDeltaTime;
+            if (ShowArrowTime <= 0)
+            {
+                foreach (var pc in PlayerCatch.AllPlayerControls)
+                    GetArrow.Remove(pc.PlayerId, SnipeBasePosition);
+                _ = new LateTask(() => UtilsNotifyRoles.NotifyRoles(), 0.35f, "", true);
+            }
+        }
+
         if (!AimAssist) return;
 
         if (!IsAim) return;
 
-        if (!GameStates.IsInTask)
+        if (GameStates.CalledMeeting)
         {
             //エイム終了
             IsAim = false;
             AimTime = 0f;
+            foreach (var pc in PlayerCatch.AllPlayerControls)
+                GetArrow.Remove(pc.PlayerId, SnipeBasePosition);
             return;
         }
 
@@ -288,14 +374,16 @@ public sealed class Sniper : RoleBase, IImpostor
         else
         {
             AimTime += Time.fixedDeltaTime;
-            Utils.NotifyRoles(SpecifySeer: Player);
+            UtilsNotifyRoles.NotifyRoles(SpecifySeer: Player);
         }
     }
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         MeetingReset = true;
+        foreach (var pc in PlayerCatch.AllPlayerControls)
+            GetArrow.Remove(pc.PlayerId, SnipeBasePosition);
     }
-    public override string GetProgressText(bool comms = false)
+    public override string GetProgressText(bool comms = false, bool gamelog = false)
     {
         return Utils.ColorString(Color.yellow, $"({BulletCount})");
     }
@@ -319,20 +407,40 @@ public sealed class Sniper : RoleBase, IImpostor
     }
     public static string GetMarkOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
+        seen ??= seer;
+        var arrow = "";
+        if (isForMeeting) return "";
+
         //各スナイパーから
         foreach (var sniper in Snipers)
         {
+            if (sniper.ShowArrowTime > 0 && OpShowArrowTime.GetFloat() != 0)
+                arrow += "<size=90%><#ff1919>" + GetArrow.GetArrows(seer, sniper.SnipeBasePosition) + "</color></size>";
+
             //射撃音が聞こえるプレイヤー
             var snList = sniper.ShotNotify;
             if (snList.Count > 0 && snList.Contains(seer.PlayerId))
             {
-                return $"<size=200%>{Utils.ColorString(Palette.ImpostorRed, "!")}</size>";
+                return seer == seen ? $"<size=200%>{Utils.ColorString(Palette.ImpostorRed, "!" + arrow)}</size>" : "";
             }
         }
-        return "";
+
+        return seer == seen ? arrow : "";
     }
     public override string GetAbilityButtonText()
     {
         return GetString(BulletCount <= 0 ? "DefaultShapeshiftText" : "SniperSnipeButtonText");
+    }
+    public static Dictionary<int, Achievement> achievements = new();
+    [Attributes.PluginModuleInitializer]
+    public static void Load()
+    {
+        var n1 = new Achievement(RoleInfo, 0, 1, 0, 0);
+        var l1 = new Achievement(RoleInfo, 1, 1, 0, 1);
+        var sp1 = new Achievement(RoleInfo, 2, 1, 0, 2);
+        var l2 = new Achievement(RoleInfo, 3, 1, 0, 1, true);
+        achievements.Add(0, n1);
+        achievements.Add(1, l1);
+        achievements.Add(2, l2);
     }
 }

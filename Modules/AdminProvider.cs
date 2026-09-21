@@ -7,13 +7,18 @@ namespace TownOfHost.Modules;
 
 public static class AdminProvider
 {
+    public static SortedDictionary<SystemTypes, AdminEntry> NowAdmin = new();
     // ref: MapCountOverlay.Update
     /// <summary>
     /// 実行された時点でのアドミン情報を取得する
     /// </summary>
     /// <returns>Key: 部屋のSystemType, Value: <see cref="AdminEntry"/>で，Key順にソートされた辞書</returns>
-    public static SortedDictionary<SystemTypes, AdminEntry> CalculateAdmin()
+    public static SortedDictionary<SystemTypes, AdminEntry> CalculateAdmin(bool checkmeeting = false)
     {
+        if (GameStates.CalledMeeting && !checkmeeting)
+        {
+            return NowAdmin;
+        }
         SortedDictionary<SystemTypes, AdminEntry> allAdmins = new();
         // 既にカウントされた人のPlayerIdを格納する
         // これに追加しようとしたときにfalseが返ってきたらカウントしないようにすることで，各プレイヤーが1回しかカウントされないようになっている
@@ -59,7 +64,7 @@ public static class AdminProvider
                         totalPlayers++;
                         numDeadBodies++;
                         // インポスターの死体だった場合
-                        if (Utils.GetPlayerById(deadBody.ParentId)?.Is(CustomRoleTypes.Impostor) == true)
+                        if (PlayerCatch.GetPlayerById(deadBody.ParentId)?.Is(CustomRoleTypes.Impostor) == true)
                         {
                             numImpostors++;
                         }
@@ -89,6 +94,7 @@ public static class AdminProvider
                 NumImpostors = numImpostors,
             };
         }
+        NowAdmin = allAdmins;
         return allAdmins;
     }
 

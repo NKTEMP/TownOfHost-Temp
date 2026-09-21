@@ -5,7 +5,6 @@ using UnityEngine;
 using AmongUs.GameOptions;
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Core.Interfaces;
-using static TownOfHost.Translator;
 
 namespace TownOfHost.Roles.Impostor;
 
@@ -18,9 +17,11 @@ public sealed class Warlock : RoleBase, IImpostor
             CustomRoles.Warlock,
             () => RoleTypes.Shapeshifter,
             CustomRoleTypes.Impostor,
-            1400,
+            5000,
             null,
-            "wa"
+            "wa",
+            OptionSort: (4, 4),
+            from: From.TheOtherRoles
         );
     public Warlock(PlayerControl player)
     : base(
@@ -74,7 +75,7 @@ public sealed class Warlock : RoleBase, IImpostor
                 CursedPlayer = target;
                 //呪える相手は一人だけなのでキルボタン無効化
                 killer.SetKillCooldown(255f);
-                killer.RpcResetAbilityCooldown();
+                _ = new LateTask(() => killer.RpcResetAbilityCooldown(), 0.5f, "WarlockAbility", true);
             }
             //どちらにしてもキルは無効
             info.DoKill = false;
@@ -94,22 +95,26 @@ public sealed class Warlock : RoleBase, IImpostor
                 Vector2 cpPos = CursedPlayer.transform.position;
                 Dictionary<PlayerControl, float> candidateList = new();
                 float distance;
-                foreach (PlayerControl candidatePC in Main.AllAlivePlayerControls)
+                foreach (PlayerControl candidatePC in PlayerCatch.AllAlivePlayerControls)
                 {
-                    if (candidatePC != CursedPlayer)
+                    if (candidatePC != CursedPlayer && !candidatePC.Is(CustomRoles.King))
                     {
                         distance = Vector2.Distance(cpPos, candidatePC.transform.position);
                         candidateList.Add(candidatePC, distance);
-                        Logger.Info($"{candidatePC?.Data?.PlayerName}の位置{distance}", "Warlock");
+                        Logger.Info($"{candidatePC?.Data?.GetLogPlayerName()}の位置{distance}", "Warlock");
                     }
                 }
                 var nearest = candidateList.OrderBy(c => c.Value).FirstOrDefault();
                 var killTarget = nearest.Key;
-                killTarget.SetRealKiller(Player);
-                Logger.Info($"{killTarget.GetNameWithRole()}was killed", "Warlock");
-                CursedPlayer.RpcMurderPlayer(killTarget);
+                if (CustomRoleManager.OnCheckMurder(Player, killTarget, CursedPlayer, killTarget, true, false, 2))
+                {
+                    Logger.Info($"{killTarget.GetNameWithRole().RemoveHtmlTags()}was killed", "Warlock");
+                }
                 Player.SetKillCooldown();
                 CursedPlayer = null;
+                Achievements.RpcCompleteAchievement(Player.PlayerId, 1, achievements[0]);
+                if (killTarget.IsTeammate(Player))
+                    Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[1]);
             }
         }
         else
@@ -127,5 +132,20 @@ public sealed class Warlock : RoleBase, IImpostor
     {
         CursedPlayer = null;
         IsCursed = false;
+        Shapeshifting = false;
+    }
+    public override bool OverrideAbilityButton(out string text)
+    {
+        text = "Warlock_Ability";
+        return true;
+    }
+    public static Dictionary<int, Achievement> achievements = new();
+    [Attributes.PluginModuleInitializer]
+    public static void Load()
+    {
+        var n1 = new Achievement(RoleInfo, 0, 5, 0, 0);
+        var sp1 = new Achievement(RoleInfo, 1, 1, 2, 2, true);
+        achievements.Add(0, n1);
+        achievements.Add(1, sp1);
     }
 }

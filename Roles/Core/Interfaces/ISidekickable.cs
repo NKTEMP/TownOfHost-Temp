@@ -12,5 +12,5 @@ public interface ISidekickable
     /// サイドキックを作れるかどうか．ほとんどの場合各役職のサイドキックオプションをラップするbool型メンバの値をそのまま返すことになります
     /// </summary>
     /// <returns>作れるならtrue</returns>
-    public bool CanMakeSidekick() => true;
+    public bool CanMakeSidekick() => false;
 }

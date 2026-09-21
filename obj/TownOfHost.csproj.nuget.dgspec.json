@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Github\\TownOfHost-Temp\\TownOfHost.csproj": {}
+    "D:\\SteamLibrary\\steamapps\\common\\TownOfHost-Temp-main\\TownOfHost.csproj": {}
   },
   "projects": {
-    "D:\\Github\\TownOfHost-Temp\\TownOfHost.csproj": {
-      "version": "5.1.14",
+    "D:\\SteamLibrary\\steamapps\\common\\TownOfHost-Temp-main\\TownOfHost.csproj": {
+      "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Github\\TownOfHost-Temp\\TownOfHost.csproj",
-        "projectName": "TownOfHost",
-        "projectPath": "D:\\Github\\TownOfHost-Temp\\TownOfHost.csproj",
+        "projectUniqueName": "D:\\SteamLibrary\\steamapps\\common\\TownOfHost-Temp-main\\TownOfHost.csproj",
+        "projectName": "TownOfHost-Temp",
+        "projectPath": "D:\\SteamLibrary\\steamapps\\common\\TownOfHost-Temp-main\\TownOfHost.csproj",
         "packagesPath": "C:\\Users\\akito\\.nuget\\packages\\",
-        "outputPath": "D:\\Github\\TownOfHost-Temp\\obj\\",
+        "outputPath": "D:\\SteamLibrary\\steamapps\\common\\TownOfHost-Temp-main\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -55,17 +55,11 @@
             "Costura.Fody": {
               "suppressParent": "All",
               "target": "Package",
-              "version": "[6.2.0, )"
-            },
-            "GitInfo": {
-              "include": "None",
-              "suppressParent": "All",
-              "target": "Package",
-              "version": "[3.6.1, )"
+              "version": "[5.7.0, )"
             },
             "csv": {
               "target": "Package",
-              "version": "[2.0.245, )"
+              "version": "[2.0.87, )"
             }
           },
           "imports": [

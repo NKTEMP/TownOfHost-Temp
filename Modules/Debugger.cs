@@ -13,19 +13,66 @@ namespace TownOfHost
     {
         public static void Send(string text)
         {
-            if (Main.WebhookURL.Value == "none") return;
+            if (Main.IsAndroid()) return;
+            ClientOptionsManager.CheckOptions();
+            if (ClientOptionsManager.WebhookUrl == "none" || !Main.UseWebHook.Value) return;
             HttpClient httpClient = new();
             Dictionary<string, string> strs = new()
             {
                 { "content", text },
-                { "username", "TownOfHost-Debugger" },
-                { "avatar_url", "https://cdn.discordapp.com/avatars/336095904320716800/95243b1468018a24f7ae03d7454fd5f2.webp?size=40" }
             };
-            TaskAwaiter<HttpResponseMessage> awaiter = httpClient.PostAsync(
-                Main.WebhookURL.Value, new FormUrlEncodedContent(strs)).GetAwaiter();
-            awaiter.GetResult();
+            try
+            {
+                TaskAwaiter<HttpResponseMessage> awaiter = httpClient.PostAsync(
+                    ClientOptionsManager.WebhookUrl, new FormUrlEncodedContent(strs)).GetAwaiter();
+                awaiter.GetResult();
+            }
+            catch
+            {
+                Logger.Warn("WebHookの送信に失敗", nameof(Webhook));
+            }
+        }
+        //参考元→https://github.com/Dolly1016/Nebula-Public/
+        public static void SendResult(byte[] pngImage)
+        {
+            if (Main.IsAndroid()) return;
+            ClientOptionsManager.CheckOptions();
+            if (ClientOptionsManager.WebhookUrl == "none" || !Main.UseWebHook.Value) return;
+            try
+            {
+                HttpClient httpClient = new();
+                using MultipartFormDataContent content = new();
+                content.Add(new ByteArrayContent(pngImage), "file", "image.png");
+                var awaiter = httpClient.PostAsync(ClientOptionsManager.WebhookUrl, content).GetAwaiter();
+                awaiter.GetResult();
+                return;
+            }
+            catch (Exception e)
+            {
+                Logger.Info($"{e}", "SendResult");
+            }
         }
     }
+
+    class Alert
+    {
+        /*
+        public static void Send(string text, string name = "TownOfHost-Temp", string avatar = "https://cdn.discordapp.com/attachments/1219855613752774657/1254725875535183933/TabIcon_MainSettings.png?ex=667a8a08&is=66793888&hm=dc20a50c7cadab0a15a215c19abcde6006fbef9911299ab82e452b7cf5242f57&")
+        {
+            ClientOptionsManager.CheckOptions();
+            HttpClient httpClient = new();
+            Dictionary<string, string> strs = new()
+            {
+                { "content", text },
+                { "username", name },
+                { "avatar_url", avatar }
+            };
+            TaskAwaiter<HttpResponseMessage> awaiter = httpClient.PostAsync(
+                Main.DebugwebURL, new FormUrlEncodedContent(strs)).GetAwaiter();
+            awaiter.GetResult();
+        }*/
+    }
+
     class Logger
     {
         public static bool isEnable;
@@ -42,7 +89,7 @@ namespace TownOfHost
             else sendToGameList.Remove(tag);
         }
         public static void Disable(string tag) { if (!disableList.Contains(tag)) disableList.Add(tag); }
-        public static void SendInGame(string text, bool isAlways = false)
+        public static void seeingame(string text, bool isAlways = false)
         {
             if (!isEnable) return;
             if (DestroyableSingleton<HudManager>._instance) DestroyableSingleton<HudManager>.Instance.Notifier.AddDisconnectMessage(text);
@@ -51,8 +98,8 @@ namespace TownOfHost
         {
             if (!isEnable || disableList.Contains(tag)) return;
             var logger = Main.Logger;
-            string t = DateTime.Now.ToString("HH:mm:ss");
-            if (sendToGameList.Contains(tag) || isAlsoInGame) SendInGame($"[{tag}]{text}");
+            string t = DateTime.Now.ToString("HH:mm:ss:ff");
+            if (sendToGameList.Contains(tag) || isAlsoInGame) seeingame($"[{tag}]{text}");
             if (escapeCRLF)
                 text = text.Replace("\r", "\\r").Replace("\n", "\\n");
             string log_text = $"[{t}][{tag}]{text}";
@@ -90,7 +137,7 @@ namespace TownOfHost
             SendToFile(text, LogLevel.Info, tag, escapeCRLF, lineNumber, fileName);
         public static void Warn(string text, string tag, bool escapeCRLF = true, [CallerLineNumber] int lineNumber = 0, [CallerFilePath] string fileName = "") =>
             SendToFile(text, LogLevel.Warning, tag, escapeCRLF, lineNumber, fileName);
-        public static void Error(string text, string tag, bool escapeCRLF = true, [CallerLineNumber] int lineNumber = 0, [CallerFilePath] string fileName = "") =>
+        public static void Error(string text, string tag, bool escapeCRLF = false, [CallerLineNumber] int lineNumber = 0, [CallerFilePath] string fileName = "") =>
             SendToFile(text, LogLevel.Error, tag, escapeCRLF, lineNumber, fileName);
         public static void Fatal(string text, string tag, bool escapeCRLF = true, [CallerLineNumber] int lineNumber = 0, [CallerFilePath] string fileName = "") =>
             SendToFile(text, LogLevel.Fatal, tag, escapeCRLF, lineNumber, fileName);
@@ -98,13 +145,23 @@ namespace TownOfHost
             SendToFile(text, LogLevel.Message, tag, escapeCRLF, lineNumber, fileName);
         public static void Exception(Exception ex, string tag, [CallerLineNumber] int lineNumber = 0, [CallerFilePath] string fileName = "") =>
             SendToFile(ex.ToString(), LogLevel.Error, tag, false, lineNumber, fileName);
+        static float OldDate = -1;
+        public static void CheckElapsed(string tag)
+        {
+            var Nowdate = DateTime.Now;
+            var NowTime = Nowdate.Millisecond + Nowdate.Second * 1000 + Nowdate.Minute * 100000 + Nowdate.Hour * 10000000;
+            var elapsed = OldDate < 0 ? "null" : $"{NowTime - OldDate}";
+
+            SendToFile($"{DateTime.Now:HH.mm.ss.fff} ({elapsed})", LogLevel.Info, tag);
+            OldDate = Nowdate.Millisecond + Nowdate.Second * 1000 + Nowdate.Minute * 100000 + Nowdate.Hour * 10000000;
+        }
         public static void CurrentMethod([CallerLineNumber] int lineNumber = 0, [CallerFilePath] string fileName = "")
         {
             StackFrame stack = new(1);
             Logger.Msg($"\"{stack.GetMethod().ReflectedType.Name}.{stack.GetMethod().Name}\" Called in \"{Path.GetFileName(fileName)}({lineNumber})\"", "Method");
         }
 
-        public static LogHandler Handler(string tag)
-            => new(tag);
+        public static LogHandler Handler(string tag, bool escapeCRLF = true)
+            => new(tag, escapeCRLF);
     }
 }

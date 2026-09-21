@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-
 using UnityEngine;
 
 using TownOfHost.Attributes;
@@ -27,7 +26,6 @@ namespace TownOfHost
             }
         }
         static Dictionary<byte, DoubleTriggerData> DoubleTriggerList = new(15);
-
         static float DoubleTriggerTime = 0.3f;
 
         [GameModuleInitializer]
@@ -49,7 +47,11 @@ namespace TownOfHost
         public static bool OnCheckMurderAsKiller(MurderInfo info)
         {
             var (killer, target) = info.AttemptTuple;
+
             if (!DoubleTriggerList.TryGetValue(killer.PlayerId, out var triggerData)) return false;
+            if (killer.GetRoleClass() is not IDoubleTrigger role) return false;
+            if (!role.CheckAction) return false;
+
             if (triggerData.Target == null)
             {
                 //シングルアクション候補
@@ -72,7 +74,10 @@ namespace TownOfHost
         }
         public static void OnFixedUpdate(PlayerControl player)
         {
-            if (!DoubleTriggerList.TryGetValue(player.PlayerId, out var triggerData)) return;
+            if (!GameStates.IsInGame) return;
+            if (player.GetRoleClass() is not IDoubleTrigger role) return;
+
+            if (!DoubleTriggerList.TryGetValue(player.PlayerId, out var triggerData)) throw new Exception($"{player.name} is Not Registered DoubleTrigger");
             if (!GameStates.IsInTask)
             {
                 triggerData.Target = null;

@@ -33,6 +33,7 @@ namespace TownOfHost
         public BoolOptionBackupValue(BoolOptionNames name, bool value) : base(name, value) { }
         public override void Restore(IGameOptions option)
         {
+            if(OptionName is BoolOptionNames.Roles or BoolOptionNames.GhostsDoTasks) return;
             option.SetBool(OptionName, Value);
         }
     }

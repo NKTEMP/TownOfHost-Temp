@@ -19,6 +19,30 @@ public static class StringHelper
         return $"<mark=#{markingColorCode}>{self}</mark>";
     }
     /// <summary>
+    /// カラーからカラーコードに変換します。
+    /// </summary>
+    /// <param name="color">カラー</param>
+    /// <returns></returns>
+    public static string ColorCode(this Color32 color)
+    {
+        return "#" + ColorUtility.ToHtmlStringRGBA(color);
+    }
+    /// <summary>
+    /// カラーコードからカラーに変換します
+    /// </summary>
+    /// <param name="color"></param>
+    /// <returns></returns>
+    public static Color CodeColor(string color)
+    {
+        if (!color.StartsWith("#")) color = $"#{color}";
+
+        if (ColorUtility.TryParseHtmlString(color, out Color c))
+            return c;
+
+        Logger.Info($"{color}をcolorに変換できませんでした。", "StringHelper");
+        return Color.white;
+    }
+    /// <summary>
     /// SJISでのバイト数を計算する
     /// </summary>
     public static int GetByteCount(this string self) => shiftJIS.GetByteCount(self);

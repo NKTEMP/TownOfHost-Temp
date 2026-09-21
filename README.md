@@ -1,120 +1,133 @@
-<p align="center">
-  <img src="./Town_Of_Host-Logo.png" alt="Town Of Host-Temp">
-</p>
-
 # Town Of Host-Temp
+<img width="auto" height="auto" alt="TownOfHost-Temp" src="https://github.com/user-attachments/assets/edd99697-9213-45a0-8155-ce074399a137" />
 
-Town Of Host-Temp は、Among Us 向けの非公式MODです。
+## この Mod について
 
-Town Of Host をフォーク元とし、会議処理など一部の実装について TownOfHost-K を参考にしています。
+この Mod は非公式のものであり、この Mod の開発に関して Among Us の開発元である"Innersloth"は一切関与していません。<br>
+この Mod の問題などに関して公式に問い合わせないでください。<br>
 
-> [!WARNING]
-> このMODは非公式のファンメイドMODです。
-> Among Us の開発元である Innersloth は、本MODの開発・運営には一切関与していません。
->
-> 本MODに関する問題について、Innersloth等の公式サポートへ問い合わせないでください。
+この Mod はTOH,TOHKに役職や機能など追加したModです
+TOH-Tempで起きたバグは本家や他MODには報告しないでまずはTOH-Tempに報告してください。<br>
 
----
+また、TOH-Tempに関する質問、バグ報告は基本、[DiscordServer](https://discord.gg/YpPJB7RdvD)でのみ受け付けております。<br>
 
-## 📌 基本情報
+[本家TOHはこちら](https://github.com/tukasa0001/TownOfHost)<br>
+[TOHKはこちら](https://github.com/KYMario/TownOfHost-K)<br>
 
-| 項目 | 内容 |
-| --- | --- |
-| MOD名 | Town Of Host-Temp |
-| Among Us バージョン | **18.0.0** |
-| フォーク元 | Town Of Host |
-| 参考プロジェクト | TownOfHost-K |
-| 開発者 | てんぷら |
-| イラスト | CheEZ! |
+## リリース
+AmongUsバージョン : **18.0.0**~<br>
 
-### 🔗 Links
+**最新版は[こちら](https://github.com/NKTEMP/TownOfHost-Temp/releases/latest)**<br>
+過去バージョンは[こちら](https://github.com/NKTEMP/TownOfHost-Temp/releases)<br>
 
-- [GitHub](https://github.com/NKTEMP/TownOfHost-Temp)
-- [Discord](https://discord.gg/2NSjvjkygQ)
+## 公開ルームについて
+> [!Note]
+> 現在のバージョンではAmongUs公式よりバニラサーバーで公開ルームを開くことができません。
 
----
+> [**Note**]
+> - 【理由】
+> - 以前からHostMod(Mode含む)部屋での仕様, 不具合がAmongUs公式に問い合わせが多数寄せられた事が主な原因と捉えています。
+> - また、ユーザーが**意図しないMod体験**が行われないよう注意喚起をしています。
+<br>
+-これは永続的な変更では有りません。<br>
+-非公開ルームへの影響は有りません。<br>
+-カスタムサーバーの影響は有りません。<br>
+●公開ルームが開けない等のお問い合わせはご遠慮ください
 
-# ✨ 特徴
+## 勧誘部屋を開く又は勧誘する,勧誘からの参加は厳禁です。
+**禁止行為**
+> [**Note**]
+> - ・非公開でMod部屋を建て,その部屋へのコードを公開ルームで伝え公開ルーム利用者がその部屋に参加する可能性がある行為。
+> - (例)
+> - 部屋主がサブ垢等で公開ルームを建てそこから非公開ルームへ勧誘する行為
+> - 参加者がサブ垢等で公開ルームを建てそこから非公開ルームへ勧誘する行為
+> - 部屋主,参加者が公開ルームへ参加し、そこから非公開ルームへ勧誘する行為
 
-Town Of Host-Temp は、ホスト側のクライアントにMODを導入することで動作するMODです。
+=>　公開ルーム利用者が意図しないMod体験を行われないようにするためです。<br>
+**禁止されない行為**
+> [**Note**]
+> - Discordや村のオープンチャットで非公開ルームのコードを伝え身内間でMod部屋を開催
+> - Youtubeなどの配信サイトで上記の禁止行為に該当しない参加型/身内村配信<br>
 
-基本的に、**部屋を建てるホストがMODを導入していれば、他のプレイヤーはMODを導入していなくても参加できます。**
+=>　要するに**Modだと認知していない野良のプレイヤーが交わる可能性がある**とアウトです。<br>
+<br>
+勧誘部屋に遭遇した場合は勧誘先に無闇に参加せずまずは開発者にお知らせください。厳正に対処いたします。<br>
 
-また、使用する端末の種類に関係なく参加できます。
+## TOH-Tempでの処罰、利用不可について
+TOHK v.5.1.61.1以降より[SuperNewRoles](https://github.com/SuperNewRoles/SuperNewRoles/)様等一部のModに搭載されていた<br>
+ブラックリストをTown Of Host-Tempでも適応するようにいたしました。<br>
 
-ただし、ホストが途中で退出するなどしてホストが変更された場合、
-追加役職などのMOD機能が正常に動作しなくなる可能性があります。
+> [!note]
+> - 【処罰に値する利用方法】
+> - ・上記に記載している勧誘部屋,勧誘行為に値する行動を行った場合
+> - ・開発者が不適切かつ処罰するに値する迷惑行為を行った場合
 
----
+上記に当てはまるプレイヤーはMod開発者の判断によりブラックリストに追加されます。<br>
+**ブラックリストを適応しているMod部屋に永久もしくは一時的に参加/主催することが出来ません。**<br>
 
-# 📦 導入について
+**★また、ブラックリスト追加により,ルーム作成にフレンドコードが必須となりました。ご了承ください。★**<br>
 
-Town Of Host-Temp は Among Us のゲームクライアントに導入して使用します。
+-----------------------------------------------
 
-導入時は、対応している Among Us のバージョンとMODのバージョンが一致していることを確認してください。
+**【絶対に読むんだ】**<br>
+Town Of Host-Tempの利用をもって"処罰に値する利用方法"内で記載されている<br>
+行動をしないと誓い,<br>
+処罰に値する利用を行った場合はいかなる場合でも処罰を受け入れるものとします。<br>
 
-### 対応バージョン
+-----------------------------------------------
 
-**Among Us : 18.0.0**
+要するに<br>
+上の【処罰に値する利用方法】の行動をしたら<br>
+Modが使えなくなるよ!<br>
+このMod使うならMod使えなくなっても受け入れるし、<br>
+その処罰に値する利用方法をしないよ！！<br>
+ってことです。
 
-> バージョンが異なる場合、正常に動作しない可能性があります。
+**TownOfHost-Tempの開発者**<br>
+　てんぷら<br>
+ 
+　あけぼの<br>
+　　[Youtube](https://www.youtube.com/channel/UCw2bDCc7XF4te7qK0L-Holg)
 
----
+※本家TownOfHost,TownOfHost_K様の開発者はここでは省略させていただきます
 
-# 🎮 コマンド
+#### クレジット
+[Town Of Host](https://github.com/tukasa0001/TownOfHost)<br>
+　Fork元の本家です。<br>TownOfHost様にある機能はTownOfHost-Tempでも大体実装されています<br>
 
-## ホストのみ
+[Town Of Host_K](https://github.com/KYMario/TownOfHost-K)<br>
+　Fork元です。<br>TownOfHost_K様にある機能はTownOfHost-Tempでも大体実装されています<br>
 
-| コマンド | 機能 |
-| --- | --- |
-| `/winner` / `/win` | 勝者を表示 |
-| `/rename <名前>` / `/r <名前>` | 名前を変更 |
-| `/dis <crewmate/impostor>` | 試合をクルー/インポスターの切断として終了 |
-| `/messagewait <秒>` / `/mw <秒>` | メッセージの表示間隔を設定 |
-| `/help` / `/h` | コマンドの説明を表示 |
-| `/help roles <役職>` / `/help r <役職>` | 役職の説明を表示 |
-| `/help addons <属性>` / `/help a <属性>` | 属性の説明を表示 |
-| `/help modes <モード>` / `/help m <モード>` | モードの説明を表示 |
-| `/hidename <文字列>` / `/hn <文字列>` | コード隠しの名前を変更 |
-| `/say <文字列>` | ホストとしてアナウンス |
+[Town Of Host_Y](https://github.com/Yumenopai/TownOfHost_Y)<br>
+　会議時の役職表示、会議拡張、ワーカホリック,属性名、一部役職を参考/移植させて頂きました！<br>
 
-## MODクライアントのみ
+[Town Of Host For E](https://github.com/AsumuAkaguma/TownOfHost_ForE) <br>
+　機能やコメント取得一部処理の参考にさせて頂きました！<br>
 
-| コマンド | 機能 |
-| --- | --- |
-| `/dump` | ログをダンプ |
-| `/version` / `/v` | MODクライアントのバージョンを表示 |
+[Revolutionary Host Roles](https://github.com/sansaaaaai/Revolutionary-host-roles)<br>
+　カスタムボタンの参考、リローダー、スタッフ、インセンダーを移行させていただきました！<br>
 
-## 全クライアント
+[Town Of Host-H](https://github.com/Hyz-sui/TownOfHost-H) <br>
+　10.24アプデの対応で参考にさせていただきました！<br>
 
-| コマンド | 機能 |
-| --- | --- |
-| `/lastresult` / `/l` | 試合結果を表示 |
-| `/killlog` / `/kl` | キルログを表示 |
-| `/now` / `/n` | 現在の設定を表示 |
-| `/now roles` / `/n r` | 現在の役職設定を表示 |
-| `/help now` / `/help n` | 有効な設定の説明を表示 |
-| `/template <タグ>` / `/t <タグ>` | タグに対応した定型文を表示 |
-| `/myrole` / `/m` | 自分の役割の説明を表示 |
+[SuperNewRoles](https://github.com/ykundesu/SuperNewRoles) <br>
+　天秤、ミーティングシェリフ、トイレファン、イビルギャンブラー、ペンギン、マッドスーサイドを移植/参考<br>
+　ブラックリスト等や様々な部分を参考にさせて頂きました！<br>
 
----
+[TheOtherRoles](https://github.com/TheOtherRolesAU/TheOtherRoles)<br>
+　カモフラージャー、ゲッサー等を参考/移植させていただきました<br>
 
-# ⌨️ ホットキー
+[TheOtherRole GM](https://github.com/yukinogatari/TheOtherRoles-GM)<br>
+　一部役職を参考/移植させていただきました<br>
 
-チャット入力中に使用できます。
+[TOR_GM_Haoming_Edition](https://github.com/haoming37/GMH)<br>
+　イビルトラッカー、シュレディンガーの猫等を参考/移植させていただきました<br>
 
-| キー | 機能 |
-| --- | --- |
-| `Ctrl + X` | チャット履歴関連の操作 |
-| `↑` / `↓` | チャット履歴を移動 |
+[Nebula On The Ship](https://github.com/Dolly1016/Nebula/)<br>
+　ドクター、スナイパーを参考/移植させていただきました<br>
 
----
+[au.libhalt.net](https://au.libhalt.net/)<br>
+　マッドジェスターの参考/移植させていただきました<br>
 
-# 📝 テンプレート
-
-定型文を登録して、ゲーム中に簡単に呼び出すことができます。
-
-使用方法：
-
-```text
-/template <タグ>
+[ExtremeRoles](https://github.com/yukieiji/ExtremeRoles)<br>
+　アサシンとマーリンの参考/移植をさせていただきました。<br>

@@ -1,9 +1,9 @@
 using AmongUs.GameOptions;
 using HarmonyLib;
 using UnityEngine;
-
+using TownOfHost.Modules;
 using TownOfHost.Roles.Core;
-using TownOfHost.Roles.Neutral;
+
 namespace TownOfHost
 {
     [HarmonyPatch(typeof(Console), nameof(Console.CanUse))]
@@ -11,9 +11,23 @@ namespace TownOfHost
     {
         public static bool Prefix(ref float __result, Console __instance, [HarmonyArgument(0)] NetworkedPlayerInfo pc, [HarmonyArgument(1)] out bool canUse, [HarmonyArgument(2)] out bool couldUse)
         {
+            if (GameStates.IsFreePlay)
+            {
+                canUse = couldUse = false;
+                return true;
+            }
             canUse = couldUse = false;
+            var role = PlayerControl.LocalPlayer.GetCustomRole();
+            var hastask = UtilsTask.HasTasks(PlayerControl.LocalPlayer.Data, false);
+            var isMotogaCrew = PlayerControl.LocalPlayer.IsAlive() && !hastask && PlayerControl.LocalPlayer.Data.RoleType.IsCrewmate() && !PlayerControl.LocalPlayer.CanUseKillButton() && !role.IsImpostor();
+            var Rolecanuse = isMotogaCrew || (hastask && (PlayerControl.LocalPlayer.GetRoleClass()?.CanTask() ?? true));
+            var isAmn = PlayerControl.LocalPlayer.Is(CustomRoles.Amnesia) && !PlayerControl.LocalPlayer.Is(CustomRoleTypes.Impostor);
+
             //こいつをfalseでreturnしても、タスク(サボ含む)以外の使用可能な物は使えるまま(ボタンなど)
-            return __instance.AllowImpostor || Utils.HasTasks(PlayerControl.LocalPlayer.Data, false);
+            if (!GameStates.InGame)
+                return __instance.AllowImpostor || hastask;
+            else
+                return __instance.AllowImpostor || Rolecanuse || isAmn;
         }
     }
     [HarmonyPatch(typeof(EmergencyMinigame), nameof(EmergencyMinigame.Update))]
@@ -21,7 +35,9 @@ namespace TownOfHost
     {
         public static void Postfix(EmergencyMinigame __instance)
         {
-            if (Options.CurrentGameMode == CustomGameMode.HideAndSeek) __instance.Close();
+            if (Options.CurrentGameMode is CustomGameMode.HideAndSeek or CustomGameMode.TaskBattle
+            or CustomGameMode.StandardHAS or CustomGameMode.SuddenDeath or CustomGameMode.MurderMystery)
+                __instance.Close();
         }
     }
     [HarmonyPatch(typeof(Vent), nameof(Vent.CanUse))]
@@ -38,12 +54,19 @@ namespace TownOfHost
 
             // カスタムロールを元にベントを使えるか判定
             // エンジニアベースの役職は常にtrue
-            couldUse = playerControl.CanUseImpostorVentButton() || (pc.Role.Role == RoleTypes.Engineer && pc.Role.CanUse(__instance.Cast<IUsable>()));
+            couldUse = playerControl.CanUseImpostorVentButton() || pc.Role.Role == RoleTypes.Engineer;
+            if (playerControl.GetRoleClass()?.CanClickUseVentButton == false) couldUse = false;
 
             canUse = couldUse;
             // カスタムロールが使えなかったら使用不可
             if (!canUse)
             {
+                return false;
+            }
+            //エンジニア置き換えでもコミュだったらだめだよね。
+            if (pc.Role.Role == RoleTypes.Engineer && Utils.IsActive(SystemTypes.Comms))
+            {
+                canUse = couldUse = false;
                 return false;
             }
 

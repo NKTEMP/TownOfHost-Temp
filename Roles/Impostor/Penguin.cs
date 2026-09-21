@@ -4,7 +4,7 @@ using Hazel;
 
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Core.Interfaces;
-using static TownOfHost.Translator;
+using System.Collections.Generic;
 
 namespace TownOfHost.Roles.Impostor;
 
@@ -17,18 +17,23 @@ class Penguin : RoleBase, IImpostor
             CustomRoles.Penguin,
             () => RoleTypes.Shapeshifter,
             CustomRoleTypes.Impostor,
-            3400,
+            4100,
             SetupOptionItem,
-            "pe"
+            "pe",
+            OptionSort: (4, 0),
+            from: From.SuperNewRoles
         );
     public Penguin(PlayerControl player)
         : base(RoleInfo, player)
     {
         AbductTimerLimit = OptionAbductTimerLimit.GetFloat();
         MeetingKill = OptionMeetingKill.GetBool();
+
+        CustomRoleManager.OnEnterVentOthers.Add(OnEnterVentOthers);
     }
     public override void OnDestroy()
     {
+        Penguins = new();
         AbductVictim = null;
     }
 
@@ -46,12 +51,13 @@ class Penguin : RoleBase, IImpostor
     private float AbductTimerLimit;
     private bool stopCount;
     private bool MeetingKill;
+    static HashSet<Penguin> Penguins = new();
 
     //拉致中にキルしそうになった相手の能力を使わせないための処置
     public bool IsKiller => AbductVictim == null;
     public static void SetupOptionItem()
     {
-        OptionAbductTimerLimit = FloatOptionItem.Create(RoleInfo, 11, OptionName.PenguinAbductTimerLimit, new(5f, 20f, 1f), 10f, false)
+        OptionAbductTimerLimit = FloatOptionItem.Create(RoleInfo, 11, OptionName.PenguinAbductTimerLimit, new(5f, 100f, 1f), 10f, false)
             .SetValueFormat(OptionFormat.Seconds);
         OptionMeetingKill = BooleanOptionItem.Create(RoleInfo, 12, OptionName.PenguinMeetingKill, false, false);
     }
@@ -59,6 +65,9 @@ class Penguin : RoleBase, IImpostor
     {
         AbductTimer = 255f;
         stopCount = false;
+        oldpos = Vector2.zero;
+        movecount = 0;
+        Penguins.Add(this);
     }
     public override void ApplyGameOptions(IGameOptions opt) => AURoleOptions.ShapeshifterCooldown = AbductVictim != null ? AbductTimer : 255f;
     private void SendRPC()
@@ -78,31 +87,39 @@ class Penguin : RoleBase, IImpostor
         }
         else
         {
-            AbductVictim = Utils.GetPlayerById(victim);
+            AbductVictim = PlayerCatch.GetPlayerById(victim);
             AbductTimer = AbductTimerLimit;
         }
     }
     void AddVictim(PlayerControl target)
     {
         PlayerState.GetByPlayerId(target.PlayerId).CanUseMovingPlatform = MyState.CanUseMovingPlatform = false;
+        CheckMurderPatch.TimeSinceLastKill[Player.PlayerId] = 0f;
         AbductVictim = target;
         AbductTimer = AbductTimerLimit;
-        Player.SyncSettings();
-        Player.RpcResetAbilityCooldown();
+        Player.RpcResetAbilityCooldown(Sync: true);
         SendRPC();
+        movecount = 0;
+        oldpos = Player.GetTruePosition();
+        target.GetPlayerState().CanMove = false;
+        target.MarkDirtySettings();
     }
     void RemoveVictim()
     {
         if (AbductVictim != null)
         {
             PlayerState.GetByPlayerId(AbductVictim.PlayerId).CanUseMovingPlatform = true;
+            AbductVictim.GetPlayerState().CanMove = true;
+            AbductVictim.MarkDirtySettings();
             AbductVictim = null;
         }
         MyState.CanUseMovingPlatform = true;
         AbductTimer = 255f;
-        Player.SyncSettings();
-        Player.RpcResetAbilityCooldown();
+        Player.RpcResetAbilityCooldown(Sync: true);
         SendRPC();
+        movecount = 0;
+        if (100 < movecount)
+            Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[1]);
     }
     public void OnCheckMurderAsKiller(MurderInfo info)
     {
@@ -120,6 +137,11 @@ class Penguin : RoleBase, IImpostor
         }
         else
         {
+            if (info.CheckHasGuard())
+            {
+                info.IsGuard = false;
+                return;
+            }
             info.DoKill = false;
             AddVictim(target);
         }
@@ -140,6 +162,11 @@ class Penguin : RoleBase, IImpostor
     {
         return GetString("PenguinTimerText");
     }
+    public override bool OverrideAbilityButton(out string text)
+    {
+        text = "Penguin_Ability";
+        return true;
+    }
     public override bool CanUseAbilityButton()
     {
         return AbductVictim != null;
@@ -147,6 +174,7 @@ class Penguin : RoleBase, IImpostor
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         stopCount = true;
+        if (AddOns.Common.Amnesia.CheckAbilityreturn(Player)) return;
         // 時間切れ状態で会議を迎えたらはしご中でも構わずキルする
         if (AbductVictim != null && AbductTimer <= 0f)
         {
@@ -192,7 +220,7 @@ class Penguin : RoleBase, IImpostor
             {
                 // 先にIsDeadをtrueにする(はしごチェイス封じ)
                 AbductVictim.Data.IsDead = true;
-                AbductVictim.Data.MarkDirty();
+                GameData.Instance.DirtyAllData();
                 // ペンギン自身がはしご上にいる場合，はしごを降りてからキルする
                 if (!AbductVictim.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
                 {
@@ -221,6 +249,7 @@ class Penguin : RoleBase, IImpostor
                         sender.SendMessage();
                     }, 0.3f, "PenguinMurder");
                     RemoveVictim();
+                    Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
                 }
             }
             // はしごの上にいるプレイヤーにはSnapToRPCが効かずホストだけ挙動が変わるため，一律でテレポートを行わない
@@ -230,11 +259,11 @@ class Penguin : RoleBase, IImpostor
                 state++;
                 if (state % div == 0)
                 {
-
                     var position = Player.transform.position;
+                    movecount += Vector2.Distance(position, oldpos);
+                    oldpos = position;
                     if (Player.PlayerId != 0)
                     {
-                        //サーバー負荷を減らすためSendOption.Noneを使用
                         AbductVictim.RpcSnapToForced(position, SendOption.None);
                     }
                     else
@@ -243,11 +272,10 @@ class Penguin : RoleBase, IImpostor
                         {
                             if (AbductVictim != null)
                             {
-                                //サーバー負荷を減らすためSendOption.Noneを使用
                                 AbductVictim.RpcSnapToForced(position, SendOption.None);
                             }
                         }
-                        , 0.25f, "");
+                        , 0.25f, "", true);
                     }
                 }
             }
@@ -255,7 +283,48 @@ class Penguin : RoleBase, IImpostor
         else if (AbductTimer <= 100f)
         {
             AbductTimer = 255f;
-            Player.RpcResetAbilityCooldown();
+            Player.RpcResetAbilityCooldown(Sync: true);
         }
+    }
+    public override void OnMurderPlayerAsTarget(MurderInfo info)
+    {
+        if (AbductVictim != null)
+        {
+            if (info.AttemptKiller.PlayerId == AbductVictim.PlayerId)
+                Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[2]);
+        }
+    }
+    public static bool OnEnterVentOthers(PlayerPhysics physics, int ventId)
+    {
+        var user = physics.myPlayer;
+        foreach (var Penguin in Penguins)
+        {
+            if (Penguin.AbductVictim != null)
+            {
+                if (Penguin.AbductVictim.PlayerId == user.PlayerId)
+                {
+                    _ = new LateTask(() =>
+                    {
+                        if (user.inVent && user.IsAlive())
+                            physics.RpcBootFromVent(ventId);
+                    }, 0.8f, "PenginTargetnonvent", true);
+                    return true;
+                }
+            }
+        }
+        return true;
+    }
+    Vector2 oldpos;
+    float movecount;
+    public static Dictionary<int, Achievement> achievements = new();
+    [Attributes.PluginModuleInitializer]
+    public static void Load()
+    {
+        var n1 = new Achievement(RoleInfo, 0, 1, 0, 0);
+        var l1 = new Achievement(RoleInfo, 1, 1, 0, 1);
+        var l2 = new Achievement(RoleInfo, 2, 1, 0, 1);
+        achievements.Add(0, n1);
+        achievements.Add(1, l1);
+        achievements.Add(2, l2);
     }
 }

@@ -5,23 +5,37 @@ using Hazel;
 using AmongUs.GameOptions;
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Core.Interfaces;
-using static TownOfHost.Translator;
-using System;
+using TownOfHost.Roles.Neutral;
 
 namespace TownOfHost.Roles.Impostor
 {
-    public sealed class Witch : RoleBase, IImpostor, IDoubleTrigger
+    public sealed class Witch : RoleBase, IImpostor, IUsePhantomButton, IDoubleTrigger
     {
         public static readonly SimpleRoleInfo RoleInfo =
             SimpleRoleInfo.Create(
                 typeof(Witch),
                 player => new Witch(player),
                 CustomRoles.Witch,
-                () => RoleTypes.Impostor,
+                () => ((SwitchTrigger)OptionModeSwitchAction.GetValue() is SwitchTrigger.OnPhantom or SwitchTrigger.WitchOcButton) ? RoleTypes.Phantom : RoleTypes.Impostor,
                 CustomRoleTypes.Impostor,
-                1500,
+                5100,
                 SetupOptionItem,
-                "wi"
+                "wi",
+                OptionSort: (3, 9),
+                from: From.TheOtherRoles,
+                Desc: () =>
+                {
+                    var trigger = (SwitchTrigger)OptionModeSwitchAction.GetValue();
+                    switch (trigger)
+                    {
+                        case SwitchTrigger.WitchOcButton:
+                            return GetString("WitchPhantomButtonDesc");
+                        case SwitchTrigger.TriggerDouble:
+                            return GetString("WhichdoubleclickDesc");
+                        default:
+                            return string.Format(GetString("WitchDesc"), GetString($"{(trigger is SwitchTrigger.TriggerKill ? "Which_Kill" : (trigger is SwitchTrigger.OnPhantom ? "Which_Phantom" : "Which_Vent"))}"));
+                    }
+                }
             );
         public Witch(PlayerControl player)
         : base(
@@ -30,6 +44,9 @@ namespace TownOfHost.Roles.Impostor
         )
         {
             CustomRoleManager.MarkOthers.Add(GetMarkOthers);
+            cool = OptionShcool.GetFloat();
+            occool = cool;
+            if (NowSwitchTrigger == SwitchTrigger.TriggerDouble) Player.AddDoubleTrigger();
         }
         public override void OnDestroy()
         {
@@ -38,6 +55,7 @@ namespace TownOfHost.Roles.Impostor
             CustomRoleManager.MarkOthers.Remove(GetMarkOthers);
         }
         public static OptionItem OptionModeSwitchAction;
+        public static OptionItem OptionShcool;
         enum OptionName
         {
             WitchModeSwitchAction,
@@ -47,16 +65,26 @@ namespace TownOfHost.Roles.Impostor
             TriggerKill,
             TriggerVent,
             TriggerDouble,
+            OnPhantom,
+            WitchOcButton,
         };
 
         public bool IsSpellMode;
+        public float cool;
+        private float occool;
         public List<byte> SpelledPlayer = new();
-        public SwitchTrigger NowSwitchTrigger;
+        public static SwitchTrigger NowSwitchTrigger;
 
         public static List<Witch> Witches = new();
         public static void SetupOptionItem()
         {
             OptionModeSwitchAction = StringOptionItem.Create(RoleInfo, 10, OptionName.WitchModeSwitchAction, EnumHelper.GetAllNames<SwitchTrigger>(), 0, false);
+            OptionShcool = FloatOptionItem.Create(RoleInfo, 11, GeneralOption.Cooldown, new(0f, 180f, 0.5f), 30f, false)
+            .SetValueFormat(OptionFormat.Seconds);
+        }
+        public override void ApplyGameOptions(IGameOptions opt)
+        {
+            AURoleOptions.PhantomCooldown = NowSwitchTrigger is SwitchTrigger.WitchOcButton ? occool : 0;
         }
         public override void Add()
         {
@@ -64,7 +92,7 @@ namespace TownOfHost.Roles.Impostor
             SpelledPlayer.Clear();
             NowSwitchTrigger = (SwitchTrigger)OptionModeSwitchAction.GetValue();
             Witches.Add(this);
-            if (NowSwitchTrigger == SwitchTrigger.TriggerDouble) Player.AddDoubleTrigger();
+            Player.AddDoubleTrigger();
         }
         private void SendRPC(bool doSpell, byte target = 255)
         {
@@ -111,12 +139,15 @@ namespace TownOfHost.Roles.Impostor
                 case SwitchTrigger.TriggerVent:
                     needSwitch = !kill;
                     break;
+                case SwitchTrigger.OnPhantom:
+                    needSwitch = !kill;
+                    break;
             }
             if (needSwitch)
             {
                 IsSpellMode = !IsSpellMode;
                 SendRPC(false);
-                Utils.NotifyRoles(SpecifySeer: Player);
+                UtilsNotifyRoles.NotifyRoles(SpecifySeer: Player);
             }
         }
         public static bool IsSpelled(byte target = 255)
@@ -125,15 +156,41 @@ namespace TownOfHost.Roles.Impostor
             {
                 if (target == 255 && witch.SpelledPlayer.Count != 0) return true;
 
-                if (witch.SpelledPlayer.Contains(target))
+                if (witch.SpelledPlayer.Contains(target) && witch.Player.IsAlive())
                 {
                     return true;
                 }
             }
             return false;
         }
+        public override string MeetingAddMessage()
+        {
+            if (AddOns.Common.Amnesia.CheckAbilityreturn(Player)) return "";
+            if (SpelledPlayer.Count == 0) return "";
+
+            //ウィッチ本人が会議前に死んでたら削除
+            if (!Player.IsAlive())
+            {
+                SpelledPlayer.Clear();
+                return "";
+            }
+
+            var Message = GetString("Skill.Witchf").Color(Palette.ImpostorRed) + "\n";
+            var targetids = new List<byte>();
+
+            foreach (var pc in SpelledPlayer)
+            {
+                if (pc == byte.MaxValue) continue;
+                if (targetids.Contains(pc)) continue;
+                Message += (targetids.Count == 0 ? "" : ",") + $"{UtilsName.GetPlayerColor(pc)}";
+                targetids.Add(pc);
+            }
+            return Message + GetString("Skill.WitchO");
+        }
         public void SetSpelled(PlayerControl target)
         {
+            if (target.Is(CustomRoles.King)) return;
+
             if (!IsSpelled(target.PlayerId))
             {
                 SpelledPlayer.Add(target.PlayerId);
@@ -142,11 +199,55 @@ namespace TownOfHost.Roles.Impostor
                 Player.SetKillCooldown();
             }
         }
+        public bool UseOneclickButton => NowSwitchTrigger is SwitchTrigger.OnPhantom or SwitchTrigger.WitchOcButton;
+        public void OnClick(ref bool AdjustKillCooldown, ref bool? ResetCooldown)
+        {
+            if (NowSwitchTrigger is SwitchTrigger.WitchOcButton)
+            {
+                ResetCooldown = true;
+                var target = Player.GetKillTarget(true);
+                if (target != null)
+                {
+                    var targetroleclass = target?.GetRoleClass();
+                    if (targetroleclass is SchrodingerCat schrodingerCat)
+                    {
+                        if (schrodingerCat.Team == ISchrodingerCatOwner.TeamType.None)
+                        {
+                            schrodingerCat.ChangeTeamOnKill(Player);
+                            Player.SetKillCooldown(target: schrodingerCat.Player);
+                            return;
+                        }
+                    }
+                    if (targetroleclass is BakeCat bakeneko)
+                    {
+                        if (bakeneko.Team == ISchrodingerCatOwner.TeamType.None)
+                        {
+                            bakeneko.ChangeTeamOnKill(Player);
+                            Player.SetKillCooldown(target: bakeneko.Player);
+                            return;
+                        }
+                    }
+
+                    _ = new LateTask(() => SetSpelled(target), 0.35f, "WhichSetKIll", true);
+                    UtilsNotifyRoles.NotifyRoles(SpecifySeer: Player);
+                }
+                ResetCooldown = target is not null;
+                AdjustKillCooldown = target == null;
+            }
+            else
+                if (NowSwitchTrigger is SwitchTrigger.OnPhantom)
+                {
+                    ResetCooldown = false;
+                    AdjustKillCooldown = true;
+                    SwitchSpellMode(false);
+                }
+        }
         public void OnCheckMurderAsKiller(MurderInfo info)
         {
             var (killer, target) = info.AttemptTuple;
             if (IsSpellMode)
-            {//呪いならキルしない
+            {
+                //呪いならキルしない
                 info.DoKill = false;
                 SetSpelled(target);
             }
@@ -154,10 +255,11 @@ namespace TownOfHost.Roles.Impostor
         }
         public override void AfterMeetingTasks()
         {
-            if (Player.IsAlive() || MyState.DeathReason != CustomDeathReason.Vote)
+            if (AddOns.Common.Amnesia.CheckAbilityreturn(Player)) return;
+            if (Player.IsAlive() && MyState.DeathReason != CustomDeathReason.Vote)
             {//吊られなかった時呪いキル発動
                 var spelledIdList = new List<byte>();
-                foreach (var pc in Main.AllAlivePlayerControls)
+                foreach (var pc in PlayerCatch.AllAlivePlayerControls)
                 {
                     if (SpelledPlayer.Contains(pc.PlayerId) && !Main.AfterMeetingDeathPlayers.ContainsKey(pc.PlayerId))
                     {
@@ -166,11 +268,23 @@ namespace TownOfHost.Roles.Impostor
                     }
                 }
                 MeetingHudPatch.TryAddAfterMeetingDeathPlayers(CustomDeathReason.Spell, spelledIdList.ToArray());
+                if (0 < spelledIdList.Count)
+                {
+                    Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
+                    Achievements.RpcCompleteAchievement(Player.PlayerId, 1, achievements[2], spelledIdList.Count);
+                }
+                if (2 <= spelledIdList.Count)
+                    Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[1]);
             }
             //実行してもしなくても呪いはすべて解除
             SpelledPlayer.Clear();
-            if (AmongUsClient.Instance.AmHost)
-                SendRPC(true);
+            if (!AmongUsClient.Instance.AmHost) return;
+            SendRPC(true);
+            if (occool is 0)
+            {
+                occool = cool;
+                Player.MarkDirtySettings();
+            }
         }
         public static string GetMarkOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
         {
@@ -184,7 +298,8 @@ namespace TownOfHost.Roles.Impostor
         public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
         {
             seen ??= seer;
-            if (!Is(seen) || isForMeeting) return "";
+            if (!Is(seen) || isForMeeting || !Player.IsAlive()) return "";
+            if (NowSwitchTrigger is SwitchTrigger.WitchOcButton) return GetString("UseWitchOcButton");
 
             var sb = new StringBuilder();
             sb.Append(isForHud ? GetString("WitchCurrentMode") : "Mode:");
@@ -208,6 +323,15 @@ namespace TownOfHost.Roles.Impostor
             text = default;
             return false;
         }
+        public override string GetAbilityButtonText()
+        {
+            return GetString("WitchSpellButtonText");
+        }
+        public override bool OverrideAbilityButton(out string text)
+        {
+            text = "Witch_Ability";
+            return true;
+        }
         public override bool OnEnterVent(PlayerPhysics physics, int ventId)
         {
             if (NowSwitchTrigger is SwitchTrigger.TriggerVent)
@@ -216,16 +340,27 @@ namespace TownOfHost.Roles.Impostor
             }
             return true;
         }
-
+        public bool CheckAction => NowSwitchTrigger is SwitchTrigger.TriggerDouble;
         public bool SingleAction(PlayerControl killer, PlayerControl target)
         {
+            if (NowSwitchTrigger is not SwitchTrigger.TriggerDouble) return true;
             SetSpelled(target);
             return false;
         }
-
         public bool DoubleAction(PlayerControl killer, PlayerControl target)
         {
             return true;
+        }
+        public static Dictionary<int, Achievement> achievements = new();
+        [Attributes.PluginModuleInitializer]
+        public static void Load()
+        {
+            var n1 = new Achievement(RoleInfo, 0, 1, 0, 0);
+            var l1 = new Achievement(RoleInfo, 1, 1, 0, 1);
+            var sp1 = new Achievement(RoleInfo, 2, 15, 0, 2);
+            achievements.Add(0, n1);
+            achievements.Add(1, l1);
+            achievements.Add(2, sp1);
         }
     }
 }

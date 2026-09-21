@@ -15,11 +15,13 @@ public sealed class SabotageMaster : RoleBase, ISystemTypeUpdateHook
             CustomRoles.SabotageMaster,
             () => RoleTypes.Crewmate,
             CustomRoleTypes.Crewmate,
-            20300,
+            11800,
             SetupOptionItem,
             "sa",
             "#0000ff",
-            introSound: () => ShipStatus.Instance.SabotageSound
+            (7, 3),
+            introSound: () => ShipStatus.Instance.SabotageSound,
+            from: From.TownOfHost
         );
     public SabotageMaster(PlayerControl player)
     : base(
@@ -66,7 +68,7 @@ public sealed class SabotageMaster : RoleBase, ISystemTypeUpdateHook
     public static void SetupOptionItem()
     {
         OptionSkillLimit = IntegerOptionItem.Create(RoleInfo, 10, OptionName.SabotageMasterSkillLimit, new(0, 99, 1), 1, false)
-            .SetValueFormat(OptionFormat.Times);
+            .SetValueFormat(OptionFormat.Times).SetZeroNotation(OptionZeroNotation.Infinity);
         OptionFixesDoors = BooleanOptionItem.Create(RoleInfo, 11, OptionName.SabotageMasterFixesDoors, false, false);
         OptionFixesReactors = BooleanOptionItem.Create(RoleInfo, 12, OptionName.SabotageMasterFixesReactors, false, false);
         OptionFixesOxygens = BooleanOptionItem.Create(RoleInfo, 13, OptionName.SabotageMasterFixesOxygens, false, false);
@@ -184,6 +186,7 @@ public sealed class SabotageMaster : RoleBase, ISystemTypeUpdateHook
             ShipStatusUpdateSystemPatch.CheckAndOpenDoorsRange(shipStatus, amount, 76, 78);
             ShipStatusUpdateSystemPatch.CheckAndOpenDoorsRange(shipStatus, amount, 68, 70);
             ShipStatusUpdateSystemPatch.CheckAndOpenDoorsRange(shipStatus, amount, 83, 84);
+            ShipStatusUpdateSystemPatch.CheckAndOpenDoorsRange(shipStatus, amount, 79, 82);
         }
         else if (mapId == 5)
         {
@@ -211,4 +214,18 @@ public sealed class SabotageMaster : RoleBase, ISystemTypeUpdateHook
         return true;
     }
     private bool IsSkillAvailable() => SkillLimit <= 0 || UsedSkillCount < SkillLimit;
+    public override void CheckWinner(GameOverReason reason)
+    {
+        Achievements.RpcCompleteAchievement(Player.PlayerId, 1, achievements[0], UsedSkillCount);
+        Achievements.RpcCompleteAchievement(Player.PlayerId, 1, achievements[1], UsedSkillCount);
+    }
+    public static System.Collections.Generic.Dictionary<int, Achievement> achievements = new();
+    [Attributes.PluginModuleInitializer]
+    public static void Load()
+    {
+        var n1 = new Achievement(RoleInfo, 0, 5, 0, 0);
+        var l1 = new Achievement(RoleInfo, 1, 50, 0, 1);
+        achievements.Add(0, n1);
+        achievements.Add(1, l1);
+    }
 }

@@ -6,6 +6,7 @@ using AmongUs.GameOptions;
 using TownOfHost.Roles.Core;
 
 namespace TownOfHost.Roles.Crewmate;
+
 public class Snitch : RoleBase
 {
     public static readonly SimpleRoleInfo RoleInfo =
@@ -15,10 +16,12 @@ public class Snitch : RoleBase
             CustomRoles.Snitch,
             () => RoleTypes.Crewmate,
             CustomRoleTypes.Crewmate,
-            20500,
+            10900,
             SetupOptionItem,
             "sn",
-            "#b8fb4f"
+            "#b8fb4f",
+            (6, 0),
+            from: From.TheOtherRoles
         );
     public Snitch(PlayerControl player)
     : base(
@@ -72,7 +75,7 @@ public class Snitch : RoleBase
         OptionCanGetColoredArrow = BooleanOptionItem.Create(RoleInfo, 11, OptionName.SnitchCanGetArrowColor, false, false);
         OptionCanFindNeutralKiller = BooleanOptionItem.Create(RoleInfo, 12, OptionName.SnitchCanFindNeutralKiller, false, false);
         OptionRemainingTasks = IntegerOptionItem.Create(RoleInfo, 13, OptionName.SnitchRemainingTaskFound, new(0, 10, 1), 1, false);
-        Options.OverrideTasksData.Create(RoleInfo, 20);
+        OverrideTasksData.Create(RoleInfo, 20);
     }
     /// <summary>
     /// スニッチのターゲットであるかの判定
@@ -83,7 +86,9 @@ public class Snitch : RoleBase
     private static bool IsSnitchTarget(PlayerControl target)
     {
         return target.Is(CustomRoleTypes.Impostor)
-            || (CanFindNeutralKiller && target.IsNeutralKiller());
+            || (CanFindNeutralKiller && target.IsNeutralKiller())
+            || (CanFindNeutralKiller && target.Is(CustomRoles.GrimReaper))
+            || target.Is(CustomRoles.WolfBoy);
     }
 
     /// <summary>
@@ -102,6 +107,7 @@ public class Snitch : RoleBase
 
         //キラーじゃなければ無し
         if (!IsSnitchTarget(seer)) return "";
+        if (seer.Is(CustomRoles.WolfBoy)) return "";
         //タスクが進んでいなければ無し
         if (ExposedList.Count == 0) return "";
 
@@ -148,20 +154,20 @@ public class Snitch : RoleBase
         foreach (var targetId in TargetList)
         {
             var arrow = TargetArrow.GetArrows(seer, targetId);
-            arrows += CanGetColoredArrow ? Utils.ColorString(TargetColorlist[targetId], arrow) : arrow;
+            arrows += CanGetColoredArrow ? Utils.ColorString(PlayerCatch.GetPlayerById(targetId).Is(CustomRoles.WolfBoy) ? Palette.ImpostorRed : TargetColorlist[targetId], arrow) : arrow;
         }
         return arrows;
     }
     /// <summary>
     /// タスクの進行状況の管理
     /// </summary>
-    public override bool OnCompleteTask()
+    public override bool OnCompleteTask(uint taskid)
     {
         var update = false;
         if (TargetList.Count == 0)
         {
             //TargetListが未作成ならここで作る
-            foreach (var target in Main.AllAlivePlayerControls)
+            foreach (var target in PlayerCatch.AllAlivePlayerControls)
             {
                 if (!IsSnitchTarget(target)) continue;
 
@@ -184,19 +190,27 @@ public class Snitch : RoleBase
             update = true;
         }
 
-        if (!IsComplete && IsTaskFinished)
+        if (!IsComplete && IsTaskFinished && Player.IsAlive())
         {
             IsComplete = true;
             foreach (var targetId in TargetList)
             {
-                NameColorManager.Add(Player.PlayerId, targetId);
+                NameColorManager.Add(Player.PlayerId, targetId, PlayerCatch.GetPlayerById(targetId).Is(CustomRoles.WolfBoy) ? "#ff1919" : "");
 
                 if (EnableTargetArrow)
                     TargetArrow.Add(Player.PlayerId, targetId);
             }
+            Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
             update = true;
         }
-        if (update) Utils.NotifyRoles();
+        if (update) UtilsNotifyRoles.NotifyRoles();
         return true;
+    }
+    public static Dictionary<int, Achievement> achievements = new();
+    [Attributes.PluginModuleInitializer]
+    public static void Load()
+    {
+        var n1 = new Achievement(RoleInfo, 0, 1, 0, 0);
+        achievements.Add(0, n1);
     }
 }

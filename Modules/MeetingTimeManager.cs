@@ -1,11 +1,9 @@
 using System;
 using AmongUs.GameOptions;
 
-using TownOfHost.Attributes;
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Core.Interfaces;
 using TownOfHost.Roles.Impostor;
-using TownOfHost.Roles.Crewmate;
 
 namespace TownOfHost.Modules
 {
@@ -16,7 +14,6 @@ namespace TownOfHost.Modules
         private static int DefaultDiscussionTime;
         private static int DefaultVotingTime;
 
-        [GameModuleInitializer]
         public static void Init()
         {
             DefaultDiscussionTime = Main.RealOptionsData.GetInt(Int32OptionNames.DiscussionTime);
@@ -36,7 +33,18 @@ namespace TownOfHost.Modules
         }
         public static void OnReportDeadBody()
         {
-            if (Options.AllAliveMeeting.GetBool() && Utils.IsAllAlive)
+            if (Roles.Crewmate.Balancer.Id != 255 && Roles.Crewmate.Balancer.target1 is not 255 && Roles.Crewmate.Balancer.target1 is not 255)
+            {
+                Balancer(Roles.Crewmate.Balancer.meetingtime);
+                return;
+            }
+            if (Assassin.assassin?.NowState is Assassin.AssassinMeeting.Guessing or Assassin.AssassinMeeting.CallMetting)
+            {
+                DiscussionTime = 0;
+                VotingTime = Assassin.OptionAssassinMeetingTime.GetInt();
+                return;
+            }
+            if (Options.AllAliveMeeting.GetBool() && PlayerCatch.IsAllAlive)
             {
                 DiscussionTime = 0;
                 VotingTime = Options.AllAliveMeetingTime.GetInt();
@@ -48,22 +56,13 @@ namespace TownOfHost.Modules
             int BonusMeetingTime = 0;
             int MeetingTimeMin = 0;
             int MeetingTimeMax = 300;
+            MeetingTimeMin = Options.LowerLimitVotingTime.GetInt();
+            MeetingTimeMax = Options.MeetingTimeLimit.GetInt();
 
             foreach (var role in CustomRoleManager.AllActiveRoles.Values)
             {
                 if (role is IMeetingTimeAlterable meetingTimeAlterable)
                 {
-                    if (role is TimeThief)
-                    {
-                        // Hyz-sui: 会議時間をいじる役職が増えたら上限&下限設定の置き場所要検討
-                        MeetingTimeMin = TimeThief.LowerLimitVotingTime;
-                    }
-
-                    if (role is TimeManager)
-                    {
-                        MeetingTimeMax = TimeManager.MeetingTimeLimit;
-                    }
-
                     if (!role.Player.IsAlive() && meetingTimeAlterable.RevertOnDie)
                     {
                         continue;
@@ -90,6 +89,12 @@ namespace TownOfHost.Modules
                 }
             }
             Logger.Info($"DiscussionTime:{DiscussionTime}, VotingTime{VotingTime}", "MeetingTimeManager.OnReportDeadBody");
+        }
+
+        public static void Balancer(int time)
+        {
+            DiscussionTime = 0;
+            VotingTime = time;
         }
     }
 }

@@ -42,36 +42,17 @@ namespace TownOfHost
             Text.color = Color.red;
             Text.outlineColor = Color.black;
             Text.alignment = TMPro.TextAlignmentOptions.Top;
-
-            // 背景
-            var bgObject = new GameObject("Background") { layer = LayerMask.NameToLayer("UI") };
-            var bgRenderer = instance.background = bgObject.AddComponent<SpriteRenderer>();
-            var bgTexture = new Texture2D(Screen.width, 150, TextureFormat.ARGB32, false);
-            for (var x = 0; x < bgTexture.width; x++)
-            {
-                for (var y = 0; y < bgTexture.height; y++)
-                {
-                    bgTexture.SetPixel(x, y, new(0f, 0f, 0f, 0.6f));
-                }
-            }
-            bgTexture.Apply();
-            var bgSprite = Sprite.Create(bgTexture, new(0, 0, bgTexture.width, bgTexture.height), new(0.5f, 1f /* 上端の真ん中を中心とする */ ));
-            bgRenderer.sprite = bgSprite;
-            var bgTransform = bgObject.transform;
-            bgTransform.parent = instance.transform;
-            bgTransform.localPosition = new(0f, TextOffsetY, 1f);
-            bgObject.SetActive(false);
         }
 
         public TMPro.TextMeshPro Text;
-        private SpriteRenderer background;
         public Camera Camera;
         public List<ErrorData> AllErrors = new();
-        public Vector3 TextOffset = new(0, TextOffsetY, -1000f);
+        public Vector3 TextOffset = new(0, 0.3f, -1000f);
         public void Update()
         {
             AllErrors.ForEach(err => err.IncreaseTimer());
-            var ToRemove = AllErrors.Where(err => err.ErrorLevel <= 1 && 30f < err.Timer);
+            var ToRemove = AllErrors.Where(err => (err.Code is ErrorCode.OnPlayerLeftPostfixFailedInGame or ErrorCode.OnPlayerLeftPostfixFailedInLobby ||
+                                                    err.ErrorLevel <= 1) && 10f < err.Timer);
             if (ToRemove.Any())
             {
                 AllErrors.RemoveAll(err => ToRemove.Contains(err));
@@ -115,32 +96,24 @@ namespace TownOfHost
             }
             if (maxLevel == 0)
             {
-                Hide();
+                Text.enabled = false;
             }
             else
             {
                 if (!HnSFlag)
                     text += $"{GetString($"ErrorLevel{maxLevel}")}";
-                Show();
+                Text.enabled = true;
             }
             if (GameStates.IsInGame && maxLevel != 3)
                 text += $"\n{GetString("TerminateCommand")}: Shift+L+Enter";
-            Text.text = text;
+            Text.text = $"<b>{text}</b>";
+            Text.SetOutlineColor(Palette.Black);
+            Text.SetOutlineThickness(0.14f);
         }
         public void Clear()
         {
             AllErrors.RemoveAll(err => err.ErrorLevel != 3);
             UpdateText();
-        }
-        private void Show()
-        {
-            Text.enabled = true;
-            background.gameObject.SetActive(true);
-        }
-        private void Hide()
-        {
-            Text.enabled = false;
-            background.gameObject.SetActive(false);
         }
 
         public class ErrorData
@@ -168,8 +141,6 @@ namespace TownOfHost
         }
 
         public bool HnSFlag;
-
-        const float TextOffsetY = 0.3f;
     }
     public enum ErrorCode
     {
@@ -185,13 +156,14 @@ namespace TownOfHost
         // 001 Main
         Main_DictionaryError = 0010003, // 001-000-3 Main Dictionary Error
         OptionIDDuplicate = 001_010_3, // 001-010-3 オプションIDが重複している(DEBUGビルド時のみ)
+        OptionError = 001_020_1, // 001-020-1 オプションの読み込みに失敗した
         // 002 サポート関連
         UnsupportedVersion = 002_000_1,  // 002-000-1 AmongUsのバージョンが古い
-
         // 010 参加/退出関連
         OnPlayerLeftPostfixFailedInGame = 010_000_2,  // 010-000-2 OnPlayerLeftPatch.Postfixがゲーム中に失敗
         OnPlayerLeftPostfixFailedInLobby = 010_001_2,  // 010-001-2 OnPlayerLeftPatch.Postfixがロビーで失敗
-
+        // 011 Ping
+        CommunicationisUnstable = 011_000_1, // 011-000-1 通信が不安定(750ms以上を検知したら)
         // ==========
         // 000 Test
         NoError = 0000000, // 000-000-0 No Error

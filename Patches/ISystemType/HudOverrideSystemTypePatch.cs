@@ -1,5 +1,6 @@
 using HarmonyLib;
 using Hazel;
+using TownOfHost.Roles.AddOns.Common;
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Core.Interfaces;
 using TownOfHost.Roles.Neutral;
@@ -17,26 +18,56 @@ public static class HudOverrideSystemTypeUpdateSystemPatch
             amount = newReader.ReadByte();
             newReader.Recycle();
         }
-
+        if (!AmongUsClient.Instance.AmHost)
+        {
+            return true;
+        }
+        if (amount.HasBit(SwitchSystem.DamageSystem))
+        {
+            return true;
+        }
+        var tags = (HqHudSystemType.Tags)(amount & HqHudSystemType.TagMask);
         var playerRole = player.GetRoleClass();
         var isMadmate =
             player.Is(CustomRoleTypes.Madmate) ||
             // マッド属性化時に削除
             (playerRole is SchrodingerCat schrodingerCat && schrodingerCat.AmMadmate);
-        if ((amount & HudOverrideSystemType.DamageBit) <= 0 && isMadmate && !Options.MadmateCanFixComms.GetBool())
+
+        if ((isMadmate && !Options.MadmateCanFixComms.GetBool() && !player.Is(CustomRoles.MadWare))
+        || (player.Is(CustomRoles.Amanojaku) && !Amanojaku.OptCanFixComms.GetBool())
+        || (player.Is(CustomRoles.Clumsy)))
+        {
+            return false;
+        }
+        if (Options.CommsDonttouch.GetBool() && (Options.CommsDonttouchTime.GetFloat() > Main.SabotageActivetimer))
         {
             return false;
         }
 
-        if (playerRole is ISystemTypeUpdateHook systemTypeUpdateHook && !systemTypeUpdateHook.UpdateHudOverrideSystem(__instance, amount))
+        if (RoleAddAddons.GetRoleAddon(player.GetCustomRole(), out var data, player, subrole: CustomRoles.Clumsy) && data.GiveClumsy.GetBool()) return false;
+
+        if (Amnesia.CheckAbility(player))
+            if (playerRole is ISystemTypeUpdateHook systemTypeUpdateHook && !systemTypeUpdateHook.UpdateHudOverrideSystem(__instance, amount))
+            {
+                return false;
+            }
+        foreach (var roleclass in CustomRoleManager.AllActiveRoles)
         {
-            return false;
+            roleclass.Value.OnFixSabotage(player, Main.SabotageType, amount);
         }
         return true;
     }
     public static void Postfix()
     {
         Camouflage.CheckCamouflage();
-        Utils.NotifyRoles();
+        UtilsNotifyRoles.NotifyRoles();
+
+        if (PlayerControl.LocalPlayer.Data.RoleType is AmongUs.GameOptions.RoleTypes.Engineer && PlayerControl.LocalPlayer.inVent)
+        {
+            if (VentilationSystemUpdateSystemPatch.NowVentId.TryGetValue(PlayerControl.LocalPlayer.PlayerId, out var ventid))
+            {
+                PlayerControl.LocalPlayer.MyPhysics.RpcExitVent(ventid);
+            }
+        }
     }
 }

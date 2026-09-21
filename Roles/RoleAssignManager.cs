@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AmongUs.GameOptions;
-
+using TownOfHost.Modules;
 using TownOfHost.Roles.Core;
 using static TownOfHost.Translator;
 
@@ -20,8 +20,24 @@ namespace TownOfHost.Roles
 
             private RandomAssignOptions(int id, OptionItem parent, CustomRoleTypes roleTypes, int maxCount)
             {
+                var name = GetString($"CustomRoleTypes.{roleTypes}");
+                switch (roleTypes)
+                {
+                    case CustomRoleTypes.Crewmate:
+                        name = Utils.ColorString(UtilsRoleText.GetRoleColor(CustomRoles.Crewmate), name);
+                        break;
+                    case CustomRoleTypes.Impostor:
+                        name = Utils.ColorString(UtilsRoleText.GetRoleColor(CustomRoles.Impostor), name);
+                        break;
+                    case CustomRoleTypes.Madmate:
+                        name = Utils.ColorString(ModColors.MadMateOrenge, name);
+                        break;
+                    case CustomRoleTypes.Neutral:
+                        name = Utils.ColorString(ModColors.Gray, name);
+                        break;
+                }
                 var replacementDictionary = new Dictionary<string, string>()
-                { { "%roleType%", GetString( $"CustomRoleTypes.{roleTypes}") } };
+                { { "%roleType%", name} };
 
                 var minOption = IntegerOptionItem.Create(idStart + id + 1, "RoleTypeMin", new(0, maxCount, 1), 0, TabGroup.MainSettings, false)
                     .SetParent(parent)
@@ -53,7 +69,7 @@ namespace TownOfHost.Roles
             "AssignAlgorithm.Fixed",
             "AssignAlgorithm.Random"
         };
-        private static CustomRoles[] AllMainRoles => Options.CurrentGameMode == CustomGameMode.Standard ? CustomRolesHelper.AllStandardRoles : CustomRolesHelper.AllHASRoles;
+        private static CustomRoles[] AllMainRoles => GameModeManager.IsStandardClass() ? CustomRolesHelper.AllStandardRoles : CustomRolesHelper.AllHASRoles;
         public static OptionItem OptionAssignMode;
         private static Dictionary<CustomRoleTypes, RandomAssignOptions> RandomAssignOptionsCollection = new(CustomRolesHelper.AllRoleTypes.Length);
         private static Dictionary<CustomRoleTypes, int> AssignCount = new(CustomRolesHelper.AllRoleTypes.Length);
@@ -61,7 +77,8 @@ namespace TownOfHost.Roles
         public static void SetupOptionItem()
         {
             OptionAssignMode = StringOptionItem.Create(idStart, "AssignMode", AssignModeSelections, 0, TabGroup.MainSettings, false)
-                .SetHeader(true);
+                .SetHeader(true)
+                .SetColorcode("#48a630");
 
             assignMode = () => (AssignAlgorithm)OptionAssignMode.GetInt();
             RandomAssignOptionsCollection.Clear();
@@ -69,6 +86,15 @@ namespace TownOfHost.Roles
             RandomAssignOptions.Create(20, OptionAssignMode, CustomRoleTypes.Madmate);
             RandomAssignOptions.Create(30, OptionAssignMode, CustomRoleTypes.Crewmate);
             RandomAssignOptions.Create(40, OptionAssignMode, CustomRoleTypes.Neutral);
+        }
+        public static (bool, int, int) CheckRoleTypeCount(CustomRoleTypes role)
+        {
+            if (AssignMode == AssignAlgorithm.Fixed) return (false, 0, 0);
+            if (RandomAssignOptionsCollection.TryGetValue(role, out var option))
+            {
+                return (true, option.Max, option.Min);
+            }
+            return (true, -1, -1);
         }
         public static bool CheckRoleCount()
         {
@@ -86,7 +112,7 @@ namespace TownOfHost.Roles
             if (min > max || min > numImpostors || max > numImpostors)
             {
                 var msg = GetString("Warning.NotMatchImpostorCount");
-                Logger.SendInGame(msg);
+                Logger.seeingame(msg);
                 Logger.Warn(msg, "BeginGame");
                 result = false;
             }
@@ -96,7 +122,7 @@ namespace TownOfHost.Roles
             if (roleMinCount > playerCount)
             {
                 var msg = GetString("Warning.NotMatchRoleCount");
-                Logger.SendInGame(msg);
+                Logger.seeingame(msg);
                 Logger.Warn(msg, "BeginGame");
                 result = false;
             }
@@ -112,16 +138,61 @@ namespace TownOfHost.Roles
             {
                 case AssignAlgorithm.Fixed:
                     SetFixedAssignRole();
-                    SetAddOnsList(true);
+                    SetAddOnsList();
                     break;
                 case AssignAlgorithm.Random:
                     SetRandomAssignCount();
                     SetRandomAssignRoleList();
-                    SetAddOnsList(false);
+                    SetAddOnsList();
                     break;
             }
 
             AssignRoleList.Sort();
+
+            if (SuddenDeathMode.SuddenSharingRoles.GetBool())
+            {
+                var roles = AssignRoleList.Where(role => role != CustomRoles.Impostor && !role.IsAddOn() && !role.IsGhostRole() && !role.IsLovers()).ToArray();
+                var addons = AssignRoleList.Where(role => role.IsAddOn() || role.IsLovers())?.ToArray();
+                var rand = IRandom.Instance;
+                var role = CustomRoles.Impostor;
+
+                if (roles.Length != 0) role = roles[rand.Next(0, roles.Length)];
+
+                AssignRoleList.Clear();
+
+                for (var i = 0; i <= PlayerCatch.AllPlayerControls.Count() + 1; i++)
+                    AssignRoleList.Add(role);
+
+                if (addons.Length != 0)
+                    foreach (var addon in addons)
+                        if (!AssignRoleList.Contains(addon)) AssignRoleList.Add(addon);
+            }
+            else
+                if (Modules.SuddenDeathMode.NowSuddenDeathMode)
+                {
+                    var roles = AssignRoleList.Where(role => role != CustomRoles.Impostor && !role.IsAddOn() && !role.IsGhostRole() && !role.IsLovers()).ToArray();
+
+                    if (roles.Length < PlayerCatch.AllPlayerControls.Count())
+                    {
+                        for (var i = roles.Length; i < PlayerCatch.AllPlayerControls.Count(); i++)
+                        {
+                            AssignRoleList.Add(CustomRoles.Impostor);
+                        }
+                    }
+                }
+
+            foreach (var role in AssignRoleList)
+            {
+                if (role.IsCombinationRole())
+                {
+                    if (AssignRoleList.Contains(role.GetCombination()) is false)
+                    {
+                        AssignRoleList.Remove(role);
+                        AssignCount[role.GetCustomRoleTypes()]--;
+                        Logger.Error($"{role} - {role.GetCombination()}が無いため、片方もアサインされない", "AssignError");
+                    }
+                }
+            }
             Logger.Info($"{string.Join(", ", AssignCount)}", "AssignCount");
             Logger.Info($"{string.Join(", ", AssignRoleList)}", "AssignRoleList");
         }
@@ -131,21 +202,30 @@ namespace TownOfHost.Roles
         ///</summary>
         private static void SetFixedAssignRole()
         {
-            int numImpostorsLeft = Math.Min(GameData.Instance.PlayerCount, Main.RealOptionsData.GetInt(Int32OptionNames.NumImpostors));
             //インポスター以外の人数
+            int numImpostorsLeft = Math.Min(GameData.Instance.PlayerCount, Main.RealOptionsData.GetInt(Int32OptionNames.NumImpostors));
             //マッド、クルー、ニュートラル合計の限界値
             int numOthersLeft = GameData.Instance.PlayerCount - numImpostorsLeft;
 
-            foreach (var role in GetCandidateRoleList(10).OrderBy(x => Guid.NewGuid()))
+            foreach (var _role in GetCandidateRoleList(10).OrderBy(x => Guid.NewGuid()))
             {
                 if (numImpostorsLeft <= 0 && numOthersLeft <= 0) break;
 
+                var role = _role;
+                var result = false;
+                SlotRoleAssign.SlotRoles.OrderBy(x => Guid.NewGuid()).ToList().Do(info =>
+                {
+                    var id = info.CheckAssignRole(ref role);
+                    result = (result || id is 1) && id is not 2;
+                    if (id is 2) return;
+                });
+                if (result) continue;
+
                 var targetRoles = role.GetAssignUnitRolesArray();
-                var numImpostorAssign = targetRoles.Count(role => role.IsImpostor());
+                var numImpostorAssign = targetRoles.Count(role => role.GetAssignRoleType() == CustomRoleTypes.Impostor);
                 var numOthersAssign = targetRoles.Length - numImpostorAssign;
                 //アサイン枠が足りてない場合
-                if (numImpostorAssign > numImpostorsLeft
-                || numOthersAssign > numOthersLeft) continue;
+                if ((numImpostorAssign > numImpostorsLeft || numOthersAssign > numOthersLeft) && Options.CurrentGameMode is not CustomGameMode.SuddenDeath) continue;
 
                 AssignRoleList.AddRange(targetRoles);
                 numImpostorsLeft -= numImpostorAssign;
@@ -163,7 +243,6 @@ namespace TownOfHost.Roles
         ///</summary>
         private static void SetRandomAssignCount()
         {
-
             var rand = IRandom.Instance;
             int numImpostors = Math.Min(GameData.Instance.PlayerCount, Main.RealOptionsData.GetInt(Int32OptionNames.NumImpostors));
             //インポスター以外の人数
@@ -233,8 +312,17 @@ namespace TownOfHost.Roles
                     targetRoles.Count(role => role.GetAssignRoleType() == type) > count
                 )) continue;
 
-                foreach (var targetRole in targetRoles)
+                foreach (var _targetRole in targetRoles)
                 {
+                    var targetRole = _targetRole;
+                    var result = false;
+                    SlotRoleAssign.SlotRoles.OrderBy(x => Guid.NewGuid()).ToList().Do(info =>
+                    {
+                        var id = info.CheckAssignRole(ref targetRole);
+                        result = (result || id is 1) && id is not 2;
+                        if (id is 2) return;
+                    });
+                    if (result) continue;
                     AssignRoleList.Add(targetRole);
                     var targetRoleType = targetRole.GetAssignRoleType();
                     if (assignCount.ContainsKey(targetRoleType))
@@ -255,7 +343,6 @@ namespace TownOfHost.Roles
                 //確率がそのまま追加枚数に
                 for (var i = 0; i < count; i++)
                     randomRoleTicketPool.AddRange(Enumerable.Repeat((role, i), chance / 10).ToList());
-
             }
 
             //確定分では足りない場合に抽選を行う
@@ -266,8 +353,17 @@ namespace TownOfHost.Roles
                 //アサイン枠が足りていれば追加
                 if (CustomRolesHelper.AllRoleTypes.All(type => targetRoles.Count(role => role.GetAssignRoleType() == type) <= assignCount[type]))
                 {
-                    foreach (var targetRole in targetRoles)
+                    foreach (var _targetRole in targetRoles)
                     {
+                        var targetRole = _targetRole;
+                        var result = false;
+                        SlotRoleAssign.SlotRoles.OrderBy(x => Guid.NewGuid()).ToList().Do(info =>
+                        {
+                            var id = info.CheckAssignRole(ref targetRole);
+                            result = (result || id is 1) && id is not 2;//割り当て済みならtrue。別アサインされるならfalseにもどす
+                            if (id is 2) return;//別アサインを見つけたなら一回きりあげる
+                        });
+                        if (result) continue;
                         AssignRoleList.Add(targetRole);
                         assignCount[targetRole.GetAssignRoleType()]--;
                     }
@@ -280,8 +376,9 @@ namespace TownOfHost.Roles
         ///属性のアサイン抽選
         ///枠制限が無いので個別に抽選
         ///</summary>
-        private static void SetAddOnsList(bool isFixedAssign)
+        private static void SetAddOnsList()
         {
+            //固定だとしても確率でアサインさせる
             foreach (var subRole in CustomRolesHelper.AllAddOns)
             {
                 var chance = subRole.GetChance();
@@ -289,20 +386,26 @@ namespace TownOfHost.Roles
                 if (chance == 0 || count == 0) continue;
                 var rnd = IRandom.Instance;
                 for (var i = 0; i < count; i++) //役職の単位数ごとに抽選
-                    if (isFixedAssign || rnd.Next(100) < chance)
+                    if (rnd.Next(100) < chance)
                         AssignRoleList.AddRange(subRole.GetAssignUnitRolesArray());
             }
         }
-        private static List<CustomRoles> GetCandidateRoleList(int availableRate)
+        public static List<CustomRoles> GetCandidateRoleList(int availableRate, bool shutoku = false)
         {
             var candidateRoleList = new List<CustomRoles>();
             foreach (var role in AllMainRoles)
             {
-                if (!role.IsAssignable()) continue;
+                if (!shutoku)
+                    if (!role.IsAssignable()) continue;
 
                 var chance = role.GetChance();
                 var count = role.GetAssignCount();
                 if (chance < availableRate || count == 0) continue;
+                if (Options.CustomRoleSpawnChances.TryGetValue(role, out var option))
+                {
+                    if ((option.Tag != CustomOptionTags.All && !GameModeManager.GetTags(Options.CurrentGameMode).Contains(option.Tag))
+                    || GameModeManager.GetTags(Options.CurrentGameMode).Any(tag => option.DisableTag.Contains(tag))) continue;
+                }
                 candidateRoleList.AddRange(Enumerable.Repeat(role, count).ToList());
             }
             return candidateRoleList;
@@ -323,6 +426,13 @@ namespace TownOfHost.Roles
                 role switch
                 {
                     CustomRoles.Lovers => 2,
+                    CustomRoles.RedLovers => 2,
+                    CustomRoles.YellowLovers => 2,
+                    CustomRoles.BlueLovers => 2,
+                    CustomRoles.GreenLovers => 2,
+                    CustomRoles.WhiteLovers => 2,
+                    CustomRoles.PurpleLovers => 2,
+                    CustomRoles.OneLove => 1,
                     _ => 1,
                 };
             return maximumCount / assignUnitCount;
@@ -336,6 +446,13 @@ namespace TownOfHost.Roles
             role switch
             {
                 CustomRoles.Lovers => new CustomRoles[2] { CustomRoles.Lovers, CustomRoles.Lovers },
+                CustomRoles.RedLovers => new CustomRoles[2] { CustomRoles.RedLovers, CustomRoles.RedLovers },
+                CustomRoles.YellowLovers => new CustomRoles[2] { CustomRoles.YellowLovers, CustomRoles.YellowLovers },
+                CustomRoles.BlueLovers => new CustomRoles[2] { CustomRoles.BlueLovers, CustomRoles.BlueLovers },
+                CustomRoles.GreenLovers => new CustomRoles[2] { CustomRoles.GreenLovers, CustomRoles.GreenLovers },
+                CustomRoles.WhiteLovers => new CustomRoles[2] { CustomRoles.WhiteLovers, CustomRoles.WhiteLovers },
+                CustomRoles.PurpleLovers => new CustomRoles[2] { CustomRoles.PurpleLovers, CustomRoles.PurpleLovers },
+                CustomRoles.Faction => [],
                 _ => new CustomRoles[1] { role },
             };
         public static bool IsPresent(this CustomRoles role) => AssignRoleList.Any(x => x == role);

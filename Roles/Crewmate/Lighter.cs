@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using TownOfHost.Roles.Core;
 
 namespace TownOfHost.Roles.Crewmate;
+
 public sealed class Lighter : RoleBase
 {
     public static readonly SimpleRoleInfo RoleInfo =
@@ -11,10 +12,12 @@ public sealed class Lighter : RoleBase
             CustomRoles.Lighter,
             () => RoleTypes.Crewmate,
             CustomRoleTypes.Crewmate,
-            20100,
+            11400,
             SetupOptionItem,
             "li",
-            "#eee5be"
+            "#eee5be",
+            (7, 0),
+            from: From.TheOtherRoles
         );
     public Lighter(PlayerControl player)
     : base(
@@ -22,12 +25,15 @@ public sealed class Lighter : RoleBase
         player
     )
     {
+        N1flug = false;
         MaxVision = OptionMaxVision.GetFloat();
         TaskCompletedDisableLightOut = OptionTaskCompletedDisableLightOut.GetBool();
         TaskTrigger = OptionLighterTaskTrigger.GetInt();
-        CurrentVision = Main.DefaultCrewmateVision;
+        CurrentVision = OptionStartVision.GetFloat();
         LighterTriggerType = (TriggerType)OptionLighterTriggerType.GetValue();
     }
+    /// <summary>開始時の視野</summary>
+    private static OptionItem OptionStartVision;
     /// <summary>最大視野</summary>
     private static OptionItem OptionMaxVision;
     /// <summary>タスク完了時に停電の影響を受けなくする</summary>
@@ -38,6 +44,7 @@ public sealed class Lighter : RoleBase
     private static OptionItem OptionLighterTaskTrigger;
     enum OptionName
     {
+        LighterStartVision,
         LighterMaxVision,
         LighterTaskCompletedDisableLightOut,
         LighterTriggerType,
@@ -56,20 +63,23 @@ public sealed class Lighter : RoleBase
     private static bool TaskCompletedDisableLightOut;
     private static int TaskTrigger;
     private float CurrentVision;
+    bool N1flug;
 
     private static void SetupOptionItem()
     {
-        OptionMaxVision = FloatOptionItem.Create(RoleInfo, 10, OptionName.LighterMaxVision, new(0.0f, 3.0f, 0.1f), 1.0f, false)
+        OptionStartVision = FloatOptionItem.Create(RoleInfo, 14, OptionName.LighterStartVision, new(0.0f, 3.0f, 0.05f), 0.5f, false)
+            .SetValueFormat(OptionFormat.Multiplier);
+        OptionMaxVision = FloatOptionItem.Create(RoleInfo, 10, OptionName.LighterMaxVision, new(0.0f, 3.0f, 0.05f), 1.0f, false)
             .SetValueFormat(OptionFormat.Multiplier);
         OptionTaskCompletedDisableLightOut = BooleanOptionItem.Create(RoleInfo, 11, OptionName.LighterTaskCompletedDisableLightOut, true, false);
         OptionLighterTriggerType = StringOptionItem.Create(RoleInfo, 12, OptionName.LighterTriggerType, EnumHelper.GetAllNames<TriggerType>(), 0, false);
-        OptionLighterTaskTrigger = IntegerOptionItem.Create(RoleInfo, 13, OptionName.LighterTaskTrigger, new(1, 99, 1), 5, false)
-            .SetParent(OptionLighterTriggerType);
+        OptionLighterTaskTrigger = IntegerOptionItem.Create(RoleInfo, 13, OptionName.LighterTaskTrigger, new(1, 99, 1), 5, false, OptionLighterTriggerType);
     }
 
     public override void ApplyGameOptions(IGameOptions opt)
     {
-        if (!Player.IsAlive() || MyTaskState.CompletedTasksCount == 0) return;//死んでる or タスク数0
+        if (!Player.IsAlive()) return;//死んでる or タスク数0
+        opt.SetFloat(FloatOptionNames.CrewLightMod, CurrentVision);
         //タスクトリガーの場合 トリガータスク数を下回っている or タスク完了していない
         if (LighterTriggerType == TriggerType.TaskCount && !MyTaskState.HasCompletedEnoughCountOfTasks(TaskTrigger)) return;
         Logger.Info("ApplyGameOptions Trigger", "Lighter");
@@ -77,10 +87,11 @@ public sealed class Lighter : RoleBase
         opt.SetFloat(crewLightMod, CurrentVision);
         if (TaskCompletedDisableLightOut && Utils.IsActive(SystemTypes.Electrical) && MyTaskState.IsTaskFinished)
         {
-            opt.SetFloat(crewLightMod, CurrentVision * 5);
+            opt.SetFloat(crewLightMod, CurrentVision * AURoleOptions.ElectricalCrewVision);
+            N1flug = true;
         }
     }
-    public override bool OnCompleteTask()
+    public override bool OnCompleteTask(uint taskid)
     {
         if (!Player.IsAlive() || MyTaskState.CompletedTasksCount == 0) return true;//死んでる or タスク数0
         if (LighterTriggerType == TriggerType.TaskCount && MyTaskState.CompletedTasksCount != TaskTrigger) return true;
@@ -94,13 +105,17 @@ public sealed class Lighter : RoleBase
             //進捗率(%) = 完了タスク数 / 全タスク数   例:1/4 = 0.25=> 0.25*100 =>25%
             int progressRate = MyTaskState.CompletedTasksCount * 100 / MyTaskState.AllTasksCount;
             //視野差 = 最大視野 - デフォルト視野     例:(1.25 - 0.25)/100=> 1.00
-            float viewBetween = (MaxVision * 100 - Main.DefaultCrewmateVision * 100) / 100;
+            float viewBetween = (MaxVision * 100 - OptionStartVision.GetFloat() * 100) / 100;
             //例:1.00 * 25 / 100 => 0.25(上昇値)
             CurrentVision += viewBetween * progressRate / 100;
             Logger.Info("viewBetween :" + viewBetween.ToString() + "*" + " progressRate:" + progressRate.ToString() + "%", "Lighter");
             Logger.Info("タスク進捗率で視野変更 タスク:" + MyTaskState.CompletedTasksCount + "/" + MyTaskState.AllTasksCount + " セットする視野:" + CurrentVision.ToString(), "Lighter");
         }
+
+        if (!AmongUsClient.Instance.AmHost) return true;
+
         Player.MarkDirtySettings();
+
         return true;
     }
 
@@ -108,5 +123,16 @@ public sealed class Lighter : RoleBase
     public void AddCurrentVision(float addVision)
     {
         CurrentVision += addVision;
+    }
+    public override void CheckWinner(GameOverReason reason)
+    {
+        if (N1flug) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
+    }
+    public static System.Collections.Generic.Dictionary<int, Achievement> achievements = new();
+    [Attributes.PluginModuleInitializer]
+    public static void Load()
+    {
+        var n1 = new Achievement(RoleInfo, 0, 1, 0, 0);
+        achievements.Add(0, n1);
     }
 }

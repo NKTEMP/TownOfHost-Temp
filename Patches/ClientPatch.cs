@@ -1,11 +1,15 @@
 using System.Globalization;
+using System.Collections;
+using System.Collections.Generic;
 using HarmonyLib;
+using Hazel;
 using InnerNet;
 using UnityEngine;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using BepInEx.Unity.IL2CPP.Utils.Collections;
+
 using TownOfHost.Modules;
 using static TownOfHost.Translator;
-using Hazel;
-using System.Collections.Generic;
 
 namespace TownOfHost
 {
@@ -15,14 +19,15 @@ namespace TownOfHost
         public static bool Prefix(GameStartManager __instance)
         {
             // 定数設定による公開ルームブロック
+            if (!AmongUsClient.Instance.AmHost) return false;
             if (!Main.AllowPublicRoom)
             {
                 var message = GetString("DisabledByProgram");
                 Logger.Info(message, "MakePublicPatch");
-                Logger.SendInGame(message);
+                Logger.seeingame(message);
                 return false;
             }
-            if (ModUpdater.isBroken || ModUpdater.hasUpdate || !VersionChecker.IsSupported || !Main.IsPublicAvailableOnThisVersion)
+            if (!Main.IsPublicRoomAllowed())
             {
                 var message = "";
                 if (!Main.IsPublicAvailableOnThisVersion) message = GetString("PublicNotAvailableOnThisVersion");
@@ -30,48 +35,96 @@ namespace TownOfHost
                 if (ModUpdater.isBroken) message = GetString("ModBrokenMessage");
                 if (ModUpdater.hasUpdate) message = GetString("CanNotJoinPublicRoomNoLatest");
                 Logger.Info(message, "MakePublicPatch");
-                Logger.SendInGame(message);
+                Logger.seeingame(message);
                 return false;
             }
             return true;
         }
     }
+
     [HarmonyPatch(typeof(MMOnlineManager), nameof(MMOnlineManager.Start))]
     class MMOnlineManagerStartPatch
     {
         public static void Postfix(MMOnlineManager __instance)
         {
-            if (!(ModUpdater.hasUpdate || ModUpdater.isBroken || !VersionChecker.IsSupported || !Main.IsPublicAvailableOnThisVersion)) return;
-            var obj = GameObject.Find("FindGameButton");
-            if (obj)
+            //ローカルのHaS作成ボタン削除
+            var delhas = GameObject.Find("CreateHnSGameButton");
+            if (delhas) delhas?.SetActive(false);
+        }
+    }
+
+    [HarmonyPatch(typeof(CreateGameOptions), nameof(CreateGameOptions.Show)), HarmonyPriority(Priority.VeryLow)]
+    class CreateGameOptionsShowPatch
+    {
+        public static void Prefix(CreateGameOptions __instance)
+        {
+            //HaSボタンを非表示にする
+            __instance.modeButtons[1]?.gameObject?.SetActive(false);
+
+            //マップIdが無効な時画面の操作ができなくなってしまうのを修正
+            var mapId = GameOptionsManager.Instance.CurrentGameOptions.MapId;
+
+            if (__instance.mapTooltips.Length <= mapId)
             {
-                obj?.SetActive(false);
-                var parentObj = obj.transform.parent.gameObject;
-                var textObj = Object.Instantiate<TMPro.TextMeshPro>(obj.transform.FindChild("Text_TMP").GetComponent<TMPro.TextMeshPro>());
-                textObj.transform.position = new Vector3(1f, -0.3f, 0);
-                textObj.name = "CanNotJoinPublic";
-                textObj.DestroyTranslator();
-                string message = "";
-                if (ModUpdater.hasUpdate)
-                {
-                    message = GetString("CanNotJoinPublicRoomNoLatest");
-                }
-                else if (ModUpdater.isBroken)
-                {
-                    message = GetString("ModBrokenMessage");
-                }
-                else if (!VersionChecker.IsSupported)
-                {
-                    message = GetString("UnsupportedVersion");
-                }
-                else if (!Main.IsPublicAvailableOnThisVersion)
-                {
-                    message = GetString("PublicNotAvailableOnThisVersion");
-                }
-                textObj.text = $"<size=2>{Utils.ColorString(Color.red, message)}</size>";
+                GameOptionsManager.Instance.CurrentGameOptions.SetByte(AmongUs.GameOptions.ByteOptionNames.MapId, 0);
+                GameOptionsManager.Instance.currentHostOptions.SetByte(AmongUs.GameOptions.ByteOptionNames.MapId, 0);
+            }
+        }
+        public static void Postfix(CreateGameOptions __instance)
+        {
+            //ノーマルモードを選択させる
+            __instance.SelectMode(0, false);
+            __instance.SetCurrentServer();
+            //__instance.UpdateServerText(ServerManager.Instance.CurrentRegion.Name);
+        }
+    }
+
+    [HarmonyPatch(typeof(CreateGameOptions), nameof(CreateGameOptions.SelectMode))]
+    class CreateGameOptionsSelectModePatch
+    {
+        //通常モードを選択させる
+        public static void Prefix(ref int i)
+        {
+            i = 0;
+        }
+    }
+
+    [HarmonyPatch(typeof(CreateGameOptions), nameof(CreateGameOptions.OpenServerDropdown))]
+    class CreateGameOptionsOpenServerDropdown
+    {
+        public static void Prefix(CreateGameOptions __instance)
+        {
+            __instance.serverDropdown.transform.localPosition = new Vector3(2.08f, -1.63f, -15f);
+        }
+    }
+
+    [HarmonyPatch(typeof(CreateGameOptions), nameof(CreateGameOptions.Start))]
+    class CreateGameOptionsStartPatch
+    {
+        public static void Prefix() => CreateGameOptionsUpdateServerText.Prefix();
+    }
+    [HarmonyPatch(typeof(CreateGameOptions), nameof(CreateGameOptions.UpdateServerText))]
+    class CreateGameOptionsUpdateServerText
+    {
+        public static void Prefix()
+        {
+            var obj = GameObject.Find("MainMenuManager/MainUI/AspectScaler/CreateGameScreen/ParentContent/Content/CreateGame");
+            if (obj == null) return;
+            if (ServerManager.Instance?.CurrentRegion?.Name == null) return;
+
+            var nowserver = ServerManager.Instance.CurrentRegion.Name;
+            if ((Main.IsAndroid() && !Main.IsCs()) || nowserver is "ExROfficialTokyo" || nowserver.Contains("Nebula on the Ship JP") || nowserver.Contains("<color=#ffa500>Super</color>")
+            || (VersionInfoManager.BlockVanillaSaver && !Main.IsCs()))
+            {
+                obj.transform.localPosition = new Vector3(100f, 100f, 100f);
+            }
+            else
+            {
+                obj.transform.localPosition = new Vector3(2.2664f, -4.71f, -12f);
             }
         }
     }
+
     [HarmonyPatch(typeof(SplashManager), nameof(SplashManager.Update))]
     class SplashLogoAnimatorPatch
     {
@@ -140,6 +193,7 @@ namespace TownOfHost
         [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.HandleMessage)), HarmonyPrefix]
         public static bool HandleMessagePatch(InnerNetClient __instance, MessageReader reader, SendOption sendOption)
         {
+            /*
             if (DebugModeManager.IsDebugMode)
             {
                 Logger.Info($"HandleMessagePatch:Packet({reader.Length}) ,SendOption:{sendOption}", "InnerNetClient");
@@ -147,9 +201,10 @@ namespace TownOfHost
             else if (reader.Length > 1000)
             {
                 Logger.Info($"HandleMessagePatch:Large Packet({reader.Length})", "InnerNetClient");
-            }
+            }*/
             return true;
         }
+        public static bool DontTouch = false;
         static Dictionary<int, int> messageCount = new(10);
         const int warningThreshold = 100;
         static int peak = warningThreshold;
@@ -170,16 +225,16 @@ namespace TownOfHost
         public static bool SendOrDisconnectPatch(InnerNetClient __instance, MessageWriter msg)
         {
             //分割するサイズ。大きすぎるとリトライ時不利、小さすぎると受信パケット取りこぼしが発生しうる。
-            //Vanila側で500byteで分割しているため競合を避け1000byteに設定
             var limitSize = 1000;
 
-            if (DebugModeManager.IsDebugMode)
+            /*if (DebugModeManager.IsDebugMode)
             {
                 Logger.Info($"SendOrDisconnectPatch:Packet({msg.Length}) ,SendOption:{msg.SendOption}", "InnerNetClient");
             }
-            else if (msg.Length > limitSize)
+            else*/
+            if (msg.Length > limitSize)
             {
-                Logger.Info($"SendOrDisconnectPatch:Large Packet({msg.Length})", "InnerNetClient");
+                Logger.Info($"SendOrDisconnectPatch:Large Packet({msg.Length}) ,SendOption:{msg.SendOption}", "InnerNetClient");
             }
             //メッセージピークのログ出力
             if (msg.SendOption == SendOption.Reliable)
@@ -203,8 +258,14 @@ namespace TownOfHost
                         peak = totalMessages;
                     }
                 }
+                /*
+                else
+                {
+                    Logger.Info($"{totalMessages}", "InnerNetClient");
+                }*/
             }
-            if (!Options.FixSpawnPacketSize.GetBool()) return true;
+            if (!Options.FixSpawnPacketSize.GetBool() && !Utils.IsRestriction()) return true;
+            if (DontTouch || AntiBlackout.IsCached) return true;
 
             //ラージパケットを分割(9人以上部屋で落ちる現象の対策コード)
 
@@ -279,7 +340,7 @@ namespace TownOfHost
                 var subLength = subMsg.Length;
 
                 //加算すると制限を超える場合は先に送信
-                if (writer.Length + subLength > 500)
+                if (writer.Length + subLength > 800)
                 {
                     writer.EndMessage();
                     Send(__instance, writer);
@@ -307,11 +368,88 @@ namespace TownOfHost
 
         private static void Send(InnerNetClient __instance, MessageWriter writer)
         {
-            Logger.Info($"SendOrDisconnectPatch: SendMessage Length={writer.Length}", "InnerNetClient");
+            //Logger.Info($"SendOrDisconnectPatch: SendMessage Length={writer.Length}", "InnerNetClient");
             var err = __instance.connection.Send(writer);
             if (err != SendErrors.None)
             {
                 Logger.Info($"SendOrDisconnectPatch: SendMessage Error={err}", "InnerNetClient");
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(AmongUsClient))]
+    class PreloadMapPatch
+    {
+        public static bool lastToggle = false;
+        public static List<AsyncOperationHandle> handles = new();
+        public static Dictionary<byte, ShipStatus> ships = new();
+
+        [HarmonyPostfix]
+        [HarmonyPatch(nameof(AmongUsClient.Awake))]
+        [HarmonyPatch(nameof(AmongUsClient.OnGameJoined))]
+        public static void Preload()
+        {
+            if (lastToggle == Main.PreloadMapAssets.Value) return;
+            lastToggle = Main.PreloadMapAssets.Value;
+
+            if (lastToggle)
+            {
+                AmongUsClient.Instance.StartCoroutine(CoLoadAssets().WrapToIl2Cpp());
+            }
+            else
+            {
+                foreach (var handle in handles)
+                {
+                    Logger.Warn($"Start Unload {(handle.Result.TryCast<GameObject>(out var obj) ? obj.name : "???")}", nameof(PreloadMapPatch));
+                    if (handle.IsValid())
+                        handle.Release();
+                }
+                ships.Clear();
+                handles.Clear();
+            }
+        }
+
+        public static IEnumerator CoLoadAssets()
+        {
+            var maps = EnumHelper.GetAllValues<MapNames>();
+            var shipPrefabs = AmongUsClient.Instance.ShipPrefabs;
+            for (var i = 0; i < maps.Length; ++i)
+            {
+                var mapId = maps[i];
+                var ship = shipPrefabs[i];
+                if (lastToggle == false) break; //途中でOFFになった場合は中断
+                yield return CoLoad(ship, mapId);
+            }
+        }
+
+        public static IEnumerator CoLoad(UnityEngine.AddressableAssets.AssetReference ship, MapNames mapId)
+        {
+            AsyncOperationHandle handle;
+
+            if (ship.OperationHandle.IsValid() && ship.OperationHandle.Status == AsyncOperationStatus.Succeeded)
+            {
+                Logger.Warn($"Skip Load {mapId}", nameof(PreloadMapPatch));
+                handle = ship.OperationHandle;
+            }
+            else
+            {
+                Logger.Warn($"Start Load {mapId}", nameof(PreloadMapPatch));
+                handle = ship.LoadAssetAsync<GameObject>();
+                handles.Add(handle);
+
+                yield return handle;
+            }
+
+            Logger.Warn($"End Load {mapId}", nameof(PreloadMapPatch));
+
+            if (handle.IsValid() && handle.Status == AsyncOperationStatus.Succeeded)
+            {
+                var obj = handle.Result.Cast<GameObject>();
+                ships[(byte)mapId] = obj.GetComponent<ShipStatus>();
+            }
+            else
+            {
+                Logger.Error($"Failed to load {mapId}", nameof(PreloadMapPatch));
             }
         }
     }

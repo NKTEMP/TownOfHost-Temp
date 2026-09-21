@@ -4,7 +4,6 @@ using AmongUs.GameOptions;
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Core.Interfaces;
 using TownOfHost.Roles.Neutral;
-using static TownOfHost.Translator;
 
 namespace TownOfHost.Roles.Impostor
 {
@@ -17,9 +16,12 @@ namespace TownOfHost.Roles.Impostor
                 CustomRoles.SerialKiller,
                 () => RoleTypes.Shapeshifter,
                 CustomRoleTypes.Impostor,
-                1100,
+                6800,
                 SetUpOptionItem,
-                "sk"
+                "sk",
+                OptionSort: (7, 0),
+                from: From.TOR_GM_Edition,
+                Desc: () => string.Format(GetString("SerialKillerDesc"), OptionTimeLimit.GetFloat())
             );
         public SerialKiller(PlayerControl player)
         : base(
@@ -31,6 +33,8 @@ namespace TownOfHost.Roles.Impostor
             TimeLimit = OptionTimeLimit.GetFloat();
 
             SuicideTimer = null;
+
+            alivetimer = 0;
         }
         private static OptionItem OptionKillCooldown;
         private static OptionItem OptionTimeLimit;
@@ -39,16 +43,16 @@ namespace TownOfHost.Roles.Impostor
             SerialKillerLimit
         }
         private static float KillCooldown;
-        private static float TimeLimit;
+        public static float TimeLimit;
 
         public bool CanBeLastImpostor { get; } = false;
         public float? SuicideTimer;
 
         private static void SetUpOptionItem()
         {
-            OptionKillCooldown = FloatOptionItem.Create(RoleInfo, 10, GeneralOption.KillCooldown, new(2.5f, 180f, 2.5f), 20f, false)
+            OptionKillCooldown = FloatOptionItem.Create(RoleInfo, 10, GeneralOption.KillCooldown, new(0f, 180f, 0.5f), 20f, false)
                 .SetValueFormat(OptionFormat.Seconds);
-            OptionTimeLimit = FloatOptionItem.Create(RoleInfo, 11, OptionName.SerialKillerLimit, new(5f, 900f, 5f), 60f, false)
+            OptionTimeLimit = FloatOptionItem.Create(RoleInfo, 11, OptionName.SerialKillerLimit, new(5f, 900f, 1f), 60f, false)
                 .SetValueFormat(OptionFormat.Seconds);
         }
         public float CalculateKillCooldown() => KillCooldown;
@@ -94,11 +98,19 @@ namespace TownOfHost.Roles.Impostor
                     SuicideTimer = null;
                 }
                 else
+                {
                     SuicideTimer += Time.fixedDeltaTime;//時間をカウント
+                    alivetimer += Time.fixedDeltaTime;
+                }
             }
         }
         public override bool CanUseAbilityButton() => HasKilled();
         public override string GetAbilityButtonText() => GetString("SerialKillerSuicideButtonText");
+        public override bool OverrideAbilityButton(out string text)
+        {
+            text = "Serialkiller_Ability";
+            return true;
+        }
         public override void OnSpawn(bool initialState)
         {
             if (Player.IsAlive())
@@ -110,6 +122,29 @@ namespace TownOfHost.Roles.Impostor
         public void OnSchrodingerCatKill(SchrodingerCat schrodingerCat)
         {
             SuicideTimer = null;
+        }
+        public void OnBakeCatKill(BakeCat bakeneko)
+        {
+            SuicideTimer = null;
+        }
+        float alivetimer;
+        public override void CheckWinner(GameOverReason reason)
+        {
+            if (120 <= alivetimer)
+                Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
+            if (5 < MyState.GetKillCount(true)) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[1]);
+            if ((TimeLimit * 6) < alivetimer) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[2]);
+        }
+        public static System.Collections.Generic.Dictionary<int, Achievement> achievements = new();
+        [Attributes.PluginModuleInitializer]
+        public static void Load()
+        {
+            var n1 = new Achievement(RoleInfo, 0, 1, 0, 0);
+            var l1 = new Achievement(RoleInfo, 1, 1, 0, 1);
+            var sp1 = new Achievement(RoleInfo, 2, 1, 0, 2);
+            achievements.Add(0, n1);
+            achievements.Add(1, l1);
+            achievements.Add(2, sp1);
         }
     }
 }

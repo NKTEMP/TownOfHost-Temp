@@ -11,6 +11,7 @@ namespace TownOfHost
         public MessageWriter stream;
         public readonly string name;
         public readonly SendOption sendOption;
+        public int tag;
         public bool isUnsafe;
         public delegate void onSendDelegateType();
         public onSendDelegateType onSendDelegate;
@@ -40,6 +41,7 @@ namespace TownOfHost
             this.sendOption = sendOption;
             this.isUnsafe = isUnsafe;
             this.currentRpcTarget = -2;
+            this.tag = -1;
             onSendDelegate = () => Logger.Info($"{this.name}'s onSendDelegate =>", "CustomRpcSender");
 
             currentState = State.Ready;
@@ -68,16 +70,34 @@ namespace TownOfHost
 
             if (targetClientId < 0)
             {
-                // 全員に対するRPC
-                stream.StartMessage(5);
-                stream.Write(AmongUsClient.Instance.GameId);
+                if (tag is 5 or -1)
+                {
+                    // 全員に対するRPC
+                    stream.StartMessage(5);
+                    stream.Write(AmongUsClient.Instance.GameId);
+                    tag = 5;
+                }
+                else
+                {
+                    Logger.Error($"{name} {tag}/5tagが前回のと異なります。", "CustomRpcSender.Error");
+                    return this;
+                }
             }
             else
             {
                 // 特定のクライアントに対するRPC (Desync)
-                stream.StartMessage(6);
-                stream.Write(AmongUsClient.Instance.GameId);
-                stream.WritePacked(targetClientId);
+                if (tag is 6 or -1)
+                {
+                    stream.StartMessage(6);
+                    stream.Write(AmongUsClient.Instance.GameId);
+                    stream.WritePacked(targetClientId);
+                    tag = 6;
+                }
+                else
+                {
+                    Logger.Error($"{name} {tag}/6tagが前回のと異なります。", "CustomRpcSender.Error");
+                    return this;
+                }
             }
 
             currentRpcTarget = targetClientId;
@@ -154,6 +174,11 @@ namespace TownOfHost
         #endregion
         public CustomRpcSender AutoStartRpc(
             uint targetNetId,
+            RpcCalls callid,
+            int targetClientId = -1
+        ) => AutoStartRpc(targetNetId, (byte)callid, targetClientId);
+        public CustomRpcSender AutoStartRpc(
+            uint targetNetId,
             byte callId,
             int targetClientId = -1)
         {
@@ -172,6 +197,7 @@ namespace TownOfHost
             }
             if (currentRpcTarget != targetClientId)
             {
+                //Logger.Warn($"{currentRpcTarget} - {targetClientId}前回とClientIdが異なります。", "AuteStartRpc");
                 //StartMessage処理
                 if (currentState == State.InRootMessage) this.EndMessage();
                 this.StartMessage(targetClientId);
@@ -222,9 +248,9 @@ namespace TownOfHost
         public CustomRpcSender WriteNetObject(InnerNetObject obj) => Write(w => w.WriteNetObject(obj));
         #endregion
 
-        private CustomRpcSender Write(Action<MessageWriter> action)
+        public CustomRpcSender Write(Action<MessageWriter> action, bool check = false)
         {
-            if (currentState != State.InRpc)
+            if (currentState != State.InRpc && (!check || currentState != State.InRootMessage))
             {
                 string errorMsg = $"RPCを書き込もうとしましたが、StateがWrite(書き込み中)ではありません (in: \"{name}\")";
                 if (isUnsafe)
@@ -257,34 +283,14 @@ namespace TownOfHost
         {
             sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetRole, targetClientId)
                 .Write((ushort)role)
-                .Write(false)
+                .Write(Main.SetRoleOverride && GameModeManager.IsStandardClass())
                 .EndRpc();
         }
         public static void RpcMurderPlayer(this CustomRpcSender sender, PlayerControl player, PlayerControl target, int targetClientId = -1)
         {
             sender.AutoStartRpc(player.NetId, (byte)RpcCalls.MurderPlayer, targetClientId)
                 .WriteNetObject(target)
-                .Write((int)ExtendedPlayerControl.SucceededFlags)
-                .EndRpc();
-        }
-        public static void RpcSetName(this CustomRpcSender sender, PlayerControl player, string name, PlayerControl seer = null)
-        {
-            var targetClientId = seer == null ? -1 : seer.GetClientId();
-            if (seer == null)
-            {
-                foreach (var seer2 in Main.AllPlayerControls)
-                {
-                    Main.LastNotifyNames[(player.PlayerId, seer2.PlayerId)] = name;
-                }
-            }
-            else
-            {
-                Main.LastNotifyNames[(player.PlayerId, seer.PlayerId)] = name;
-            }
-            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetName, targetClientId)
-                .Write(player.Data.NetId)
-                .Write(name)
-                .Write(false)
+                .Write((int)ExtendedPlayerControl.SuccessFlags)
                 .EndRpc();
         }
     }
