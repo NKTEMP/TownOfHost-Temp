@@ -72,7 +72,7 @@ namespace TownOfHost
                     new(-0.8f, -1f, 1f),//-1f
                     new(153, 153, 153, byte.MaxValue),
                     new(209, 209, 209, byte.MaxValue),
-                    () => Application.OpenURL("https://github.com/KYMario/TownOfHost-S"),
+                    () => Application.OpenURL("https://github.com/KYMario/TownOfHost-Temp"),
                     "GitHub");
             }
 

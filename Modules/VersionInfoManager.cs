@@ -16,7 +16,7 @@ namespace TownOfHost.Modules;
 [HarmonyPatch]
 class VersionInfoManager
 {
-    public static readonly string URL = "https://raw.githubusercontent.com/KYMario/TownOfHost-S/main/versions.json";
+    public static readonly string URL = "https://raw.githubusercontent.com/KYMario/TownOfHost-Temp/main/versions.json";
     //public static readonly string URL = "https://raw.githubusercontent.com/KYMario/TOHTm-Test/main/versions.json";
     public static Dictionary<string, VersionInfo> Versions { get; protected set; }
     public static VersionInfo version { get; protected set; }
@@ -275,7 +275,7 @@ class VersionInfoManager
         try
         {
             UnityWebRequest request = UnityWebRequest.Get(URL);
-            request.SetRequestHeader("User-Agent", "TownOfHost-S VersionChecker");
+            request.SetRequestHeader("User-Agent", "TownOfHost-Temp VersionChecker");
 
             var co = request.SendWebRequest();
             while (!co.isDone) { System.Threading.Thread.Sleep(10); }

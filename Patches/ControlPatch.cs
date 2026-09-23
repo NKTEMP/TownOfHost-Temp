@@ -70,7 +70,7 @@ namespace TownOfHost
                 {
                     if (CredentialsPatch.TOHTmLogo)
                     {
-                        CredentialsPatch.TOHTmLogo.sprite = UtilsSprite.LoadSprite("TownOfHost.Resources.TOHTm.TownOfHost-S_A.png", 300f);
+                        CredentialsPatch.TOHTmLogo.sprite = UtilsSprite.LoadSprite("TownOfHost.Resources.TOHTm.TownOfHost-Temp_A.png", 300f);
                     }
                 }
             }

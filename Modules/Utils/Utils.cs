@@ -524,7 +524,7 @@ namespace TownOfHost
                     case CustomGameMode.SuddenDeath: sb.Append("\r\n").Append(ColorString(GetRoleColor(CustomRoles.Comebacker), GetString("SuddenDeathMode"))); break;
                     case CustomGameMode.MurderMystery: sb.Append("\r\n").Append($"<#1a389c>{GetString("MurderMystery")}"); break;
                 }
-                n = "<line-height=-100%>\n<b></line-height>" + name + $"\n<line-height=-{(sb.Length is 0 ? "200" : "300")}%>\n<size=60%><line-height=0%><{Main.ModColor}>TownOfHost-S <#ffffff>v{Main.PluginShowVersion}<line-height=100%>{sb.ToString()}</size>\n<size=0> ";
+                n = "<line-height=-100%>\n<b></line-height>" + name + $"\n<line-height=-{(sb.Length is 0 ? "200" : "300")}%>\n<size=60%><line-height=0%><{Main.ModColor}>TownOfHost-Temp <#ffffff>v{Main.PluginShowVersion}<line-height=100%>{sb.ToString()}</size>\n<size=0> ";
                 if (force)
                     PlayerCatch.AllPlayerControls.DoIf(x => x.name != "Player(Clone)" && x.PlayerId != PlayerControl.LocalPlayer.PlayerId && !x.IsModClient(), x => PlayerControl.LocalPlayer.RpcSetNamePrivate(n, true, x, true));
                 else if (pc.PlayerId != PlayerControl.LocalPlayer.PlayerId)
