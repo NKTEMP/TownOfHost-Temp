@@ -27,7 +27,7 @@ public sealed class Stealth : RoleBase, IImpostor, IUsePhantomButton
         () => optionAddDarkenRoom.GetBool() ? RoleTypes.Phantom : RoleTypes.Impostor,
         CustomRoleTypes.Impostor,
         6100,
-        SetupOptionItems,
+        SetupOptionItem,
         "st",
         OptionSort: (6, 6),
         introSound: () => GetIntroSound(RoleTypes.Phantom),
@@ -41,7 +41,7 @@ public sealed class Stealth : RoleBase, IImpostor, IUsePhantomButton
     static OptionItem optionmax;
     static OptionItem optioncooldown;
     private enum OptionName { StealthExcludeImpostors, StealthDarkenDuration, StealthAddDarkenRoom, StateAddRoomMax }
-    private static void SetupOptionItems()
+    private static void SetupOptionItem()
     {
         optionExcludeImpostors = BooleanOptionItem.Create(RoleInfo, 10, OptionName.StealthExcludeImpostors, true, false);
         optionDarkenDuration = FloatOptionItem.Create(RoleInfo, 20, OptionName.StealthDarkenDuration, new(0.5f, 30f, 0.5f), 1f, false);

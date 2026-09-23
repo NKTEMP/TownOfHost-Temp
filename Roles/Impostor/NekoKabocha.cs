@@ -16,7 +16,7 @@ public sealed class NekoKabocha : RoleBase, IImpostor, INekomata
             () => RoleTypes.Impostor,
             CustomRoleTypes.Impostor,
             6300,
-            SetupOptionItems,
+            SetupOptionItem,
             "nk",
             OptionSort: (6, 7),
             introSound: () => PlayerControl.LocalPlayer.KillSfx,
@@ -44,7 +44,7 @@ public sealed class NekoKabocha : RoleBase, IImpostor, INekomata
     /// <summary>ニュートラルに仕返し/道連れするかどうか</summary>
     private static BooleanOptionItem optionNeutralsGetRevenged;
     private static BooleanOptionItem optionRevengeOnExile;
-    private static void SetupOptionItems()
+    private static void SetupOptionItem()
     {
         optionImpostorsGetRevenged = BooleanOptionItem.Create(RoleInfo, 10, OptionName.NekoKabochaImpostorsGetRevenged, false, false);
         optionMadmatesGetRevenged = BooleanOptionItem.Create(RoleInfo, 20, OptionName.NekoKabochaMadmatesGetRevenged, false, false);

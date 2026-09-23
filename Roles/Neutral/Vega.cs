@@ -18,7 +18,7 @@ public sealed class Vega : RoleBase, IKiller, IAdditionalWinner
             () => RoleTypes.Impostor,
             CustomRoleTypes.Neutral,
             22100,
-            SetupOptionItems,
+            SetupOptionItem,
             "vg",
             "#f1d9d9",
             (3, 0),
@@ -110,7 +110,7 @@ public sealed class Vega : RoleBase, IKiller, IAdditionalWinner
         VegaAddWin
     }
 
-    private static void SetupOptionItems()
+    private static void SetupOptionItem()
     {
         SoloWinOption.Create(RoleInfo, 9, defo: 0);
         OptionKillCooldown = FloatOptionItem.Create(RoleInfo, 10, GeneralOption.KillCooldown, new(0f, 180f, 0.5f), 30f, false)

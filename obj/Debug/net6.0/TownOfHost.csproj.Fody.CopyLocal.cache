@@ -1,155 +1,154 @@
-D:\SteamLibrary\steamapps\common\TeU\BepInEx\core\0Harmony.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\AddressablesPlayAssetDelivery.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\AmongUsCaching.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\core\AsmResolver.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\core\AsmResolver.DotNet.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\core\AsmResolver.PE.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\core\AsmResolver.PE.File.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Assembly-CSharp-firstpass.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Assembly-CSharp.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\core\AssetRipper.CIL.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\core\AssetRipper.Primitives.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\core\BepInEx.Core.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\core\BepInEx.Preloader.Core.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\core\BepInEx.Unity.Common.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\core\BepInEx.Unity.IL2CPP.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\core\Cpp2IL.Core.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\CsvHelper.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\core\Disarm.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\core\Gee.External.Capstone.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Hazel.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\core\Iced.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\core\Il2CppInterop.Common.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\core\Il2CppInterop.Generator.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\core\Il2CppInterop.HarmonySupport.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\core\Il2CppInterop.Runtime.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Il2CppMono.Security.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Il2Cppmscorlib.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Il2CppSystem.Configuration.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Il2CppSystem.Core.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Il2CppSystem.Data.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Il2CppSystem.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Il2CppSystem.Drawing.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Il2CppSystem.Net.Http.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Il2CppSystem.Numerics.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Il2CppSystem.Runtime.Serialization.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Il2CppSystem.Xml.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Il2CppSystem.Xml.Linq.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\io.sentry.unity.runtime.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\core\LibCpp2IL.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\core\Mono.Cecil.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\core\Mono.Cecil.Mdb.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\core\Mono.Cecil.Pdb.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\core\Mono.Cecil.Rocks.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\core\MonoMod.RuntimeDetour.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\core\MonoMod.Utils.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Newtonsoft.Json.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\QRCoder.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Rewired_Core.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Rewired_Windows.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Rewired_Windows_Functions.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\core\SemanticVersioning.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Sentry.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Sentry.Microsoft.Bcl.AsyncInterfaces.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Sentry.System.Buffers.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Sentry.System.Collections.Immutable.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Sentry.System.Memory.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Sentry.System.Numerics.Vectors.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Sentry.System.Reflection.Metadata.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Sentry.System.Runtime.CompilerServices.Unsafe.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Sentry.System.Text.Encodings.Web.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Sentry.System.Text.Json.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Sentry.System.Threading.Tasks.Extensions.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Sentry.Unity.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\core\StableNameDotNet.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Unity.Addressables.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Unity.LevelPlay.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Unity.ProBuilder.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Unity.ResourceManager.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Unity.Services.Core.Configuration.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Unity.Services.Core.Device.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Unity.Services.Core.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Unity.Services.Core.Environments.Internal.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Unity.Services.Core.Internal.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Unity.Services.Core.Registration.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Unity.Services.Core.Scheduler.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Unity.Services.Core.Telemetry.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Unity.Services.Core.Threading.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\Unity.TextMeshPro.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.AccessibilityModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.AIModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.AndroidJNIModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.AnimationModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.AssetBundleModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.AudioModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.ClothModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.ClusterInputModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.ClusterRendererModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.ContentLoadModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.CoreModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.CrashReportingModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.DirectorModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.DSPGraphModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.GameCenterModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.GIModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.GridModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.HotReloadModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.ImageConversionModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.IMGUIModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.InputLegacyModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.InputModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.JSONSerializeModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.LocalizationModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.ParticleSystemModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.PerformanceReportingModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.Physics2DModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.PhysicsModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.ProfilerModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.PropertiesModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.Purchasing.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.Purchasing.SecurityCore.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.RuntimeInitializeOnLoadManagerInitializerModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.ScreenCaptureModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.SharedInternalsModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.SpriteMaskModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.SpriteShapeModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.StreamingModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.SubstanceModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.SubsystemsModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.TerrainModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.TerrainPhysicsModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.TextCoreFontEngineModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.TextCoreTextEngineModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.TextRenderingModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\UnityEngine.TilemapModule.dll
-D:\SteamLibrary\steamapps\common\TeU\BepInEx\interop\UnityEngine.TLSModule.dll
-D:\SteamLibrary\steamapps\common\TeU\BepInEx\interop\UnityEngine.UI.dll
-D:\SteamLibrary\steamapps\common\TeU\BepInEx\interop\UnityEngine.UIElementsModule.dll
-D:\SteamLibrary\steamapps\common\TeU\BepInEx\interop\UnityEngine.UIModule.dll
-D:\SteamLibrary\steamapps\common\TeU\BepInEx\interop\UnityEngine.UmbraModule.dll
-D:\SteamLibrary\steamapps\common\TeU\BepInEx\interop\UnityEngine.UnityAnalyticsCommonModule.dll
-D:\SteamLibrary\steamapps\common\TeU\BepInEx\interop\UnityEngine.UnityAnalyticsModule.dll
-D:\SteamLibrary\steamapps\common\TeU\BepInEx\interop\UnityEngine.UnityConnectModule.dll
-D:\SteamLibrary\steamapps\common\TeU\BepInEx\interop\UnityEngine.UnityCurlModule.dll
-D:\SteamLibrary\steamapps\common\TeU\BepInEx\interop\UnityEngine.UnityTestProtocolModule.dll
-D:\SteamLibrary\steamapps\common\TeU\BepInEx\interop\UnityEngine.UnityWebRequestAssetBundleModule.dll
-D:\SteamLibrary\steamapps\common\TeU\BepInEx\interop\UnityEngine.UnityWebRequestAudioModule.dll
-D:\SteamLibrary\steamapps\common\TeU\BepInEx\interop\UnityEngine.UnityWebRequestModule.dll
-D:\SteamLibrary\steamapps\common\TeU\BepInEx\interop\UnityEngine.UnityWebRequestTextureModule.dll
-D:\SteamLibrary\steamapps\common\TeU\BepInEx\interop\UnityEngine.UnityWebRequestWWWModule.dll
-D:\SteamLibrary\steamapps\common\TeU\BepInEx\interop\UnityEngine.VehiclesModule.dll
-D:\SteamLibrary\steamapps\common\TeU\BepInEx\interop\UnityEngine.VFXModule.dll
-D:\SteamLibrary\steamapps\common\TeU\BepInEx\interop\UnityEngine.VideoModule.dll
-D:\SteamLibrary\steamapps\common\TeU\BepInEx\interop\UnityEngine.VirtualTexturingModule.dll
-D:\SteamLibrary\steamapps\common\TeU\BepInEx\interop\UnityEngine.VRModule.dll
-D:\SteamLibrary\steamapps\common\TeU\BepInEx\interop\UnityEngine.WindModule.dll
-D:\SteamLibrary\steamapps\common\TeU\BepInEx\interop\UnityEngine.XRModule.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\core\WasmDisassembler.dll
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\interop\__Generated.dll
-D:\SteamLibrary\steamapps\common\TeU\BepInEx\core\0Harmony.xml
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\core\BepInEx.Core.xml
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\core\BepInEx.Preloader.Core.xml
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\core\BepInEx.Unity.Common.xml
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\core\BepInEx.Unity.IL2CPP.xml
-D:\SteamLibrary\steamapps\common\TOH-T\BepInEx\core\BepInEx.Unity.IL2CPP.dll.config
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\core\0Harmony.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\AddressablesPlayAssetDelivery.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\AmongUsCaching.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\core\AsmResolver.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\core\AsmResolver.DotNet.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\core\AsmResolver.PE.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\core\AsmResolver.PE.File.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Assembly-CSharp-firstpass.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Assembly-CSharp.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\core\AssetRipper.CIL.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\core\AssetRipper.Primitives.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\core\BepInEx.Core.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\core\BepInEx.Preloader.Core.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\core\BepInEx.Unity.Common.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\core\BepInEx.Unity.IL2CPP.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\core\Cpp2IL.Core.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\CsvHelper.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\core\Disarm.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\core\Gee.External.Capstone.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Hazel.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\core\Iced.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\core\Il2CppInterop.Common.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\core\Il2CppInterop.Generator.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\core\Il2CppInterop.HarmonySupport.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\core\Il2CppInterop.Runtime.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Il2CppMono.Security.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Il2Cppmscorlib.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Il2CppSystem.Configuration.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Il2CppSystem.Core.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Il2CppSystem.Data.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Il2CppSystem.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Il2CppSystem.Drawing.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Il2CppSystem.Net.Http.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Il2CppSystem.Numerics.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Il2CppSystem.Runtime.Serialization.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Il2CppSystem.Xml.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Il2CppSystem.Xml.Linq.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\io.sentry.unity.runtime.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\core\LibCpp2IL.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\core\Mono.Cecil.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\core\Mono.Cecil.Mdb.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\core\Mono.Cecil.Pdb.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\core\Mono.Cecil.Rocks.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\core\MonoMod.RuntimeDetour.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\core\MonoMod.Utils.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Newtonsoft.Json.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\QRCoder.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Rewired_Core.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Rewired_Windows.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Rewired_Windows_Functions.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\core\SemanticVersioning.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Sentry.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Sentry.Microsoft.Bcl.AsyncInterfaces.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Sentry.System.Buffers.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Sentry.System.Collections.Immutable.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Sentry.System.Memory.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Sentry.System.Numerics.Vectors.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Sentry.System.Reflection.Metadata.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Sentry.System.Runtime.CompilerServices.Unsafe.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Sentry.System.Text.Encodings.Web.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Sentry.System.Text.Json.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Sentry.System.Threading.Tasks.Extensions.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Sentry.Unity.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\core\StableNameDotNet.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Unity.Addressables.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Unity.LevelPlay.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Unity.ProBuilder.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Unity.ResourceManager.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Unity.Services.Core.Configuration.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Unity.Services.Core.Device.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Unity.Services.Core.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Unity.Services.Core.Environments.Internal.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Unity.Services.Core.Internal.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Unity.Services.Core.Registration.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Unity.Services.Core.Scheduler.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Unity.Services.Core.Telemetry.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Unity.Services.Core.Threading.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\Unity.TextMeshPro.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.AccessibilityModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.AIModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.AndroidJNIModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.AnimationModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.AssetBundleModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.AudioModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.ClothModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.ClusterInputModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.ClusterRendererModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.ContentLoadModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.CoreModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.CrashReportingModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.DirectorModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.DSPGraphModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.GameCenterModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.GIModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.GridModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.HotReloadModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.ImageConversionModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.IMGUIModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.InputLegacyModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.InputModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.JSONSerializeModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.LocalizationModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.ParticleSystemModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.PerformanceReportingModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.Physics2DModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.PhysicsModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.ProfilerModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.PropertiesModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.Purchasing.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.Purchasing.SecurityCore.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.RuntimeInitializeOnLoadManagerInitializerModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.ScreenCaptureModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.SharedInternalsModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.SpriteMaskModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.SpriteShapeModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.StreamingModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.SubstanceModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.SubsystemsModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.TerrainModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.TerrainPhysicsModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.TextCoreFontEngineModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.TextCoreTextEngineModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.TextRenderingModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.TilemapModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.TLSModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.UI.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.UIElementsModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.UIModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.UmbraModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.UnityAnalyticsCommonModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.UnityAnalyticsModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.UnityConnectModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.UnityCurlModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.UnityTestProtocolModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.UnityWebRequestAssetBundleModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.UnityWebRequestAudioModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.UnityWebRequestModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.UnityWebRequestTextureModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.UnityWebRequestWWWModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.VehiclesModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.VFXModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.VideoModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.VirtualTexturingModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.VRModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.WindModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\UnityEngine.XRModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\core\WasmDisassembler.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\interop\__Generated.dll
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\core\BepInEx.Core.xml
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\core\BepInEx.Preloader.Core.xml
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\core\BepInEx.Unity.Common.xml
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\core\BepInEx.Unity.IL2CPP.xml
+C:\Program Files (x86)\Steam\steamapps\common\Among Us toht\BepInEx\core\BepInEx.Unity.IL2CPP.dll.config

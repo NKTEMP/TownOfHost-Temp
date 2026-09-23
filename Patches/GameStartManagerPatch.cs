@@ -283,7 +283,7 @@ namespace TownOfHost
                         Logger.Warn(msg, "BeginGame");
                     }
                 }
-                if (DebugModeManager.Spawndummy.GetBool() && DebugModeManager.EnableTOHTmDebugMode.GetBool() && GameStates.IsLocalGame && PlayerCatch.AllPlayerControls.Where(pc => pc.isDummy is false).Count() == 1
+                if (DebugModeManager.Spawndummy.GetBool() && DebugModeManager.EnableTOHSDebugMode.GetBool() && GameStates.IsLocalGame && PlayerCatch.AllPlayerControls.Where(pc => pc.isDummy is false).Count() == 1
                 && DebugModeManager.AmDebugger)
                 {
                     byte id = 0;

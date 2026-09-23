@@ -16,7 +16,7 @@ public sealed class Driver : RoleBase, IImpostor, IKillFlashSeeable, IDeathReaso
             () => RoleTypes.Impostor,
             CustomRoleTypes.Impostor,
             16000,
-            SetupOptionItems,
+            SetupOptionItem,
             "dr",
             OptionSort: (0, 0),
             tab: TabGroup.Combinations,
@@ -64,7 +64,7 @@ public sealed class Driver : RoleBase, IImpostor, IKillFlashSeeable, IDeathReaso
     public static float BraidKillCooldown;
     public static float KillCooldown;
     public static bool HasGuard;
-    public static void SetupOptionItems()
+    public static void SetupOptionItem()
     {
         OptionDriverCanSeeBraid = BooleanOptionItem.Create(RoleInfo, 21, OptionName.DriverCanSeeBraid, false, false);
         OptionKillCooldown = FloatOptionItem.Create(RoleInfo, 9, OptionName.KillCooldown, new(0f, 180f, 0.5f), 30f, false)

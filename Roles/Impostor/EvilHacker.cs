@@ -23,7 +23,7 @@ public sealed class EvilHacker : RoleBase, IImpostor, IKillFlashSeeable
             () => OptionShapeshiftAdmin.GetBool() ? RoleTypes.Shapeshifter : RoleTypes.Impostor,
             CustomRoleTypes.Impostor,
             3100,
-            SetupOptionItems,
+            SetupOptionItem,
             "eh",
             OptionSort: (2, 0),
             from: From.TheOtherRoles
@@ -73,7 +73,7 @@ public sealed class EvilHacker : RoleBase, IImpostor, IKillFlashSeeable
 
     private HashSet<MurderNotify> activeNotifies = new(2);
 
-    private static void SetupOptionItems()
+    private static void SetupOptionItem()
     {
         OptionCanSeeDeadMark = BooleanOptionItem.Create(RoleInfo, 10, OptionName.EvilHackerCanSeeDeadMark, true, false);
         OptionCanSeeImpostorMark = BooleanOptionItem.Create(RoleInfo, 11, OptionName.EvilHackerCanSeeImpostorMark, true, false);

@@ -633,7 +633,7 @@ namespace TownOfHost
             ObjectOptionitem.Create(1_000_113, "GameOption", true, null, TabGroup.MainSettings).SetOptionName(() => "Game").SetColorcode("#ea633eff");
             ONspecialMode = BooleanOptionItem.Create(100000, "ONspecialMode", false, TabGroup.MainSettings, false)
                 .SetHeader(true)
-                .SetColorcode("#00c1ff");
+                .SetColorcode("#ffcc00");
             InsiderMode = BooleanOptionItem.Create(100001, "InsiderMode", false, TabGroup.MainSettings, false).SetParent(ONspecialMode)
                 .SetTag(CustomOptionTags.Standard)
                 .SetTooltip(() => Translator.GetString("InsiderModeOptionInfo"));
@@ -1176,15 +1176,15 @@ namespace TownOfHost
             AutoDisplayKillLog = BooleanOptionItem.Create(1_000_006, "AutoDisplayKillLog", true, TabGroup.MainSettings, true)
                 .SetColorcode("#66ffff");
             HideGameSettings = BooleanOptionItem.Create(1_000_002, "HideGameSettings", false, TabGroup.MainSettings, true)
-                .SetColorcode("#00c1ff");
+                .SetColorcode("#ffcc00");
             HideSettingsDuringGame = BooleanOptionItem.Create(1_000_003, "HideGameSettingsDuringGame", false, TabGroup.MainSettings, true)
-                .SetColorcode("#00c1ff");
+                .SetColorcode("#ffcc00");
             SuffixMode = StringOptionItem.Create(1_000_001, "SuffixMode", suffixModes, 0, TabGroup.MainSettings, true)
-                .SetColorcode("#00c1ff");
+                .SetColorcode("#ffcc00");
             ChangeNameToRoleInfo = BooleanOptionItem.Create(1_000_004, "ChangeNameToRoleInfo", true, TabGroup.MainSettings, true)
-                .SetColorcode("#00c1ff");
+                .SetColorcode("#ffcc00");
             RoleAssigningAlgorithm = StringOptionItem.Create(1_000_005, "RoleAssigningAlgorithm", RoleAssigningAlgorithms, 0, TabGroup.MainSettings, true)
-                .SetColorcode("#00c1ff")
+                .SetColorcode("#ffcc00")
                 .RegisterUpdateValueEvent(
                     (object obj, OptionItem.UpdateValueEventArgs args) => IRandom.SetInstanceById(args.CurrentValue)
                 );

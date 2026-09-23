@@ -24,7 +24,7 @@ namespace TownOfHost
         public static SimpleButton UpdateDetailsButton { get; private set; }
         private static SimpleButton gitHubButton;
         private static SimpleButton TwitterXButton;
-        private static SimpleButton TOHTmBOTButton;
+        private static SimpleButton TOHSBOTButton;
         private static SimpleButton RoleInfoButton;
         //private static SimpleButton VersionChangeButton;
         private static SimpleButton betaversionchange;
@@ -72,7 +72,7 @@ namespace TownOfHost
                     new(-0.8f, -1f, 1f),//-1f
                     new(153, 153, 153, byte.MaxValue),
                     new(209, 209, 209, byte.MaxValue),
-                    () => Application.OpenURL("https://github.com/NKTEMP/TownOfHost-Temp"),
+                    () => Application.OpenURL("https://github.com/KYMario/TownOfHost-S"),
                     "GitHub");
             }
 
@@ -84,19 +84,19 @@ namespace TownOfHost
                     new(0.9f, -1f, 1f),
                     new(0, 202, 255, byte.MaxValue),
                     new(60, 255, 255, byte.MaxValue),
-                    () => Application.OpenURL("https://x.com/TownOfHostTm"),
+                    () => Application.OpenURL("https://twitter.com/TOHSserver_k"),
                     "Twitter(X)");
             }
-            // Wikiボタンを生成(ボットないからwikiに変えた)
-            if (SimpleButton.IsNullOrDestroyed(TOHTmBOTButton))
+            // TOHSBOTボタンを生成
+            if (SimpleButton.IsNullOrDestroyed(TOHSBOTButton))
             {
-                TOHTmBOTButton = CreateButton(
-                    "Wikibutton",
+                TOHSBOTButton = CreateButton(
+                    "TOHSBOTButton",
                     new(2.6f, -1f, 1f),
                     new(0, 201, 87, byte.MaxValue),
                     new(60, 201, 87, byte.MaxValue),
-                    () => Application.OpenURL("https://github.com/NKTEMP/TownOfHost-Temp/wiki"),
-                    "Wiki");
+                    () => Application.OpenURL("https://discord.com/api/oauth2/authorize?client_id=1198276538563567716&permissions=8&scope=bot"),
+                    "TOHSBOT");
             }
             if (SimpleButton.IsNullOrDestroyed(StatisticsButton))
             {
@@ -107,7 +107,7 @@ namespace TownOfHost
                     new(255, 248, 173, byte.MaxValue),
                     () =>
                     {
-                        CredentialsPatch.TOHTmLogo.gameObject.SetActive(false);
+                        CredentialsPatch.TOHSLogo.gameObject.SetActive(false);
                         __instance.screenTint.enabled = true;
                         Statistics_TMP.gameObject.SetActive(true);
                         Statistics_TMP.text = $"<size=60%>{SaveStatistics.ShowText()}";
@@ -179,7 +179,7 @@ namespace TownOfHost
                         UpdateDetailsPopup.name = "Update Detail";
                         UpdateDetailsPopup.gameObject.SetActive(true);
                         UpdateDetailsPopup.AnnouncementListSlider.SetActive(false);
-                        UpdateDetailsPopup.Title.text = "TOH-Tm " + ModUpdater.latestTitle;
+                        UpdateDetailsPopup.Title.text = "TOH-S " + ModUpdater.latestTitle;
                         UpdateDetailsPopup.AnnouncementBodyText.text = Regex.Replace(ModUpdater.body.Replace("#", "").Replace("**", ""), @"\[(.*?)\]\(.*?\)", "$1");
                         UpdateDetailsPopup.DateString.text = "Latest Release";
                         UpdateDetailsPopup.SubTitle.text = "";
@@ -200,7 +200,7 @@ namespace TownOfHost
                     new(60, 255, 183, byte.MaxValue),
                     () =>
                     {
-                        CredentialsPatch.TOHTmLogo.gameObject.SetActive(false);
+                        CredentialsPatch.TOHSLogo.gameObject.SetActive(false);
                         __instance.screenTint.enabled = true;
                         if (betaVersionMenu != null)
                         {
@@ -294,7 +294,7 @@ namespace TownOfHost
             Transform transform = null,
             string toolTip = null)
         {
-            var button = new SimpleButton(transform == null ? CredentialsPatch.TOHTmLogo.transform : transform, name, localPosition, normalColor, hoverColor, action, label, isActive);
+            var button = new SimpleButton(transform == null ? CredentialsPatch.TOHSLogo.transform : transform, name, localPosition, normalColor, hoverColor, action, label, isActive);
             if (scale.HasValue)
             {
                 button.Scale = scale.Value;
@@ -370,9 +370,9 @@ namespace TownOfHost
                 //    createbutton.GetComponent<BoxCollider2D>().offset = new(100f, 100);
             }
 
-            if (CredentialsPatch.TOHTmLogo != null)
+            if (CredentialsPatch.TOHSLogo != null)
             {
-                CredentialsPatch.TOHTmLogo.gameObject.SetActive(false);
+                CredentialsPatch.TOHSLogo.gameObject.SetActive(false);
             }
             if (VersionMenu != null)
                 VersionMenu.SetActive(false);
@@ -401,9 +401,9 @@ namespace TownOfHost
         [HarmonyPatch(nameof(MainMenuManager.ResetScreen)), HarmonyPostfix]
         public static void ResetScreenPostfix(MainMenuManager __instance)
         {
-            if (CredentialsPatch.TOHTmLogo != null)
+            if (CredentialsPatch.TOHSLogo != null)
             {
-                CredentialsPatch.TOHTmLogo?.gameObject?.SetActive(true);
+                CredentialsPatch.TOHSLogo?.gameObject?.SetActive(true);
             }
             if (VersionMenu != null)
                 VersionMenu.SetActive(false);
@@ -526,7 +526,7 @@ namespace TownOfHost
             {
                 var allrole = CustomRolesHelper.AllStandardRoles;
                 var role = allrole[IRandom.Instance.Next(allrole.Count())];
-                var sprite = UtilsSprite.LoadSprite($"TownOfHost.Resources.TOHTm.Label.{role}.png", size);
+                var sprite = UtilsSprite.LoadSprite($"TownOfHost.Resources.TOHS.Label.{role}.png", size);
                 if (sprite is null) return;
                 part.myRend.material.shader = shader;
                 part.myRend.sharedMaterial.shader = shader;
@@ -536,11 +536,11 @@ namespace TownOfHost
             {
                 var allrole = CustomRolesHelper.AllRoles;
                 var role = allrole[IRandom.Instance.Next(allrole.Count())];
-                var sprite = UtilsSprite.LoadSprite($"TownOfHost.Resources.TOHTm.Button.{role}_Ability.png", size);
+                var sprite = UtilsSprite.LoadSprite($"TownOfHost.Resources.TOHS.Button.{role}_Ability.png", size);
                 if (sprite is null)
-                    sprite = UtilsSprite.LoadSprite($"TownOfHost.Resources.TOHTm.Button.{role}_Kill.png", size);
+                    sprite = UtilsSprite.LoadSprite($"TownOfHost.Resources.TOHS.Button.{role}_Kill.png", size);
                 if (sprite is null)
-                    sprite = UtilsSprite.LoadSprite($"TownOfHost.Resources.TOHTm.Button.{role}_Vent.png", size);
+                    sprite = UtilsSprite.LoadSprite($"TownOfHost.Resources.TOHS.Button.{role}_Vent.png", size);
                 if (sprite is null) return;
                 part.myRend.material.shader = shader;
                 part.myRend.sharedMaterial.shader = shader;

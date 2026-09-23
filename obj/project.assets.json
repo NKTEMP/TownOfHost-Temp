@@ -42,6 +42,15 @@
           "build/Fody.targets": {}
         }
       },
+      "GitInfo/2.0.20": {
+        "type": "package",
+        "build": {
+          "build/GitInfo.targets": {}
+        },
+        "buildMultiTargeting": {
+          "buildMultiTargeting/GitInfo.targets": {}
+        }
+      },
       "Microsoft.NETCore.Platforms/1.1.0": {
         "type": "package",
         "compile": {
@@ -1399,6 +1408,25 @@
         "netstandardtask/Mono.Cecil.Rocks.pdb",
         "netstandardtask/Mono.Cecil.dll",
         "netstandardtask/Mono.Cecil.pdb"
+      ]
+    },
+    "GitInfo/2.0.20": {
+      "sha512": "mCzyI02VtCPy/O/GGa7y9iiCVRkwklU6hhyjbDPF1nPM8+sIjLe84iZA5jRKZzhu0u5kLC0SMvPQztcr/I28DQ==",
+      "type": "package",
+      "path": "gitinfo/2.0.20",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "build/GitInfo.cache.pp",
+        "build/GitInfo.cs.pp",
+        "build/GitInfo.targets",
+        "build/GitInfo.vb.pp",
+        "build/wslpath.cmd",
+        "build/wslrun.cmd",
+        "buildMultiTargeting/GitInfo.targets",
+        "gitinfo.2.0.20.nupkg.sha512",
+        "gitinfo.nuspec",
+        "readme.txt"
       ]
     },
     "Microsoft.NETCore.Platforms/1.1.0": {
@@ -4674,28 +4702,24 @@
   "projectFileDependencyGroups": {
     "net6.0": [
       "Costura.Fody >= 5.7.0",
+      "GitInfo >= 2.0.20",
       "csv >= 2.0.87"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\akito\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\tiram\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\SteamLibrary\\steamapps\\common\\TownOfHost-Temp-main\\TownOfHost.csproj",
+      "projectUniqueName": "C:\\Users\\tiram\\TownOfHost-Temp\\Temp-main\\TownOfHost.csproj",
       "projectName": "TownOfHost-Temp",
-      "projectPath": "D:\\SteamLibrary\\steamapps\\common\\TownOfHost-Temp-main\\TownOfHost.csproj",
-      "packagesPath": "C:\\Users\\akito\\.nuget\\packages\\",
-      "outputPath": "D:\\SteamLibrary\\steamapps\\common\\TownOfHost-Temp-main\\obj\\",
+      "projectPath": "C:\\Users\\tiram\\TownOfHost-Temp\\Temp-main\\TownOfHost.csproj",
+      "packagesPath": "C:\\Users\\tiram\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\tiram\\TownOfHost-Temp\\Temp-main\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "C:\\Users\\akito\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Users\\tiram\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -4703,7 +4727,9 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "https://api.nuget.org/v3/index.json": {}
+        "C:\\Program Files\\dotnet\\library-packs": {},
+        "https://api.nuget.org/v3/index.json": {},
+        "https://nuget.bepinex.dev/v3/index.json": {}
       },
       "frameworks": {
         "net6.0": {
@@ -4734,6 +4760,12 @@
             "target": "Package",
             "version": "[5.7.0, )"
           },
+          "GitInfo": {
+            "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+            "suppressParent": "All",
+            "target": "Package",
+            "version": "[2.0.20, )"
+          },
           "csv": {
             "target": "Package",
             "version": "[2.0.87, )"
@@ -4750,26 +4782,12 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
-        "downloadDependencies": [
-          {
-            "name": "Microsoft.AspNetCore.App.Ref",
-            "version": "[6.0.36, 6.0.36]"
-          },
-          {
-            "name": "Microsoft.NETCore.App.Ref",
-            "version": "[6.0.36, 6.0.36]"
-          },
-          {
-            "name": "Microsoft.WindowsDesktop.App.Ref",
-            "version": "[6.0.36, 6.0.36]"
-          }
-        ],
         "frameworkReferences": {
           "Microsoft.NETCore.App": {
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.400\\RuntimeIdentifierGraph.json"
       }
     }
   }

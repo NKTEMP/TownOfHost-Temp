@@ -15,7 +15,7 @@ public sealed class Notifier : RoleBase, IImpostor
             () => RoleTypes.Impostor,
             CustomRoleTypes.Impostor,
             7100,
-            SetupOptionItems,
+            SetupOptionItem,
             "nt",
             OptionSort: (7, 6),
             from: From.TownOfHost_K
@@ -37,7 +37,7 @@ public sealed class Notifier : RoleBase, IImpostor
     }
     private static int NotifierProbability;
     private static float KillCooldown;
-    private static void SetupOptionItems()
+    private static void SetupOptionItem()
     {
         OptionKillCooldown = FloatOptionItem.Create(RoleInfo, 10, GeneralOption.KillCooldown, new(0f, 180f, 0.5f), 25f, false)
                 .SetValueFormat(OptionFormat.Seconds);

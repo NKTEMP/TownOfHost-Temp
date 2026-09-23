@@ -283,7 +283,7 @@ namespace TownOfHost
                         PlayerControl.LocalPlayer.RpcSetRole(RoleTypes.Crewmate, Main.SetRoleOverride && GameModeManager.IsStandardClass());
                         PlayerControl.LocalPlayer.Data.IsDead = true;
                     }
-                    if (DebugModeManager.EnableTOHTmDebugMode.GetBool())
+                    if (DebugModeManager.EnableTOHSDebugMode.GetBool())
                     {
                         if (Main.HostRole != CustomRoles.NotAssigned)
                         {
