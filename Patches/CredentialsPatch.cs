@@ -201,9 +201,9 @@ namespace TownOfHost
             if (Main.DebugVersion) Debugver = $"<{Main.ModColor}>☆Debug☆</color>";
             Subver = "";
             Main.credentialsText = $"<{Main.ModColor}>{Main.ModName}</color> v{Main.PluginShowVersion}" + Debugver;
-#if DEBUG
+/*#if DEBUG
             if (!GameStates.InGame) Main.credentialsText += $"\n<{Main.ModColor}>{ThisAssembly.Git.Branch}({ThisAssembly.Git.Commit})</color>";
-#endif
+#endif*/
             var credentials = TMPTemplate.Create(
                 "TOHCredentialsText",
                 Main.credentialsText,
@@ -211,9 +211,9 @@ namespace TownOfHost
                 alignment: TextAlignmentOptions.Right,
                 setActive: true);
             credentials.transform.position = new Vector3(2.3419f, 2.29f, -5f);
-#if DEBUG
+/*#if DEBUG
             if (!GameStates.InGame) credentials.transform.position -= new Vector3(0f, 0.1218f, 0f);
-#endif
+#endif*/
             if (FindAGameManager._instance)
             {
                 credentials.transform.position = new Vector3(2.5f, -2.858f, 5f);
