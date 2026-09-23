@@ -860,6 +860,7 @@ public enum CustomRoles
     EvilBlender,
     UnFortuner,
     //DEBUG only Impostor,
+    StepBomber,
     //Madmate
     MadGuardian,
     Madmate,
@@ -943,6 +944,7 @@ public enum CustomRoles
     Satellite,
     Merlin,
     //DEBUG only Crewmate
+    Coroner,
     Analyzer,
     //Neutral
     Arsonist,

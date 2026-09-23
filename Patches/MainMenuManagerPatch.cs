@@ -84,19 +84,19 @@ namespace TownOfHost
                     new(0.9f, -1f, 1f),
                     new(0, 202, 255, byte.MaxValue),
                     new(60, 255, 255, byte.MaxValue),
-                    () => Application.OpenURL("https://twitter.com/TOHTmserver_k"),
+                    () => Application.OpenURL("https://x.com/TownOfHostTm"),
                     "Twitter(X)");
             }
-            // TOHTmBOTボタンを生成
+            // Wikiボタンを生成(ボットないからwikiに変えた)
             if (SimpleButton.IsNullOrDestroyed(TOHTmBOTButton))
             {
                 TOHTmBOTButton = CreateButton(
-                    "TOHTmBOTButton",
+                    "Wikibutton",
                     new(2.6f, -1f, 1f),
                     new(0, 201, 87, byte.MaxValue),
                     new(60, 201, 87, byte.MaxValue),
-                    () => Application.OpenURL("https://discord.com/api/oauth2/authorize?client_id=1198276538563567716&permissions=8&scope=bot"),
-                    "TOHTmBOT");
+                    () => Application.OpenURL("https://github.com/NKTEMP/TownOfHost-Temp/wiki"),
+                    "Wiki");
             }
             if (SimpleButton.IsNullOrDestroyed(StatisticsButton))
             {
