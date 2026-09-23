@@ -68,8 +68,8 @@ public class ClientActionItem
 
                 ModOptionsButton = Object.Instantiate(mouseMoveToggle, generalTab);
                 ModOptionsButton.transform.localPosition = leaveButton?.transform?.localPosition ?? new(0f, -2.4f, 1f);
-                ModOptionsButton.name = "TOH-SOptions";
-                ModOptionsButton.Text.text = Translator.GetString("TOH-SOptions");
+                ModOptionsButton.name = "TOH-TmOptions";
+                ModOptionsButton.Text.text = Translator.GetString("TOH-TmOptions");
                 if (ColorUtility.TryParseHtmlString(Main.ModColor, out var modColor))
                 {
                     ModOptionsButton.Background.color = modColor;

@@ -198,7 +198,7 @@ namespace TownOfHost
                     SelfName = SelfSuffix.ToString() == "" ? SelfName : ($"\n{SelfName}" + "<line-height=85%>\r\n " + SelfSuffix.ToString() + "</line-height>");
                     SelfName = "<line-height=85%>" + SelfName + "\r\n";
                     SelfName = SelfName.RemoveDeltext("color=#", "#");
-                    //SelfName = $"\n\n\n\n\n\n{SelfName}{(SelfSuffix.ToString() == "" ? "\n\n\n\n\n\n" : "\n\n\n\n")}<{Main.ModColor}55>TOH-S</color>";
+                    //SelfName = $"\n\n\n\n\n\n{SelfName}{(SelfSuffix.ToString() == "" ? "\n\n\n\n\n\n" : "\n\n\n\n")}<{Main.ModColor}55>TOH-Tm</color>";
 
                     if (SelfName.Length > 340 && IsRestriction())
                     {

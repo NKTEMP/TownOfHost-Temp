@@ -468,7 +468,7 @@ namespace TownOfHost
                         case SuffixModes.None:
                             break;
                         case SuffixModes.TOH:
-                            name += $"<size=75%>(<{Main.ModColor}>TOH-S v{Main.PluginShowVersion})</color></size>";
+                            name += $"<size=75%>(<{Main.ModColor}>TOH-Tm v{Main.PluginShowVersion})</color></size>";
                             break;
                         case SuffixModes.Streaming:
                             name += $"<size=75%>(<{Main.ModColor}>{GetString("SuffixMode.Streaming")})</color></size>";
@@ -934,7 +934,7 @@ namespace TownOfHost
         public static bool IsRestriction()
         {
             //デバッグならカスタム・ローカル問わずバニラと同処理。
-            if (DebugModeManager.AmDebugger && DebugModeManager.EnableTOHSDebugMode.GetBool()) return true;
+            if (DebugModeManager.AmDebugger && DebugModeManager.EnableTOHTmDebugMode.GetBool()) return true;
             //カスタムサーバー か ローカルゲームならfalseを返す
             if (Main.IsCs() || GameStates.IsLocalGame) return false;
 

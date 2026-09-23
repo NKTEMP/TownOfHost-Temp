@@ -17,7 +17,7 @@ namespace TownOfHost
         public static bool IsDebugMode => AmDebugger && EnableDebugMode != null && EnableDebugMode.GetBool();
 
         public static OptionItem EnableDebugMode;
-        public static OptionItem EnableTOHSDebugMode;
+        public static OptionItem EnableTOHTmDebugMode;
         public static OptionItem Spawndummy;
         public static OptionItem DummyAssignRole;
 
@@ -42,7 +42,7 @@ namespace TownOfHost
                     Main.NormalOptions.NumImpostors = 1;
                 }
             });*/
-            EnableTOHSDebugMode = BooleanOptionItem.Create(3, "EnableTOHSDebugMode", false, TabGroup.MainSettings, true)
+            EnableTOHTmDebugMode = BooleanOptionItem.Create(3, "EnableTOHTmDebugMode", false, TabGroup.MainSettings, true)
                 .SetColor(Color.green)
                 .SetHidden(!AmDebugger);
             Spawndummy = IntegerOptionItem.Create(5, "Spawndummy", new(0, 14, 1), 0, TabGroup.MainSettings, true)

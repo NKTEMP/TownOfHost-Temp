@@ -17,7 +17,7 @@ namespace TownOfHost.Modules;
 class VersionInfoManager
 {
     public static readonly string URL = "https://raw.githubusercontent.com/KYMario/TownOfHost-S/main/versions.json";
-    //public static readonly string URL = "https://raw.githubusercontent.com/KYMario/TOHS-Test/main/versions.json";
+    //public static readonly string URL = "https://raw.githubusercontent.com/KYMario/TOHTm-Test/main/versions.json";
     public static Dictionary<string, VersionInfo> Versions { get; protected set; }
     public static VersionInfo version { get; protected set; }
     public static VersionInfo allversion { get; protected set; }
@@ -87,7 +87,7 @@ class VersionInfoManager
         {
             var announceText = new GameObject("ModAnnounceText").AddComponent<TextMeshPro>();
 
-            announceText.transform.SetParent(CredentialsPatch.TOHSLogo.transform);
+            announceText.transform.SetParent(CredentialsPatch.TOHTmLogo.transform);
             announceText.transform.localPosition = new(0f, 1f, 0f);
             announceText.fontSize =
             announceText.fontSizeMax =

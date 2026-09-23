@@ -16,7 +16,7 @@ namespace TownOfHost
     [HarmonyPatch]
     public static class CredentialsPatch
     {
-        public static SpriteRenderer TOHSLogo { get; private set; }
+        public static SpriteRenderer TOHTmLogo { get; private set; }
         private static TextMeshPro pingTrackerCredential = null;
         private static AspectPosition pingTrackerCredentialAspectPos = null;
         private static float deltaTime = 0.0f;
@@ -75,7 +75,7 @@ namespace TownOfHost
                         if (DebugModeManager.IsDebugMode)
                         {
                             sb.Append("\r\n");
-                            sb.Append(DebugModeManager.EnableTOHSDebugMode.OptionMeGetBool() ? "<#0066de>DebugMode</color>" : Utils.ColorString(Color.green, "デバッグモード"));
+                            sb.Append(DebugModeManager.EnableTOHTmDebugMode.OptionMeGetBool() ? "<#0066de>DebugMode</color>" : Utils.ColorString(Color.green, "デバッグモード"));
                         }
 
                         exSb.Clear();
@@ -149,14 +149,14 @@ namespace TownOfHost
                 }
 #endif
 
-                if (SpecialEventText == null && TOHSLogo != null)
+                if (SpecialEventText == null && TOHTmLogo != null)
                 {
                     SpecialEventText = TMPTemplate.Create(
                         "SpecialEventText",
                         "",
                         Color.white,
                         alignment: TextAlignmentOptions.Center,
-                        parent: TOHSLogo.transform);
+                        parent: TOHTmLogo.transform);
                     SpecialEventText.name = "SpecialEventText";
                     SpecialEventText.fontSizeMin = 3f;
                     SpecialEventText.transform.localPosition = new Vector3(0f, 0.8f, 0f);
@@ -235,13 +235,13 @@ namespace TownOfHost
                 amongUsLogo = GameObject.Find("LOGO-AU");
 
                 var rightpanel = __instance.gameModeButtons.transform.parent;
-                var logoObject = new GameObject("titleLogo_TOHS");
+                var logoObject = new GameObject("titleLogo_TOHTm");
                 var logoTransform = logoObject.transform;
-                TOHSLogo = logoObject.AddComponent<SpriteRenderer>();
+                TOHTmLogo = logoObject.AddComponent<SpriteRenderer>();
                 logoTransform.parent = rightpanel;
                 logoTransform.localPosition = new(0f, 0.15f, 1f);
                 logoTransform.localScale *= 1.0f;
-                TOHSLogo.sprite = UtilsSprite.LoadSprite(Event.April || Event.Special ? "TownOfHost.Resources.TOHS.TownOfHost-S_A.png" : "TownOfHost.Resources.TOHS.TownOfHost-S.png", 300f);
+                TOHTmLogo.sprite = UtilsSprite.LoadSprite(Event.April || Event.Special ? "TownOfHost.Resources.TOHTm.TownOfHost-S_A.png" : "TownOfHost.Resources.TOHTm.TownOfHost-S.png", 300f);
             }
         }
         [HarmonyPatch(typeof(ModManager), nameof(ModManager.LateUpdate))]
