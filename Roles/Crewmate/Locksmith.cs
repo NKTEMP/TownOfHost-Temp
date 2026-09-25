@@ -33,20 +33,22 @@ public sealed class Locksmith : RoleBase
     )
     {
         count = OptionCount.GetInt();
-        cooldown = OptionCooldown.GetInt();
+        cooldown = OptionCooldown.GetFloat();
         canOpenDoor = OptionCanOpenDoor.GetBool();
         IsInfinity = count is 0;
 
         sealedVents = new List<int>();
         banishedPlayers = new Dictionary<byte, float>();
         isBooting = false;
+        cooldownTimer = 0f;
     }
 
     private static OptionItem OptionCount;
     private static OptionItem OptionCooldown;
     private static OptionItem OptionCanOpenDoor;
 
-    static int cooldown;
+    private float cooldown;
+    private float cooldownTimer;
     static bool canOpenDoor;
     static bool IsInfinity;
     int count;
@@ -66,22 +68,22 @@ public sealed class Locksmith : RoleBase
     private static void SetupOptionItem()
     {
         OptionCount = IntegerOptionItem.Create(
-            RoleInfo, 2910, OptionName.OptionCount,
+            RoleInfo, 1310, OptionName.OptionCount,
             new(0, 5, 1), 2, false)
             .SetZeroNotation(OptionZeroNotation.Infinity);
 
         OptionCooldown = IntegerOptionItem.Create(
-            RoleInfo, 2911, OptionName.Cooldown,
+            RoleInfo, 1311, OptionName.Cooldown,
             new(0, 180, 1), 30, false);
 
         OptionCanOpenDoor = BooleanOptionItem.Create(
-            RoleInfo, 2912, OptionName.LocksmithCanOpenDoor,
+            RoleInfo, 1312, OptionName.LocksmithCanOpenDoor,
             true, false);
     }
 
     public override bool OnEnterVent(PlayerPhysics physics, int ventId)
     {
-        if (!CanUseAbility) return false;
+        if (!CanUseAbility || cooldownTimer > 0f) return false;
         if (sealedVents.Contains(ventId)) return false;
 
         if (AmongUsClient.Instance.AmHost && !GameStates.CalledMeeting)
@@ -126,10 +128,10 @@ public sealed class Locksmith : RoleBase
         }
 
         if (!IsInfinity)
-        {
             count--;
-            SendRPC();
-        }
+
+        cooldownTimer = cooldown;
+        SendRPC();
 
         Player.KillFlash(false);
 
@@ -226,6 +228,9 @@ public sealed class Locksmith : RoleBase
 
     public override void OnFixedUpdate(PlayerControl player)
     {
+        if (cooldownTimer > 0f)
+            cooldownTimer = Mathf.Max(0f, cooldownTimer - Time.fixedDeltaTime);
+
         if (GameStates.IsInTask && AmongUsClient.Instance.AmHost &&
             banishedPlayers.Count > 0)
         {
@@ -240,11 +245,22 @@ public sealed class Locksmith : RoleBase
         }
 
         if (!canOpenDoor || !AmongUsClient.Instance.AmHost ||
-            !GameStates.IsInTask) return;
+            !GameStates.IsInTask || Player == null) return;
 
         var shipStatus = ShipStatus.Instance;
+        DoorsSystemType doorsSystem = null;
+        if (shipStatus?.Systems.TryGetValue(
+            SystemTypes.Doors, out var system) == true)
+        {
+            doorsSystem = system.TryCast<DoorsSystemType>();
+        }
+
+        // Keep door opening independent of the system lookup. Some maps or
+        // game states expose AllDoors before the doors system is available.
         if (shipStatus != null && shipStatus.AllDoors != null)
         {
+            bool openedDoor = false;
+
             foreach (var door in shipStatus.AllDoors)
             {
                 if (door == null) continue;
@@ -254,9 +270,17 @@ public sealed class Locksmith : RoleBase
                     door.transform.position) < 2.0f)
                 {
                     door.SetDoorway(true);
-                    break;
+                    openedDoor = true;
+                    Logger.Info(
+                        $"ドアを自動解錠: {door.Room}",
+                        "Locksmith");
                 }
             }
+
+            // SetDoorway changes the local door state. Marking the doors
+            // system dirty makes the host replicate that state to clients.
+            if (openedDoor && doorsSystem != null)
+                doorsSystem.IsDirty = true;
         }
     }
 
@@ -264,6 +288,7 @@ public sealed class Locksmith : RoleBase
     {
         using var sender = CreateSender();
         sender.Writer.Write(count);
+        sender.Writer.Write(cooldownTimer);
         sender.Writer.Write(sealedVents.Count);
         foreach (var ventId in sealedVents)
         {
@@ -274,6 +299,7 @@ public sealed class Locksmith : RoleBase
     public override void ReceiveRPC(MessageReader reader)
     {
         count = reader.ReadInt32();
+        cooldownTimer = Mathf.Max(0f, reader.ReadSingle());
         int sealedCount = reader.ReadInt32();
         sealedVents.Clear();
         SealedVentsStatic.Clear();
@@ -296,20 +322,30 @@ public sealed class Locksmith : RoleBase
         );
 
     public bool CanUseAbility => IsInfinity || count > 0;
-    public override bool CanClickUseVentButton => CanUseAbility;
+    public override bool CanClickUseVentButton =>
+        CanUseAbility && cooldownTimer <= 0f;
 
     public override string GetAbilityButtonText() =>
-        CanUseAbility ? "ベント封印" : "";
+        CanUseAbility ? GetString("LocksmithAbility") : "";
 
     public override bool OverrideAbilityButton(out string text)
     {
-        if (CanUseAbility)
+        if (CanUseAbility && cooldownTimer <= 0f)
         {
             text = "Locksmith_Ability";
             return true;
         }
         text = "";
         return false;
+    }
+
+    [HarmonyPatch(typeof(CustomRoleManager), nameof(CustomRoleManager.Initialize))]
+    private class ResetLocksmithDataPatch
+    {
+        static void Prefix()
+        {
+            SealedVentsStatic.Clear();
+        }
     }
 
     public static Dictionary<int, Achievement> achievements =

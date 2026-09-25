@@ -1674,6 +1674,8 @@
 "FortunerAddGiveAddon","Set AddGiveAddoneList","付与する属性を上書きする"
 "FortunerGiveOne","One use Give oneaddon","1回使用で属性を1つ渡す"
 "LocksmithCanOpenDoor","CanOpenDoor","自動ドア解錠","","","","",""
+"LocksmithAbility","Seal Vent","ベント封印","封锁通风管","封鎖通風管","Вентиляция","Selar Vent",""
+"Locksmith_Ability","Seal Vent","ベント封印","封锁通风管","封鎖通風管","Вентиляция","Selar Vent",""
 "InformationAmount","Info Amount","取得情報数",""
 "DeathTimeAccuracy","Time Accuracy","死亡時刻の精度",""
 "ShowReport","Show to All","全員に表示",""
