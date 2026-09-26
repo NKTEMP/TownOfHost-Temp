@@ -20,25 +20,9 @@ namespace TownOfHost
         {
             // 定数設定による公開ルームブロック
             if (!AmongUsClient.Instance.AmHost) return false;
-            if (!Main.AllowPublicRoom)
-            {
-                var message = GetString("DisabledByProgram");
-                Logger.Info(message, "MakePublicPatch");
-                Logger.seeingame(message);
-                return false;
-            }
-            if (!Main.IsPublicRoomAllowed())
-            {
-                var message = "";
-                if (!Main.IsPublicAvailableOnThisVersion) message = GetString("PublicNotAvailableOnThisVersion");
-                if (!VersionChecker.IsSupported) message = GetString("UnsupportedVersion");
-                if (ModUpdater.isBroken) message = GetString("ModBrokenMessage");
-                if (ModUpdater.hasUpdate) message = GetString("CanNotJoinPublicRoomNoLatest");
-                Logger.Info(message, "MakePublicPatch");
-                Logger.seeingame(message);
-                return false;
-            }
-            return true;
+            // 公式の公開ルームではなく、Discord募集のON/OFFとして扱う。
+            MatchmakingRelay.Toggle();
+            return false;
         }
     }
 

@@ -43,10 +43,11 @@ namespace TownOfHost.Roles.Impostor
         public static Dictionary<byte, Vector2> LastPositions = new Dictionary<byte, Vector2>();
         public static Dictionary<byte, float> RemainingSteps = new Dictionary<byte, float>();
 
-        private static byte _pendingTargetId = byte.MaxValue;
-        private static float _clickWindowTimer = 0f;
+        // Click state belongs to each StepBomber. Keeping this static makes
+        // multiple StepBombers overwrite one another's pending target.
+        private byte _pendingTargetId = byte.MaxValue;
+        private float _clickWindowTimer = 0f;
         private const float DoubleClickThreshold = 0.3f;
-        private static bool _isProcessingClick = false;
 
         private int _bombCount = 1;
 
@@ -72,27 +73,27 @@ namespace TownOfHost.Roles.Impostor
         private static void SetupOptionItem()
         {
             OptionStepsToDetonate = FloatOptionItem.Create(
-                RoleInfo, 10, "StepsToDetonate", new(5f, 300f, 5f), 20f, false);
+                RoleInfo, 1110, "StepsToDetonate", new(5f, 300f, 5f), 20f, false);
 
             OptionNotificationTiming = FloatOptionItem.Create(
-                RoleInfo, 11, "NotificationTiming", new(0f, 2f, 1f), 0f, false);
+                RoleInfo, 1111, "NotificationTiming", new(0f, 2f, 1f), 0f, false);
 
             OptionBlastRange = FloatOptionItem.Create(
-                RoleInfo, 12, "BlastRange", new(1f, 20f, 1f), 3f, false)
+                RoleInfo, 1112, "BlastRange", new(1f, 20f, 1f), 3f, false)
                 .SetValueFormat(OptionFormat.Multiplier);
 
             OptionCooldown = FloatOptionItem.Create(
-                RoleInfo, 13, GeneralOption.Cooldown, new(0f, 999f, 0.5f), 15f, false)
+                RoleInfo, 1113, GeneralOption.Cooldown, new(0f, 999f, 0.5f), 15f, false)
                 .SetValueFormat(OptionFormat.Seconds);
 
             OptionMaxBombCount = FloatOptionItem.Create(
-                RoleInfo, 14, "MaxBombCount", new(1f, 10f, 1f), 1f, false);
+                RoleInfo, 1114, "MaxBombCount", new(1f, 10f, 1f), 1f, false);
 
             OptionCanKillImpostor = FloatOptionItem.Create(
-                RoleInfo, 15, "CanKillImpostor", new(0f, 1f, 1f), 0f, false);
+                RoleInfo, 1115, "CanKillImpostor", new(0f, 1f, 1f), 0f, false);
 
             OptionHasNormalKill = BooleanOptionItem.Create(
-                RoleInfo, 16, "HasNormalKill", false, false);
+                RoleInfo, 1116, "HasNormalKill", false, false);
         }
 
         public override void OverrideTrueRoleName(ref Color roleColor, ref string roleText)
@@ -111,6 +112,18 @@ namespace TownOfHost.Roles.Impostor
             }
 
             byte targetId = info.AttemptTarget.PlayerId;
+
+            // A target that already has a bomb must not fall through to the
+            // normal-kill double-click branch. Otherwise a later click can
+            // kill the target instead of leaving the bomb in place.
+            if (PlantedBombs.ContainsKey(targetId))
+            {
+                info.CanKill = false;
+                info.DoKill = false;
+                ResetClickState();
+                Logger.Info($"[StepBomber] Target already has a bomb: {targetId}", "StepBomber");
+                return;
+            }
 
             if (OptionHasNormalKill.GetBool())
             {
@@ -262,8 +275,7 @@ namespace TownOfHost.Roles.Impostor
             static void Postfix()
             {
                 LastPositions.Clear();
-                _pendingTargetId = byte.MaxValue;
-                _clickWindowTimer = 0f;
+                ResetAllClickStates();
                 CheckAndTriggerNotification(0);
             }
         }
@@ -371,9 +383,20 @@ namespace TownOfHost.Roles.Impostor
             IgnitedPlayers.Clear();
             LastPositions.Clear();
             RemainingSteps.Clear();
+            ResetAllClickStates();
+            SafeMeetingVotePatch.hasTriggeredVote = false;
+        }
+
+        private void ResetClickState()
+        {
             _pendingTargetId = byte.MaxValue;
             _clickWindowTimer = 0f;
-            SafeMeetingVotePatch.hasTriggeredVote = false;
+        }
+
+        private static void ResetAllClickStates()
+        {
+            foreach (var role in CustomRoleManager.AllActiveRoles.Values.OfType<StepBomber>())
+                role.ResetClickState();
         }
     }
 }

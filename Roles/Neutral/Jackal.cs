@@ -86,7 +86,9 @@ namespace TownOfHost.Roles.Neutral
                 .SetValueFormat(OptionFormat.Seconds);
             OptionSidekickPromotion = BooleanOptionItem.Create(RoleInfo, 19, OptionName.JackalSidekickPromotion, false, false, OptionCanMakeSidekick);
             ObjectOptionitem.Create(RoleInfo, 8, "AddonOption", true, null).SetOptionName(() => "Sidekick Setting");
-            RoleAddAddons.Create(RoleInfo, 20, NeutralKiller: true);
+            // The Locksmith role uses config ID 12933 in this fork. Starting the
+            // generated add-on block at offset 20 produced IDs 12933/12934.
+            RoleAddAddons.Create(RoleInfo, 40, NeutralKiller: true);
         }
         public float CalculateKillCooldown() => KillCooldown;
         public bool CanUseSabotageButton() => CanUseSabotage;

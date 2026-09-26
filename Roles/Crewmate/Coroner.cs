@@ -55,16 +55,16 @@ namespace TownOfHost.Roles.Crewmate
         private static void SetupOptionItem()
         {
             OptionInformationAmount = FloatOptionItem.Create(
-                RoleInfo, 10, "InformationAmount",
+                RoleInfo, 1210, "InformationAmount",
                 new(1f, 4f, 1f), 2f, false);
 
             OptionDeathTimeAccuracy = FloatOptionItem.Create(
-                RoleInfo, 11, "DeathTimeAccuracy",
+                RoleInfo, 1211, "DeathTimeAccuracy",
                 new(5f, 60f, 5f), 15f, false)
                 .SetValueFormat(OptionFormat.Seconds);
 
             OptionShowReport = BooleanOptionItem.Create(
-                RoleInfo, 12, "ShowReport", false, false);
+                RoleInfo, 1212, "ShowReport", false, false);
         }
 
         public override void OverrideTrueRoleName(

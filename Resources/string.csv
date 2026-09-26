@@ -1675,7 +1675,6 @@
 "FortunerGiveOne","One use Give oneaddon","1回使用で属性を1つ渡す"
 "LocksmithCanOpenDoor","CanOpenDoor","自動ドア解錠","","","","",""
 "LocksmithAbility","Seal Vent","ベント封印","封锁通风管","封鎖通風管","Вентиляция","Selar Vent",""
-"Locksmith_Ability","Seal Vent","ベント封印","封锁通风管","封鎖通風管","Вентиляция","Selar Vent",""
 "InformationAmount","Info Amount","取得情報数",""
 "DeathTimeAccuracy","Time Accuracy","死亡時刻の精度",""
 "ShowReport","Show to All","全員に表示",""
@@ -2509,8 +2508,9 @@
 
 "### ErrorText関連"
 "ErrorLevel1","Bugs may occur.","何らかのバグが発生する可能性があります。","可能同时产生多个bug","可能同時產生多個Bug","Могут возникнуть некоторые ошибки.","Bugs podem acontecer.",""
-"ErrorLevel2","This may be a bug.","バグが発生している可能性があります。","可能出现bug","可能出現Bug","Возможно вы столкнулись с ошибкой.","Talvez isso seja um bug.",""
+"ErrorLevel2","This may be a bug.","バグが発生している可能性があります。","可能出现bug","可能出現Bug","Возможно вы столкнулись с ошибкой.","Talvez você tenha encontrado um erro.",""
 "ErrorLevel3","This version shouldn't have been released.","このバージョンはリリースされるべきではありません。","未发布版本","未發布版本","Эта версия никогда не должна быть выпущена.","Esta versão não deveria ter sido lançada.",""
+"ERR-001-010-3","Duplicate option ID detected.","オプションIDが重複しています。","检测到重复的选项ID","偵測到重複的選項ID","Обнаружен дублирующийся ID параметра.","ID de opção duplicado detectado.",""
 "TerminateCommand","Abort Command","廃村コマンド","强制结束游戏命令","強制結束遊戲指令","Команда устарела","Abortar Comando",""
 "#### 000 Test"
 "ERR-000-000-0","No Error","エラーなし","无错误","無錯誤","Ошибок не обнаружено","Nenhum Erro",""

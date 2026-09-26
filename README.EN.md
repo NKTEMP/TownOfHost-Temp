@@ -1,9 +1,8 @@
 # Town Of Host-Temp
-
-!これは、英語版のReadmeです!<br>
+This is the English version of the README.<br>
 
 **DiscordServer**
-[![Discord](./Images/TownOfHostK_readme.png)](https://discord.gg/3tVdPVN65)
+[![Discord](https://private-us-east-1.manuscdn.com/sessionFile/UeHgOvc8tVnRZKbUVCKL9n/sandbox/gth5cvthY3HlE9iGpyZ06T-images_1790444713308_na1fn_L2hvbWUvdWJ1bnR1L3Jldmlld190b2gvVG93bk9mSG9zdC1UZW1wLW1haW4vSW1hZ2VzL1Rvd25PZkhvc3RLX3JlYWRtZQ.png?Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9wcml2YXRlLXVzLWVhc3QtMS5tYW51c2Nkbi5jb20vc2Vzc2lvbkZpbGUvVWVIZ092Yzh0Vm5SWktiVVZDS0w5bi9zYW5kYm94L2d0aDVjdnRoWTNIbEU5aUdweVowNlQtaW1hZ2VzXzE3OTA0NDQ3MTMzMDhfbmExZm5fTDJodmJXVXZkV0oxYm5SMUwzSmxkbWxsZDE5MGIyZ3ZWRzkzYms5bVNHOXpkQzFVWlcxd0xXMWhhVzR2U1cxaFoyVnpMMVJ2ZDI1UFpraHZjM1JMWDNKbFlXUnRaUS5wbmciLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjE3OTIwMjI0MDB9fX1dfQ__&Key-Pair-Id=K2QY5QTL8JSY6C&Signature=MEYCIQDOC9l-j9PqaBQkQ8RQpp390lJF-b3-Y-cMi7tj0KUt-gIhALUoD2So7aInPiNBbc6kd~4erTgKZNAId~vm~zeTUYug)](https://discord.gg/YpPJB7RdvD)
 
 <p align="center"><a href="https://github.com/NKTEMP/TownOfHost-Temp/releases/"><img src="https://badgen.net/github/release/NKTEMP/TownOfHost-Temp"></a></p>
 
@@ -12,10 +11,10 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 Please do not contact the official support regarding issues with this mod.<br>
 
-This mod adds roles, features, and other elements to TownOfHost.<br>
+This mod adds roles, features, and other elements to TOH and TOHK.<br>
 If you encounter bugs in TownOfHost-Temp, please report them to TownOfHost-Temp first, not to the original game or other mods.<br>
 
-Additionally, questions and bug reports regarding TownOfHost-Temp are accepted on the [DiscordServer](https://discord.gg/3tVdPVN65).<br>
+Additionally, questions and bug reports regarding TownOfHost-Temp are accepted on the [DiscordServer](https://discord.gg/YpPJB7RdvD).<br>
 
 ## [Wiki](https://github.com/NKTEMP/TownOfHost-Temp/wiki)
 
@@ -61,8 +60,8 @@ Previous versions are [Here](https://github.com/NKTEMP/TownOfHost-Temp/releases)
 <br>
 If you encounter a recruitment room, do not join it indiscriminately. Please notify the developers first. We will handle it strictly.<br>
 
-## Punishments and Usage Restrictions in TOH-Tm
-Starting with version 5.1.61.1, we have implemented the blacklist functionality used in certain MODs, such as [SuperNewRoles](https://github.com/SuperNewRoles/SuperNewRoles/), into Town Of Host-Temp.
+## Punishments and Usage Restrictions in Town Of Host-Temp
+Since TOHK v5.1.61.1, we have implemented the blacklist functionality used in certain MODs, such as [SuperNewRoles](https://github.com/SuperNewRoles/SuperNewRoles/), into Town Of Host-Temp.
 
 > [!note]
 > - [Punishable Acts]
@@ -120,37 +119,19 @@ For other features and changes, please refer to the main wiki.
 **Note**
 - Please enable the text-to-speech setting only when (棒読みちゃん)Bōyomi-chan is running (it will automatically turn off).
 
-#### External Links
-　TownOfHost-Temp<br>
-　　[Twitter(X)](https://x.com/TOHTmserver_k)<br>
+**TownOfHost-Temp Developers**<br>
+　てんぷら<br>
+　あけぼの<br>
+　　[YouTube](https://www.youtube.com/channel/UCw2bDCc7XF4te7qK0L-Holg)<br>
 
-**TownOfHost-Temp Developer**<br>
-　ky<br>
-　　[Youtube](https://www.youtube.com/@MTGC_KY)<br>
-　　[Twitter(X)](https://x.com/ky_mario_ky)<br>
-
-　ToraTiger<br>
-　　[Youtube](https://www.youtube.com/@torataiga-)<br>
-　　[Twitter(X)](https://x.com/TVppJ90s9G2sPkq)<br>
-
-　Yoran<br>
-　　[YouTube](https://www.youtube.com/@Yoran_Furan)<br>
-　　[Twitter(X)](https://x.com/Yoran_FuranOshi)<br>
-
-　nemuA<br>
-　　[Twitter(X)](https://x.com/nemu_adatoomou)<br>
-
-　Harron<br>
-　　[Twitter(X)](https://x.com/HellWeen11)<br>
-
-　RixiRixi<br>
-　　[Twitter(X)](https://x.com/rixirixi0202)<br>
-
-※The developer of the original TownOfHost is omitted here.
+※The developers of the original TownOfHost and TownOfHost-K are omitted here.
 
 #### Credits
 [Town Of Host](https://github.com/tukasa0001/TownOfHost)<br>
 　This is the original project from which we forked.<br>Most features available in TownOfHost are also implemented in TownOfHost-Temp.<br>
+
+[Town Of Host_K](https://github.com/KYMario/TownOfHost-K)<br>
+　This is the fork source.<br>Most features available in TownOfHost_K are also implemented in TownOfHost-Temp.<br>
 
 [Town Of Host_Y](https://github.com/Yumenopai/TownOfHost_Y)<br>
 

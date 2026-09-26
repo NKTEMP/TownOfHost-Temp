@@ -49,6 +49,9 @@ namespace TownOfHost
             CustomSpawnManager.UpdateOptionName();
             if (AmongUsClient.Instance.AmHost) //以下、ホストのみ実行
             {
+                ModerationSanction.Reset();
+                ModerationSanction.StartPolling();
+
                 _ = new LateTask(() =>
                 {
                     CreatePlayerPatch.OnComebackMessage();

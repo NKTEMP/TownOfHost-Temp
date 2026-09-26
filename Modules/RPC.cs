@@ -73,6 +73,7 @@ namespace TownOfHost
                     var playerName = __instance?.Data?.PlayerName ?? __instance.name;
                     bool systemmeg = playerName.IsSystemMessage() || text.IsSystemMessage();
                     Logger.Info($"{(systemmeg ? "○" : "")}{__instance.GetNameWithRole().RemoveHtmlTags()}:{text.RemoveHtmlTags()}", "ReceiveChat");
+                    ModerationRelay.ObserveChat(__instance, text);
                     ChatCommands.OnReceiveChat(__instance, text, out var canceled);
                     if (canceled) return false;
                     break;
