@@ -25,9 +25,7 @@ namespace TownOfHost.Roles.Impostor
                 SetupOptionItem,
                 "sb",
                 colorCode: "#FF0000",
-                OptionSort: (3, 2),
-                Desc: () => GetString("StepBomberInfo"),
-                from: From.None
+                OptionSort: (3, 2)
             );
 
         public static OptionItem OptionStepsToDetonate;
