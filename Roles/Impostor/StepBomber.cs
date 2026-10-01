@@ -11,7 +11,6 @@ using TownOfHost.Roles.Core.Interfaces;
 
 namespace TownOfHost.Roles.Impostor
 {
-    [HarmonyPatch]
     public sealed class StepBomber : RoleBase, IImpostor, IKiller
     {
         public static readonly SimpleRoleInfo RoleInfo =
@@ -25,9 +24,7 @@ namespace TownOfHost.Roles.Impostor
                 SetupOptionItem,
                 "sb",
                 colorCode: "#FF0000",
-                OptionSort: (3, 2),
-                Desc: () => GetString("StepBomberInfo"),
-                from: From.None
+                OptionSort: (3, 2)
             );
 
         public static OptionItem OptionStepsToDetonate;
@@ -49,34 +46,40 @@ namespace TownOfHost.Roles.Impostor
         private float _clickWindowTimer = 0f;
         private const float DoubleClickThreshold = 0.3f;
 
-        private int _bombCount = 1;
+        private int _bombCount;
+        static bool IsStart = OptionNotificationTiming.GetValue() == (int)NotifyType.Start;
+        static bool IsVote = OptionNotificationTiming.GetValue() == (int)NotifyType.Vote;
+        static bool IsMend = OptionNotificationTiming.GetValue() == (int)NotifyType.MeetingEnd;
 
         public StepBomber(PlayerControl player) : base(RoleInfo, player)
         {
-            _bombCount = Mathf.RoundToInt(OptionMaxBombCount.GetFloat());
+            _bombCount = OptionMaxBombCount.GetInt();
         }
-
-        public bool CanBeLastImpostor { get; } = true;
-        public bool IsKiller => true;
-
         enum OptionName
         {
-            StepsToDetonate,
-            NotificationTiming,
-            BlastRange,
-            Cooldown,
-            MaxBombCount,
-            CanKillImpostor,
-            HasNormalKill
+            MaxBombCount
+        }
+        public enum NotifyType
+        {
+            Start,
+            Vote,
+            MeetingEnd
         }
 
         private static void SetupOptionItem()
         {
+            var targetingModeNames = Enum.GetNames(typeof(NotifyType));
+
             OptionStepsToDetonate = FloatOptionItem.Create(
                 RoleInfo, 1110, "StepsToDetonate", new(5f, 300f, 5f), 20f, false);
 
+<<<<<<< HEAD
             OptionNotificationTiming = FloatOptionItem.Create(
                 RoleInfo, 1111, "NotificationTiming", new(0f, 2f, 1f), 0f, false);
+=======
+            OptionNotificationTiming = StringOptionItem.Create(
+                RoleInfo, 11, "NotificationTiming", targetingModeNames, 0, false);
+>>>>>>> 0a8bdeb28e07aa5ff52d7f4809766c9f78c98676
 
             OptionBlastRange = FloatOptionItem.Create(
                 RoleInfo, 1112, "BlastRange", new(1f, 20f, 1f), 3f, false)
@@ -86,11 +89,18 @@ namespace TownOfHost.Roles.Impostor
                 RoleInfo, 1113, GeneralOption.Cooldown, new(0f, 999f, 0.5f), 15f, false)
                 .SetValueFormat(OptionFormat.Seconds);
 
+<<<<<<< HEAD
             OptionMaxBombCount = FloatOptionItem.Create(
                 RoleInfo, 1114, "MaxBombCount", new(1f, 10f, 1f), 1f, false);
 
             OptionCanKillImpostor = FloatOptionItem.Create(
                 RoleInfo, 1115, "CanKillImpostor", new(0f, 1f, 1f), 0f, false);
+=======
+            OptionMaxBombCount = IntegerOptionItem.Create(RoleInfo, 12, OptionName.MaxBombCount, new(1, 14, 1), 2, false);
+
+            OptionCanKillImpostor = BooleanOptionItem.Create(
+                RoleInfo, 15, "CanKillImpostor", false, false);
+>>>>>>> 0a8bdeb28e07aa5ff52d7f4809766c9f78c98676
 
             OptionHasNormalKill = BooleanOptionItem.Create(
                 RoleInfo, 1116, "HasNormalKill", false, false);
@@ -275,8 +285,14 @@ namespace TownOfHost.Roles.Impostor
             static void Postfix()
             {
                 LastPositions.Clear();
+<<<<<<< HEAD
                 ResetAllClickStates();
                 CheckAndTriggerNotification(0);
+=======
+                _pendingTargetId = byte.MaxValue;
+                _clickWindowTimer = 0f;
+                CheckAndTriggerNotification(NotifyType.Start);
+>>>>>>> 0a8bdeb28e07aa5ff52d7f4809766c9f78c98676
             }
         }
 
@@ -290,7 +306,7 @@ namespace TownOfHost.Roles.Impostor
 
                 if (currentState == 1 && !hasTriggeredVote)
                 {
-                    CheckAndTriggerNotification(1);
+                    CheckAndTriggerNotification(NotifyType.Start);
                     hasTriggeredVote = true;
                 }
                 else if (currentState != 1)
@@ -305,7 +321,7 @@ namespace TownOfHost.Roles.Impostor
         {
             static void Postfix()
             {
-                CheckAndTriggerNotification(2);
+                CheckAndTriggerNotification(NotifyType.MeetingEnd);
             }
         }
 
@@ -315,10 +331,10 @@ namespace TownOfHost.Roles.Impostor
             static void Prefix() => ResetAll();
         }
 
-        public static void CheckAndTriggerNotification(int currentTiming)
+        public static void CheckAndTriggerNotification(NotifyType currentTiming)
         {
             if (!AmongUsClient.Instance.AmHost) return;
-            if (Mathf.RoundToInt(OptionNotificationTiming.GetFloat()) != currentTiming) return;
+            if (OptionNotificationTiming.GetValue() != (int)currentTiming) return;
 
             foreach (var bomb in PlantedBombs.ToList())
             {
@@ -356,7 +372,7 @@ namespace TownOfHost.Roles.Impostor
 
                 if (Vector2.Distance(explodePos, alivePlayer.transform.position) <= range)
                 {
-                    if (OptionCanKillImpostor.GetFloat() < 0.5f && alivePlayer.GetCustomRole().IsImpostor())
+                    if (!OptionCanKillImpostor.GetBool() && alivePlayer.GetCustomRole().IsImpostor())
                         continue;
 
                     if (CustomRoleManager.OnCheckMurder(bomber, alivePlayer, alivePlayer, alivePlayer, force: true, DontRoleAbility: true, Killpower: 1, deathReason: CustomDeathReason.Bombed))
