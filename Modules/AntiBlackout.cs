@@ -297,7 +297,6 @@ namespace TownOfHost
                     }
                     if (!isalive && pc.IsGhostRole())
                     {
-                        setrole = RoleTypes.GuardianAngel;
                     }
 
                     sender.StartRpc(pc.NetId, RpcCalls.SetRole)
@@ -336,9 +335,7 @@ namespace TownOfHost
                         //Player.RpcExileV3();
                         if (Player.PlayerId == PlayerControl.LocalPlayer.PlayerId && Player.IsGhostRole())
                         {
-                            Player.RpcSetRole(RoleTypes.GuardianAngel, true);
                             Player.RpcResetAbilityCooldown();
-                            Player.GetPlayerState().NowRoleType = RoleTypes.GuardianAngel;
                         }
                     }
                 }, Main.LagTime, "Re-SetRole", true);

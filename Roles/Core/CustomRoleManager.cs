@@ -859,11 +859,13 @@ public enum CustomRoles
     Assassin,
     EvilBlender,
     UnFortuner,
+    EvilGuesser,
     //DEBUG only Impostor,
     StepBomber,
     //Madmate
     MadGuardian,
     Madmate,
+    MadGuesser,
     MadSnitch,
     MadAvenger,
     SKMadmate,
@@ -922,6 +924,7 @@ public enum CustomRoles
     InSender,
     Staff,
     Efficient,
+    NiceGuesser,
     Psychic,
     SwitchSheriff,
     NiceLogger,
@@ -956,6 +959,7 @@ public enum CustomRoles
     Terrorist,
     Executioner,
     Jackal,
+    JackalGuesser,
     //TOHTm
     Remotekiller,
     Chef,
@@ -1055,6 +1059,7 @@ public enum CustomRoles
     GhostNoiseSender,
     GhostReseter,
     GuardianAngel,
+    SpiritGuide,
     GhostRumour,
     //NeutralGhost
     AsistingAngel,

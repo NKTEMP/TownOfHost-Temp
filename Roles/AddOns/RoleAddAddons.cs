@@ -83,8 +83,12 @@ namespace TownOfHost
             this.Role = role;
             var rolename = RoleName == CustomRoles.NotAssigned ? role : RoleName;
             Dictionary<string, string> replacementDic = new() { { "%role%", Utils.ColorString(UtilsRoleText.GetRoleColor(rolename), UtilsRoleText.GetRoleName(rolename)) } };
-            GiveAddons = BooleanOptionItem.Create(idStart++, "addaddons", DefaaultOn || NeutralKiller, tab, false).SetParent(Options.CustomRoleSpawnChances[role]).SetParentRole(role)
-                    .SetValueFormat(OptionFormat.None).SetParentRole(role);
+            GiveAddons = BooleanOptionItem.Create(idStart++, "addaddons", DefaaultOn || NeutralKiller, tab, false);
+            // RoleAddAddons can be constructed while the role spawn options are still being registered.
+            // Do not index the dictionary blindly during that phase.
+            if (Options.CustomRoleSpawnChances is not null && Options.CustomRoleSpawnChances.TryGetValue(role, out var roleSpawnChance))
+                GiveAddons.SetParent(roleSpawnChance);
+            GiveAddons.SetParentRole(role).SetValueFormat(OptionFormat.None);
             GiveAddons.ReplacementDictionary = replacementDic;
             GiveGuesser = BooleanOptionItem.Create(idStart++, "GiveGuesser", false, tab, false).SetParent(GiveAddons).SetParentRole(role);
             CanGuessTime = IntegerOptionItem.Create(idStart++, "CanGuessTime", new(1, 15, 1), 3, tab, false).SetParent(GiveGuesser).SetParentRole(role)
@@ -137,7 +141,12 @@ namespace TownOfHost
             GiveSlacker = BooleanOptionItem.Create(idStart++, "GiveSlacker", false, tab, false).SetParentRole(role).SetParent(GiveAddons);
             GiveSunglasses = BooleanOptionItem.Create(idStart++, "GiveSunglasses", false, tab, false).SetParentRole(role).SetParent(GiveAddons);
             SunglassesVisionmagnification = FloatOptionItem.Create(idStart++, "SunglassesVisionmagnification", new(1f, 100f, 1f), 75, tab, false).SetParent(GiveSunglasses).SetParentRole(role).SetValueFormat(OptionFormat.Percent)
-                    .SetTooltip(() => string.Format(Translator.GetString("SunglassesVisionmagnification_Info"), Main.NormalOptions.CrewLightMod, Main.NormalOptions.CrewLightMod * SunglassesVisionmagnification.GetFloat() * 0.01f, Main.NormalOptions.ImpostorLightMod, Main.NormalOptions.ImpostorLightMod * SunglassesVisionmagnification.GetFloat() * 0.01f));
+                    .SetTooltip(() =>
+                    {
+                        var normalOptions = Main.NormalOptions;
+                        if (normalOptions is null) return string.Empty;
+                        return string.Format(Translator.GetString("SunglassesVisionmagnification_Info"), normalOptions.CrewLightMod, normalOptions.CrewLightMod * SunglassesVisionmagnification.GetFloat() * 0.01f, normalOptions.ImpostorLightMod, normalOptions.ImpostorLightMod * SunglassesVisionmagnification.GetFloat() * 0.01f);
+                    });
 
             role = RoleName == CustomRoles.NotAssigned ? role : RoleName;
 

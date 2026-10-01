@@ -61,15 +61,15 @@ namespace TownOfHost
         public const string PluginGuid = "com.nktmp.TownOfHost-Temp";
         //バージョン名いったんこれで行かせて()
         //(メインバージョン v4とかv5とか v3以上で).(サブバージョン.1 .2など).(Kの最新バージョン　32.54など)
-        public const string PluginVersion = "3.17.32.54";//ほんとはx.y.z表記にしたかったけどx.y.z.km.ks表記だと警告だされる
-        public const string PluginShowVersion = "3.17.32.54";
-        public const string ModVersion = ".32.54";//リリースver用バージョン変更
+        public const string PluginVersion = "3.18.32.57";//ほんとはx.y.z表記にしたかったけどx.y.z.km.ks表記だと警告だされる
+        public const string PluginShowVersion = "3.18.32.57";
+        public const string ModVersion = ".32.57";//リリースver用バージョン変更
 
         /// 配布するデバッグ版なのであればtrue。リリース時にはfalseにすること。
         public static bool DebugVersion = false;
 
         // サポートされている最低のAmongUsバージョン(Readmeも変える)
-        public static readonly string LowestSupportedVersion = "2026.8.18";
+        public static readonly string LowestSupportedVersion = "2026.9.29";
         // このバージョンのみで公開ルームを無効にする場合
         public static readonly bool IsPublicAvailableOnThisVersion = false;
         public Harmony Harmony { get; } = new Harmony(PluginGuid);
@@ -79,8 +79,8 @@ namespace TownOfHost
         public static string ExceptionMessage;
         public static bool ExceptionMessageIsShown = false;
         public static string credentialsText;
-        public static NormalGameOptionsV11 NormalOptions => GameOptionsManager.Instance.currentNormalGameOptions;
-        public static HideNSeekGameOptionsV11 HideNSeekSOptions => GameOptionsManager.Instance.currentHideNSeekGameOptions;
+        public static NormalGameOptionsV12 NormalOptions => GameOptionsManager.Instance.currentNormalGameOptions;
+        public static HideNSeekGameOptionsV12 HideNSeekSOptions => GameOptionsManager.Instance.currentHideNSeekGameOptions;
         //Client Options
         public static ConfigEntry<string> HideName { get; private set; }
         public static ConfigEntry<string> HideColor { get; private set; }

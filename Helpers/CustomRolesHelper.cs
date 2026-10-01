@@ -173,7 +173,6 @@ namespace TownOfHost
         public static bool IsMainRole(this CustomRoles role) => role < CustomRoles.NotAssigned;
         public static bool IsCrewmate(this RoleTypes role) =>
             role is RoleTypes.Crewmate or RoleTypes.CrewmateGhost or
-                    RoleTypes.Engineer or RoleTypes.GuardianAngel or
                     RoleTypes.Noisemaker or RoleTypes.Scientist or RoleTypes.Tracker or RoleTypes.Detective or RoleTypes.Judge;
         public static bool IsSubRole(this CustomRoles role) => role.IsAddOn() || role.IsLovers() || role.IsGhostRole() || role is CustomRoles.Amanojaku or CustomRoles.Twins or CustomRoles.Faction;
         public static bool IsLovers(this CustomRoles roles, bool checkonelover = true)
@@ -269,6 +268,8 @@ namespace TownOfHost
             }
             if (CustomRoles.LastImpostor.IsPresent() && LastImpostor.giveguesser) return true;
             if (CustomRoles.LastNeutral.IsPresent() && LastNeutral.GiveGuesser.GetBool()) return true;
+            if (CustomRoles.NiceGuesser.IsPresent() || CustomRoles.EvilGuesser.IsPresent()
+                || CustomRoles.JackalGuesser.IsPresent() || CustomRoles.MadGuesser.IsPresent()) return true;
 
             return false;
         }
@@ -294,7 +295,6 @@ namespace TownOfHost
                 if (roleOpt is null) return 0;
                 return role switch
                 {
-                    CustomRoles.GuardianAngel => roleOpt.GetNumPerGame(RoleTypes.GuardianAngel),
                     CustomRoles.Crewmate => roleOpt.GetNumPerGame(RoleTypes.Crewmate),
                     _ => Options.GetRoleCount(role)
                 };
@@ -308,7 +308,8 @@ namespace TownOfHost
         {
             if (role.IsVanilla())
             {
-                var roleOpt = Main.NormalOptions.RoleOptions;
+                var roleOpt = Main.NormalOptions?.RoleOptions;
+                if (roleOpt is null) return 0;
                 return role switch
                 {
                     CustomRoles.GuardianAngel => roleOpt.GetChancePerGame(RoleTypes.GuardianAngel),

@@ -8,13 +8,14 @@
     <langVersion>preview</langVersion>
     <AssemblyName>TownOfHost-Temp</AssemblyName>
     <NoWarn>MSB3246</NoWarn>
-	<AmongUs>D:\SteamLibrary\steamapps\common\TOH-T</AmongUs>
+		<!-- Override with /p:AmongUs=... when building against a different game install. -->
+		<AmongUs Condition="'$(AmongUs)' == ''">..\TeU</AmongUs>
 	<GitInfo>false</GitInfo>
 	<GenerateGitInfo>false</GenerateGitInfo>
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="$(AmongUs)\BepInEx\core\*.dll" />
+    <Reference Include="$(AmongUs)\BepInEx\core\*.dll" Exclude="$(AmongUs)\BepInEx\core\0Harmony20.dll;$(AmongUs)\BepInEx\core\BepInEx.dll" />
     <Reference Include="$(AmongUs)\BepInEx\interop\*.dll" />
     <EmbeddedResource Include=".\Resources\**" />
   </ItemGroup>

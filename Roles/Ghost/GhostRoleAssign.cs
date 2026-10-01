@@ -104,7 +104,6 @@ namespace TownOfHost.Roles.Ghost
                         }
                         if (!IsDead)
                         {
-                            pc.RpcSetRole(RoleTypes.GuardianAngel, true);
                             _ = new LateTask(() => pc.RpcResetAbilityCooldown(Sync: true), 0.5f, "GhostRoleResetAbilty");
                         }
                         else
@@ -113,7 +112,6 @@ namespace TownOfHost.Roles.Ghost
                                 {
                                     if (!GameStates.CalledMeeting)
                                     {
-                                        pc.RpcSetRole(RoleTypes.GuardianAngel, true);
                                         _ = new LateTask(() => pc.RpcResetAbilityCooldown(Sync: true), 0.5f, "GhostRoleResetAbilty");
                                     }
                                 }, 1.4f, "Fix sabotage");

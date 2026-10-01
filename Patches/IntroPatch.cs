@@ -166,7 +166,7 @@ namespace TownOfHost
                 }
             }
             logger.Info("------------基本設定------------");
-            var tmp = GameOptionsManager.Instance.CurrentGameOptions.ToHudString(GameData.Instance ? GameData.Instance.PlayerCount : 10).Split("\r\n").Skip(1).SkipLast(11);
+            var tmp = GameOptionsManager.Instance.CurrentGameOptions.ToHudString(GameData.Instance ? GameData.Instance.PlayerCount : 10).Split("\r\n").Skip(1).SkipLast(12);
             foreach (var t in tmp) logger.Info(t);
             logger.Info("------------詳細設定------------");
             foreach (var o in OptionItem.AllOptions.Where(o => o is not ObjectOptionitem))
@@ -562,18 +562,7 @@ namespace TownOfHost
                     CustomButtonHud.BottonHud(true);
                 }, 0.3f, "setnames", true);
 
-                bool IsPlayerSkinShuffleMode = Options.AllPlayerSkinShuffle.GetBool() && (Event.April || Event.Special);
-                if (IsPlayerSkinShuffleMode)
-                {
-                    PlayerCatch.AllPlayerControls.Do(pc =>
-                    {
-                        if (!Camouflage.PlayerSkins.TryGetValue(pc.PlayerId, out var outfit)) return;
-
-                        if (Options.ColorNameMode.GetBool()) pc.RpcSetName(Palette.GetColorName(outfit.ColorId));
-                        else pc.RpcSetName(outfit.PlayerName);
-                    });
-                }
-                else if (Options.ColorNameMode.GetBool())
+                if (Options.ColorNameMode.GetBool())
                 {
                     PlayerCatch.AllPlayerControls.Do(pc =>
                     {
@@ -584,7 +573,7 @@ namespace TownOfHost
                 _ = new LateTask(() =>
                 {
                     CustomRoleManager.AllActiveRoles.Values.Do(role => role.ChangeColor());
-                    UtilsNotifyRoles.NotifyRoles(NoCache: IsPlayerSkinShuffleMode || Options.ColorNameMode.GetBool(), ForceLoop: true);
+                    UtilsNotifyRoles.NotifyRoles(NoCache: Options.ColorNameMode.GetBool(), ForceLoop: true);
 
                     ExtendedRpc.AllPlayerOnlySeeMePet();
                     SuddenDeathMode.NotTeamKill();

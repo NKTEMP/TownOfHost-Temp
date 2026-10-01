@@ -345,7 +345,6 @@ namespace TownOfHost
             input = FixRoleNameInput(input).ToLower();
             foreach (CustomRoles role in Enum.GetValues(typeof(CustomRoles)))
             {
-                if (!includeVanilla && role.IsVanilla() && role != CustomRoles.GuardianAngel) continue;
                 if (input == GuessManager.ChangeNormal2Vanilla(role))
                 {
                     output = role;

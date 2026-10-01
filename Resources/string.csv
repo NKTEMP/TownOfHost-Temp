@@ -1,4 +1,4 @@
-"id","0","11","13","14","5","2","3"
+﻿"id","0","11","13","14","5","2","3"
 "## Translators"
 "#5  RusTranslation: Tommy-XL"
 "#13 SChinese:fivefirex&ZeMingOH233  2T&MC-AS-Huier&xiaojin xyjx001(Edit: Tanakanira)"
@@ -20,8 +20,10 @@
 "Phantom","Phantom","ファントム"
 "Viper","Viper","バイパー"
 "Judge","Judge","ジャッジ"
+"SpiritGuide","Influencer","インフルエンサー"
 
 "# 特殊インポスター役職"
+"EvilGuesser","Evil Guesser","イビルゲッサー"
 "BountyHunter","Bounty Hunter","バウンティハンター","赏金猎人","賞金獵人","Охотник за головами","Caçador de Recompensas","Caçador de Recompensas"
 "Mare","Mare","メアー","梦魇","獵夢者","Ночной","Mare","Mare"
 "FireWorks","Fireworker","花火職人","烟花商人","煙火工匠","Фейерверк","Fogos de Artifício","Fogos de Artifício"
@@ -79,6 +81,7 @@
 "#ImpostorName"
 
 "# マッドメイト系役職"
+"MadGuesser","Mad Guesser","マッドゲッサー"
 "Madmate","Madmate","マッドメイト","叛徒","叛徒","Безумец","Tripulante Louco","Tripulante Louco"
 "MadGuardian","Mad Guardian","マッドガーディアン","背叛的天使","背叛的天使","Безумный Страж","Guardião Louco","Guardião Louco"
 "MadSnitch","Mad Snitch","マッドスニッチ","背叛的告密者","背叛的告密者","Безумный Стукач","Dedo-Duro Louco","Dedo-Duro Louco"
@@ -100,6 +103,7 @@
 "#MadmateName"
 
 "# 特殊クルー役職"
+"NiceGuesser","Nice Guesser","ナイスゲッサー"
 "Bait","Bait","ベイト","诱饵","誘餌","Приманка","Isca","Isca"
 "Lighter","Lighter","ライター","执灯人","持燈人","Фонарь","Lanterneiro","Isqueiro"
 "Mayor","Mayor","メイヤー","市长","市長","Мэр","Prefeito","Prefeito"
@@ -157,6 +161,7 @@
 "#CrewmateName"
 
 "# ニュートラル役職"
+"JackalGuesser","Jackal Guesser","ジャッカルゲッサー"
 "Arsonist","Arsonist","アーソニスト","纵火犯","縱火犯","Поджигатель","Incendiário","Incendiário"
 "Jester","Jester","ジェスター","小丑","小丑","Шут","Bobo","Bobo"
 "Terrorist","Terrorist","テロリスト","恐怖分子","恐怖分子","Террорист","Terrorista","Terrorista"
@@ -318,6 +323,7 @@
 "NeutralInfo","Independent forces unaffiliated with any other teams","他のどの陣営にも属さない孤高の陣営","不属于其他阵营的独立阵营","你屬於一個獨立陣營且不受其他陣營或職業的獲勝條件引響","Команда которая не принадлежит ни к каким другим командам","Forças independentes que não pertencem a nenhuma outra equipe","Um time solitário que não pertence a nenhum outro time"
 
 "# 特殊インポスター役職"
+"EvilGuesserInfo","Sacrifice anyone for victory.","時には仲間をも犠牲にする"
 "BountyHunterInfo","Eliminate your target","標的を確実に仕留めよう","猎杀你的赏金目标","拿下你的目標","Охотьтесь за своей целью","Elimine o seu alvo","Elimine o seu alvo"
 "MareInfo","Darkness aids you. Kill","闇の世界で暗殺せよ","在黑暗中作案","你恐懼黑暗嗎?","Убивайте в темноте","A escuridão está do seu lado. Mate!","O escuro está do seu lado. Mate"
 "FireWorksInfo","Go out with a BANG","最後に一華咲かせよう","一起来看最后的烟花吧","在最後時刻來放煙火吧","Морфитесь чтобы поставить фейерверк","Termine com uma EXPLOSÃO","Termine com uma EXPLOSÃO"
@@ -379,6 +385,7 @@
 "#ImpostorInfo"
 
 "# マッドメイト系役職"
+"MadGuesserInfo","Mad bullets protect the master.","狂気の弾丸で主人を護れ！"
 "MadmateInfo","Help the Impostors","インポスターの援助をしよう","帮助内鬼","幫助偽裝者","Помогите Предателям","Ajude os Impostores","Ajude os Impostores"
 "BeforeMadmateInfo","Finish your tasks","タスクを済ませろ","完成你的任务","完成你的任務","Завершите свои задания","Termine as suas tarefas","Termine as suas tarefas"
 "MadGuardianInfo","Finish your tasks and help the Impostors","タスクを済ませ、インポスターの援助をしよう","完成任务后来帮助内鬼","完成你的任務並幫助偽裝者","Завершите свои задания, чтобы помочь Предателям","Termine as suas tarefas e ajude os Impostores","Termine as suas tarefas e ajude os Impostores"
@@ -401,6 +408,7 @@
 "#MadmateInfo"
 
 "# 特殊クルー役職"
+"NiceGuesserInfo","Expose and eliminate the traitors!","裏切者を打ち抜け！"
 "BaitInfo","Trap your enemies","敵を罠にはめよう","引诱敌人落入你的陷阱当中","誘捕你的敵人","Ловите своих врагов","Prenda os seus inimigos","Prenda os seus inimigos"
 "LighterInfo","Light 'em up","すべてを照らそう","驱散黑暗，照亮前路","夜空中最亮的星","Увеличьте свой обзор выполнив свои задания","Luz para todo lado","Luz para todo lado"
 "MayorInfo","Your vote has more influence","自分の票が何倍もの力を持っている","你的投票更有分量","你的票數更多更有料","У вас больше голосов","O seu voto tem mais influência","O seu voto tem mais influência"
@@ -459,6 +467,7 @@
 "#CrewmateInfo"
 
 "# ニュートラル役職"
+"JackalGuesserInfo","No one leaves this place alive.","誰も生かしては帰さない"
 "ArsonistInfo","Burn them to crisps","燃やせ","火焰给我燃烧起来吧！","燒吧，燒吧，燃燒吧","Облейте и подожгите всех игроков","Queime tudo em pedacinhos","Queime tudo em pedacinhos"
 "JesterInfo","Get voted out","追放されよう","让他们把你这个假货投出去","想個辦法讓你被投出去","Заставь игроков изгнать себя","Seja exilado","Seja exilado"
 "OpportunistInfo","Just stay alive","とにかく生き残りましょう","苟着吧，苟也是个不错的选择","盡你所能地活下去吧!","Останьтесь в живых","Sobreviva a qualquer custo","Sobreviva a qualquer custo"
@@ -533,6 +542,7 @@
 "DemonicCrusherInfo","Dokaaaan!","どっかーん！"
 "DemonicSupporterInfo","Carry out sabotage","サボタージュを起こそう"
 "AsistingAngelInfo","will lead you to victory.","君を勝たせてあげる..."
+"SpiritGuideInfo","The best one","最高の一枚を"
 
 "# 属性"
 "LastImpostorInfo","You are the last of us","残ったのはあなただけ","你是狼村最后的希望…","你是狼村最後的希望...","Ты последний предатель","Você é o último Impostor","Você é o último Impostor"
@@ -581,6 +591,7 @@
 "## 役職説明ロング"
 
 "# 特殊インポスター役職"
+"EvilGuesserInfoLong","During meetings, choose a player and submit a role guess. A correct guess eliminates the target; a wrong guess costs the Evil Guesser their life. Use /cmd bt with the player ID shown beside the player name.","会議中にプレイヤーを選び、その役職を推理する。推測が正しければ対象を排除できるが、外した場合はイビルゲッサー自身が死亡する。/cmd bt にプレイヤー名の横に表示されるIDと役職名を指定して使用する。"
 "BountyHunterInfoLong","If you kill your indicated target, your next kill cooldown will be greatly reduced.\nIf you kill anyone other than your target, your next kill cooldown will increase.\nThe target swaps after a configurable amount of time.","表示されたターゲットをキルした場合、次のキルクールがとても短くなる。\nターゲットではないプレイヤーをキルした場合は、キルクールが伸びてしまう。\nターゲットは一定時間ごとに変更される。","(内鬼阵营):\n如果赏金猎人击杀了赏金目标，击杀冷却缩短。\n反之，则冷却增加。","(偽裝者陣營):\n如果賞金獵人殺了賞金目標，下一次的殺人冷卻會變得非常的短\n如果賞金獵人殺了非賞金目標，下一次的殺人冷卻將會被延長或不變\n目標將會重置在時間結束或殺死賞金目標後。","(Предатель):\nЕсли Охотник за головами убьет назначенную ему цель, время отката убийства будет намного меньше чем обычно. \n При убийстве игрока который не является его целью, приводит к стандартному времени отката убийства. \nЦели меняются спустя какое-то время","(Impostores):\nSe você matar o seu alvo, o tempo de recarga (abate) será mais rápido.\nMatar um jogador que não seja seu alvo, resulta em um tempo de recarga (abate) maior.\nOs alvos são alterados em intervalos regulares."," (Impostores):\nSe você matar o seu alvo, o tempo de morte será mais rápido.\nMatar um jogador que não seja seu alvo, resulta em um tempo de morte maior.\nOs alvos são alterados em intervalos regulares."
 "FireWorksInfoLong","Whenever you shapeshift, you can place a firework.\n After placing all fireworks, you can set them all off at once when you shapeshift once you become the last impostor.\nOnce you start placing fireworks, you cannot kill until the fireworks go off.","ワンクリックボタンを押すことで花火を最大5か所に設置可能。\nすべて設置した後、インポスター最後の生き残りになった時に再度ワンクリックボタンを押すことで一斉起爆できる。\n花火が設置されている間はキルできない。(設定有)","(内鬼阵营):\n烟花商人可以安放烟花炸弹，造成范围性杀伤。\n烟花商人在变形状态下可以安放至多三个烟花炸弹。\n当存活的内鬼阵营玩家仅剩烟花商人且烟花炸弹安置完毕时，烟花商人可以在变形状态下引爆炸弹。\n烟花商人不可以进行常规击杀，除非安放并引爆所有烟花炸弹。\n烟花炸弹可以同样炸死烟花商人自己。\n如果烟花炸弹炸死所有存活玩家，内鬼阵营将获胜。","(偽裝者陣營):\n煙火工匠可以放置煙火來造成範圍性傷害，煙火工匠可以以變形來放置煙火，最多可以放置三個煙火，但是在煙火工匠放置完所有煙火前無法殺人\n如果他的隊友都已經死亡的話，煙火工匠便可以引爆煙火。\n如果煙火工匠也在爆炸中被炸死，偽裝者陣營同樣獲勝。","(Предатель):\nФейерверк может поставить несколько фейерверков с помощью Морфлинга. \nПосле установки всех фейерверков он может поджечь их все сразу с помощью использования Морфлинга, когда он является последним Предателем. \nТолько после этого он сможет убивать."," (Impostores):\nAo mudar de corpo, você coloca um fogo de artifício.\nDepois de colocar todos, você pode acender tudo de uma vez ao trocar de corpo sendo o último Impostor.\nQuando começar a colocar fogos de artifício, você não poderá matar até eles explodirem."," (Impostores):\nAo mudar de corpo, você coloca um fogo de artifício.\nDepois de colocar todos, você pode acender tudo de uma vez ao trocar de corpo sendo o último Impostor.\nQuando começar a colocar fogos de artifício, você não poderá matar até eles explodirem."
 "SerialKillerInfoLong","You have a shorter kill cooldown than other impostors', but you will die if you don't kill before the end of your shapeshift cooldown.","キルクールが他のインポスターに比べて短い反面、変身のクールタイムが明ける前にキルしないと自爆する。","(内鬼阵营):\n嗜血杀手的冷却因为他的杀戮欲望而更快。\n嗜血杀手若不能在一定时间内进行击杀，\n就会因承受不了自己的杀戮欲望而自杀。","(偽裝者陣營):\n嗜血殺手的殺人冷卻是所有偽裝者中最短的一個。\n但是如果嗜血殺手沒有在自殺倒數歸零前再殺人，嗜血殺手將會自殺。","(Предатель):\nУ Серийного Убийцы еще более короткий откат убийства. \nНо если он не совершит убийство в установленный срок, то он мгновенно убьет сам себя.","(Impostores):\nO seu tempo de recarga (abate) é menor, porém, se você não matar no prazo morrerá no fim do seu tempo de mutação.","(Impostores):\nO seu tempo de morte é menor, porém, se você não matar no prazo morrerá no fim do seu tempo de mutação."
@@ -640,6 +651,7 @@
 "#ImpostorInfoLong"
 
 "# マッドメイト系役職"
+"MadGuesserInfoLong","The Mad Guesser is a Madmate who can challenge another player role during meetings. A correct guess eliminates the target; an incorrect guess eliminates the Mad Guesser. Use /cmd bt with the player ID and role name.","マッドメイト陣営に属し、会議中に他プレイヤーの役職を推理できる。推測が正しければ対象を排除できるが、外した場合はマッドゲッサー自身が死亡する。/cmd bt にプレイヤーIDと役職名を指定して使用する。"
 "MadmateInfoLong","You are a crewmate, but you act as the impostors' ally.\nYou and the impostors cannot recognize each other.\nYou can vent, and you have no tasks.","クルーだがインポスターの味方をする。\nインポスターと互いに認識できない。\nベントが使え、タスクはない。","(内鬼阵营):\n叛徒伪装成船员来帮助内鬼阵营，但是他们并不知道谁是内鬼。\n叛徒不可以进行击杀或者破坏，可以跳管道且没有任务。","(偽裝者陣營):\n叛徒屬於偽裝者陣營。\n偽裝者無法知道叛徒是誰，他可以使用通風口且沒有任務。","(Предатель):\nЧлен Экипажа, который на стороне Предателей. \nНо он не знает кто является Предателем в игре. \nМожет использовать вентиляцию, но нет заданий.","(Impostores):\nVocê é um tripulante que se aliou ao impostor.\nOs Impostores não sabem quem você é e vice-versa.\nPode usar a ventilação, e não tem tarefas.","(Impostores):\nVocê é um tripulante que se aliou ao impostor.\nOs Impostores não sabem quem você é e vice-versa.\nPode usar a ventilação, e não tem tarefas."
 "MadGuardianInfoLong","You are a crewmate, but you act as the impostors' ally.\nYou and the impostors cannot recognize each other.\nOnce you finish your tasks, you will be shielded from impostor kills.","クルーだがインポスターの味方をする。\nインポスターと互いに認識できない。\n規定数タスクを完了させると、シールドが付与される。","(内鬼阵营):\n背叛的守卫不可以击杀、破坏或使用管道。\n背叛的守卫完成任务之后，可以免疫所有击杀。","(狼人陣營):\n船員,但是他們屬於狼人陣營.\n狼人和他們無法互相知道誰是叛徒,誰是狼\n當背叛的天使完成所有任務時,他將有一個盾牌。","(Предатель):\nЧлен Экипажа, который на стороне Предателей. \nНо он не знает кто является Предателем в игре. \nЕсли он выполнит все задания, то он получит щит, с помощью которого он может предотвратить свое убийство.","(Impostores):\nVocê é um tripulante que se aliou ao impostor.\nOs Impostores não sabem quem você é e vice-versa.\nQuando terminar as suas tarefas, o Impostor não poderá te matar.","(Impostores):\nVocê é um tripulante que se aliou ao impostor.\nOs Impostores não sabem quem você é e vice-versa.\nQuando terminar as suas tarefas, o Impostor não poderá te matar."
 "MadSnitchInfoLong","You are a crewmate, but you act as the impostors' ally.\nYou and the impostors cannot recognize each other, but once you finish all tasks, you can see who the impostors are.","クルーだがインポスターの味方をする。\nインポスターと互いに認識できないが、既定のタスク数を完了させるとマッドスニッチからインポスターを認識できるようになる。","(内鬼阵营):\n背叛的告密者与内鬼不互认，不可以击杀、破坏或者使用管道。\n背叛的告密者完成所有任务之后，其与内鬼互认。","(狼人陣營):\n船員,但是他們屬於狼人陣營.\n狼人和他們無法互相知道誰是叛徒,誰是狼\n當背叛的告密者做完任務時,狼人和背叛的告密者將可以互相知道對方。","(Предатель):\nЧлен Экипажа, который на стороне Предателей. \nОн может увидеть, кто является Предателем, после того как выполнит все свои задания. \nВ зависимости от настроек он может использовать вентиляцию.","(Impostores):\nVocê é um tripulante que se aliou ao impostor.\nOs Impostores não sabem quem você é e vice-versa.\nQuando terminar as suas tarefas, você poderá ver quem é o Impostor.","(Impostores):\nVocê é um tripulante que se aliou ao impostor.\nOs Impostores não sabem quem você é e vice-versa.\nQuando terminar as suas tarefas, você poderá ver quem é o Impostor."
@@ -661,6 +673,7 @@
 "#MadmateInfoLong"
 
 "# 特殊クルー役職"
+"NiceGuesserInfoLong","During meetings, the Nice Guesser may challenge another player role. A correct guess removes the target, while a wrong guess causes the Nice Guesser to die. Use /cmd bt with the player ID and role name.","会議中に他プレイヤーの役職を推理できる。推測が正しければ対象を排除できるが、外した場合はナイスゲッサー自身が死亡する。/cmd bt にプレイヤーIDと役職名を指定して使用する。"
 "BaitInfoLong","When you are killed, you force your killer to immediately self-report.","キルされた時に、自身をキルした人に\n強制的にセルフレポートさせる事ができる。","(船员阵营):\n诱饵被击杀时，击杀诱饵的凶手将被迫报告。","(船員):\n當被殺時,兇手將強制自行舉報","(Член Экипажа):\nКогда Приманку убивают, он заставляет убившего игрока \nмоментально зарепортить ваш труп.","(Tripulantes):\nQuando morrer, você força o seu assassino a reportar o seu corpo imediatamente.",""
 "LighterInfoLong","Your vision will increase.","条件を満たすと、自分の視界を広げることができる。","(船员阵营):\n执灯人完成任务后，视野会扩大，且不受照明破坏影响。","(船員):\n當做完所有任務時可以增大視野且不受關燈影響","(Член Экипажа):\nПосле выполнения всех заданий Фонарик сможет увеличить свое поле зрения.","(Tripulantes):\nQuando você terminar todas as suas tarefas, sua visão irá aumentar.",""
 "MayorInfoLong","You have multiple votes, which will all go towards the one person you vote or skip.","会議の票を複数持ち、まとめて一人または\nスキップに入れることができる。(設定有)","(船员阵营):\n市长在投票时可投下多票 (票数多寡根据设置)，市长还拥有以跳通风管来召开紧急会议的能力。","(船員):\n可以一次投很多票並可以將它灌到一個人身上或跳過 (可以設定票數)","(Член Экипажа):\nМэр можете иметь несколько голосов на собрании, и проголосовать за любого игрока этими доп. голосами или \nпросто отдать все голоса в скип.","(Tripulantes):\nVocê tem votos adicionais, todo eles vão para a pessoa em que você votar ou pular.",""
@@ -719,6 +732,7 @@
 "#CrewmateInfoLong"
 
 "# ニュートラル役職"
+"JackalGuesserInfoLong","The Jackal Guesser belongs to the Jackal faction and can challenge other players roles during meetings. A correct guess eliminates the target; a wrong guess eliminates the Jackal Guesser. The normal Jackal victory condition still applies.","ジャッカル陣営に属し、会議中に他プレイヤーの役職を推理できる。推測が正しければ対象を排除できるが、外した場合はジャッカルゲッサー自身が死亡する。勝利条件は通常のジャッカル陣営に従う。"
 "ArsonistInfoLong","When you use the kill button, you douse your target in oil.\nAfter dousing all living players, you set everything ablaze and win by venting.","キルボタンを使おうとすると、ターゲットに油を塗れる。\nすべてのクルーに油を塗ったら船を燃やして勝利する。","(独立阵营):\n纵火犯可以通过对玩家点击击杀按钮并在跟随其数秒来完成涂油行为。\n当所有存活玩家都被纵火犯涂油后，纵火犯可以通过跳通风管来点火，并单独获得胜利。","(中立):\n當縱火犯嘗試使用殺人鍵,它將對他身邊最近的一個人澆上油,\n當他對所有玩家澆上油之後,縱火縱火犯點火即勝利。","(Нейтрал):\nПоджигатель может обливать игроков, нажав на кнопку 'Убить' и находясь рядом с игроком в течение нескольких секунд. \nПосле того как он обольёт всех живых игроков Поджигатель сможет запрыгнуть в вентиляцию, чтобы поджечь всех игроков, что приводит к победе Поджигателя.","(Neutros):\nAo apertar o botão de matar, você encharca o seu inimigo em óleo.\nApós ter encharcado todos os jogadores vivos, você coloca tudo em chamas e ganha entrando na ventilação.",""
 "JesterInfoLong","You solo victory by getting voted out during a meeting.\nIf the game ends without you getting voted out, or if you are killed, you lose.","会議で追放された時に単独勝利できる。\n追放されず試合が終了orキルされると敗北。","(独立阵营):\n小丑被放逐则小丑单独游戏胜利。\n游戏结束时若小丑仍存活则小丑输掉游戏。","(中立):\n當小丑被丟出時即宣告小丑獲勝,\n但是小丑在遊戲結束時活下來或是在遊戲中被殺即宣告失敗","(Нейтрал):\nШут сможет выиграть игру, если за него проголосуют во время голосования и он будет изгнан.\nВ противном случае Шут проиграет.","(Neutros): \nVocê ganha sozinho ao ser exilado durante uma reunião. \nSe o jogo terminar com você não sendo votado, ou você for morto, você perde.",""
 "TerroristInfoLong","You solo victory by getting killed or voted out AFTER you finish your tasks.","自身のタスクを全て完了させた状態で\nキル・追放された時に単独勝利する。","(独立阵营):\n恐怖分子完成所有任务后死亡，则恐怖分子单独获得胜利。","(中立):\n恐怖分子只要做完它的所有任務並且死亡即可獲勝","(Нейтрал):\nТеррорист побеждает в одиночку, если его убивают или изгоняют. \nНо только если все его задания будут выполнены.","(Neutros): \nVocê ganha sozinho se for morto ou exilado DEPOIS de finalizar suas tarefas.",""
@@ -759,6 +773,33 @@
 "#NeutralInfoLong"
 
 "# ImpostorDescInfos"
+"EvilGuesserDesc","During a meeting, guess another player role. A correct guess eliminates the target; an incorrect guess eliminates you.\n\n<u>Use /cmd bt (ID) (role) to make a guess.</u>","会議中に他プレイヤーの役職を推理する。的中すれば対象を排除できるが、外すと自身が死亡する。\n\n<u>/cmd bt (ID) (役職名) で推理する。</u>"
+"EvilGuesserDescSelfVote","After self-voting, vote for a target and then guess their role. A correct guess eliminates the target; an incorrect guess eliminates you.\n\n<u>Use /cmd bt (role) after selecting the target.</u>","自投票後に投票で対象を指定し、その役職を推理する。的中すれば対象を排除できるが、外すと自身が死亡する。\n\n<u>対象を指定した後、/cmd bt (役職名) で推理する。</u>"
+"NiceGuesserDesc","A crew-aligned role that can challenge another player role during a meeting. A correct guess eliminates the target; an incorrect guess eliminates you.\n\n<u>Use /cmd bt (ID) (role) to make a guess.</u>","クルー陣営として会議中に他プレイヤーの役職を推理する。的中すれば対象を排除できるが、外すと自身が死亡する。\n\n<u>/cmd bt (ID) (役職名) で推理する。</u>"
+"NiceGuesserDescSelfVote","After self-voting, vote for a target and then guess their role. A correct guess eliminates the target; an incorrect guess eliminates you.\n\n<u>Use /cmd bt (role) after selecting the target.</u>","自投票後に投票で対象を指定し、その役職を推理する。的中すれば対象を排除できるが、外すと自身が死亡する。\n\n<u>対象を指定した後、/cmd bt (役職名) で推理する。</u>"
+"JackalGuesserDesc","A Jackal faction role that can challenge another player role during a meeting. A correct guess eliminates the target; an incorrect guess eliminates you.\n\n<u>Use /cmd bt (ID) (role) to make a guess.</u>","ジャッカル陣営として会議中に他プレイヤーの役職を推理する。的中すれば対象を排除できるが、外すと自身が死亡する。\n\n<u>/cmd bt (ID) (役職名) で推理する。</u>"
+"JackalGuesserDescSelfVote","After self-voting, vote for a target and then guess their role. A correct guess eliminates the target; an incorrect guess eliminates you.\n\n<u>Use /cmd bt (role) after selecting the target.</u>","自投票後に投票で対象を指定し、その役職を推理する。的中すれば対象を排除できるが、外すと自身が死亡する。\n\n<u>対象を指定した後、/cmd bt (役職名) で推理する。</u>"
+"# Guesser UI"
+"MadGuesserSelfVoteInfo","Self-vote → choose a target → /bt role","自投票 → 対象を指定 → /bt 役職名"
+"Mode.MadGuesser","Mad Guesser mode","<#ff1919>マッドゲッサー</color>モード"
+"Vote.MadGuesser","Vote to choose a guessed target","投票で推理対象を指定"
+"MadGuesserTargetSelected","Target selected: {0}.","推理対象を {0} に指定した。"
+"MadGuesserNoTargetSelected","No target is selected.","推理対象が指定されていない。"
+"EvilGuesserSelfVoteInfo","Self-vote → choose a target → /bt role","自投票 → 対象を指定 → /bt 役職名"
+"NiceGuesserSelfVoteInfo","Self-vote → choose a target → /bt role","自投票 → 対象を指定 → /bt 役職名"
+"JackalGuesserSelfVoteInfo","Self-vote → choose a target → /bt role","自投票 → 対象を指定 → /bt 役職名"
+"Mode.EvilGuesser","Evil Guesser mode","<#999900>イビルゲッサー</color>モード"
+"Vote.EvilGuesser","Vote to choose a suspected target","投票で推理対象を指定"
+"Mode.NiceGuesser","Nice Guesser mode","<#dcf500>ナイスゲッサー</color>モード"
+"Vote.NiceGuesser","Vote to choose a guessed target","投票で推理対象を指定"
+"Mode.JackalGuesser","Jackal Guesser mode","<#00b4eb>ジャッカルゲッサー</color>モード"
+"Vote.JackalGuesser","Vote to choose a guessed target","投票で推理対象を指定"
+"EvilGuesserTargetSelected","Target selected: {0}.","推理対象を {0} に指定した。"
+"EvilGuesserNoTargetSelected","The target selection was cleared.","推理対象の指定を解除した。"
+"NiceGuesserTargetSelected","Target selected: {0}.","推理対象を {0} に指定した。"
+"NiceGuesserNoTargetSelected","No target is selected.","推理対象が指定されていない。"
+"JackalGuesserTargetSelected","Target selected: {0}.","推理対象を {0} に指定した。"
+"JackalGuesserNoTargetSelected","No target is selected.","推理対象が指定されていない。"
 "QuickKillerDesc","If you perform a kill while <b>{0}</b> or more players are alive,\nyou enter Quick Mode for <b>{1}</b> seconds.\nDuring Quick Mode, the kill cooldown is 0 seconds.\nAfter Quick Mode ends, the kill cooldown returns to normal.","<b>{0}</b>人以上生存している状態でキルをすると、\n<b>{1}</b>秒間の間、クイックモードになる\nクイックモード中はキルクールが0sになる。\nクイックモード終了時、キルクールが戻る。"
 "BorderKillerDesc","<b>{0}</b> or more players must be killed by you, otherwise you cannot win even if the Impostors win.","<b>{0}</b>人以上自身がキルを行わないと、インポスターが勝利しても自身は勝利できない。"
 "AntiReporterDesc","By using the one-click button while the Kill button is lit, you can disable the emergency meeting button and report button of the nearest player (excluding Impostors) for <b>{0}s</b> (up to <b>{1}</b> times).","キルボタンが光っている状態でワンクリックボタンを使用すると、\n1番近くにいるプレイヤー(インポスターを除く)の\n緊急会議ボタン・死体通報の使用を<b>{0}</b>無効化できる。(最大<b>{1}</b>回まで)"
@@ -789,6 +830,8 @@
 "StepBomberDesc","Target-stealth time bomb impostor. Explosive countdown begins after meetings based on steps taken.","ターゲットに気づかれないよう爆弾を仕掛け、会議後の歩数移動で爆破するインポスター陣営の役職です。",""
 
 "# MadmateDescInfos"
+"MadGuesserDesc","A Madmate role that can challenge another player role during a meeting. A correct guess eliminates the target; an incorrect guess eliminates you.\n\n<u>Use /cmd bt (ID) (role) to make a guess.</u>","マッドメイト陣営として会議中に他プレイヤーの役職を推理する。的中すれば対象を排除できるが、外すと自身が死亡する。\n\n<u>/cmd bt (ID) (役職名) で推理する。</u>"
+"MadGuesserDescSelfVote","After self-voting, vote for a target and then guess their role. A correct guess eliminates the target; an incorrect guess eliminates you.\n\n<u>Use /cmd bt (role) after selecting the target.</u>","自投票後に投票で対象を指定し、その役職を推理する。的中すれば対象を排除できるが、外すと自身が死亡する。\n\n<u>対象を指定した後、/cmd bt (役職名) で推理する。</u>"
 
 "# CrewmateDescInfos"
 "MayorDesc","Holds <b>{0}</b> votes during meetings, which can be cast all at once on one person or skipped.\n<u>{1}{2}</u>","会議の票を<b>{0}</b>票持ち、まとめて一人または\nスキップに入れることができる。<u>{1}{2}</u>"
@@ -842,6 +885,7 @@
 "DemonicSupporterInfoLong","Only granted to the Madmate faction that has dead.\nCan Use Sabotage","(幽霊役職):\n死亡したマッドメイトにしか付与されない。\nサボタージュが使用可能になる。"
 "AsistingAngelInfoLong","Only granted to the crew/neutral faction that has dead.\nWhen the assist target wins after using the Guardian Ability for the first time, you also gain an additional victory.\n\nAfter selecting an assist target, attempting to activate the Guardian ability on them grants them Kill Guard for a set duration.\nIf activated on anyone other than the assist target,\nthe location where it was activated is notified to the assist target.\nUsing this ability increases the next cooldown.\n\nGhost, Ghost Role Setting: Regardless of role, cannot see others' roles.\nOriginal victory conditions are removed, and tasks are also removed.","(幽霊役職):\n死亡したクルー/ニュートラルにしか付与されない。\n初めての守護能力を使用したアシスト対象が勝利すると自身も追加勝利する。\n\nアシスト対象選択後、守護能力をアシスト対象に発動しようとすると、\nアシスト対象に一定時間のキルガードを付与する。\nアシスト対象以外に発動した場合、\n発動した時の位置がアシスト対象者に通知される。\n能力を使用した場合、次のクールダウンが増加する。\n\n幽霊,幽霊役職設定に関わらず他人の役職などが見えない。\n元の勝利条件は無くなり、タスクもなくなる。"
 "GuardianAngelInfoLong","Only granted to the crew faction that has dead.\nWhen someone protected by your Guardian Ability for a set period is about to be killed, you block the kill with a barrier.","(幽霊役職):\n死亡したクルー陣営にしか付与されない。\n一定時間守護能力で守った人がキルされそうになった時、キルをバリアで防ぐ。"
+"SpiritGuideInfoLong","This is only granted to crew members who have died.\nDuring a task turn, you can send up to 3 marks to other players at once.","死亡したクルー陣営ににしか付与されない\nタスクターン中に他のプレイヤーへマークを一度に3つまで送ることができる。"
 
 "# 属性"
 "LastImpostorInfoLong","(Add-ons):\nAn Add-on granted to the last Impostor remaining.\nKill cooldown is reduced according to this setting.\nNot granted to Bounty Hunters, Serial Killers, or Vampires.","(属性):\n最後のインポスターに付与される属性。\nキルクールが設定した時間まで短くなる。\n一部インポスター役職には付与されない。","（效果）:\n这个效果在内鬼仅剩一人时赋予该内鬼。\n使其击杀冷却缩短。\n该效果对赏金猎人、嗜血杀手以及吸血鬼不适用。","(附加效果):\n該效果給予在場上的最後一位偽裝者，擁有該效果的偽裝者刀人冷卻時間會變短，該效果不會給予:\n賞金獵人, 連環殺手或吸血鬼 (可以設定冷卻)","(Атрибут):\nАтрибут, присваивается последнему Предателю. \nВремя отката убийства становится меньше, чем обычно. \nНе назначается Охотнику за головами, Серийному убийце или Вампиру.","(Atributos): \nUm Atributo dado ao último Impostor. \nO tempo de recarga (abate) é reduzido segundo a configuração. \nNão é dado para Caçadores de Recompensas, Serial Killers ou Vampiros.",""
@@ -1683,7 +1727,6 @@
 "AutopsyClue.Location","• Location: Near {0}","• 死亡地点: {0} 付近",""
 "AutopsyClue.Reason","• Method: {0}","• キル方法: {0}",""
 "AutopsyClue.Faction","• Killer Faction: {0} Team","• 犯人陣営: {0} 陣営",""
-"Autopsy","Autopsy Report","調査報告",""
 
 "## Neutral Role Setting"
 "SchrodingerCatExiledTeamChanges","Team Changes When Ejected","吊られた際、陣営が変化する","薛定谔的猫被放逐时会加入其他阵营","薛定諤的貓被丟出時陣營會轉變","Команда меняется после его Изгнания","Time Muda Quando Exilado",""
@@ -2842,3 +2885,8 @@
 "MM_MismatchedForkId","Cannot join because the host’s mods do not match yours","ホストとMODが一致しないため、参加できません。"
 "Unknown","Unknown","不明"
 "EvilBlender_Sabotage","PoisonGas","毒ガス"
+
+"ManualId","command","コマンド"
+"CmdAndSelfVote","command and selfvote","自投票 + コマンド"
+"TargetingMode","Estimation Methods","推測方法"
+"SantaGiftRateNiceGuesser","Chance to gift Nice Guesser","ナイスゲッサー排出確率"
