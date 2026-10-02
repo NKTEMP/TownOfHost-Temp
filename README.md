@@ -15,7 +15,7 @@ TOH-Tempで起きたバグは本家や他MODには報告しないでまずはTOH
 [TOHKはこちら](https://github.com/KYMario/TownOfHost-K)<br>
 
 ## リリース
-AmongUsバージョン : **18.0.0**~<br>
+AmongUsバージョン : **19.0.0**~<br>
 
 **最新版は[こちら](https://github.com/NKTEMP/TownOfHost-Temp/releases/latest)**<br>
 過去バージョンは[こちら](https://github.com/NKTEMP/TownOfHost-Temp/releases)<br>
