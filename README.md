@@ -1,9 +1,3 @@
-
-
-# このMODはTownOfHost-Hamoに吸収されました　以降はそちらをご利用ください
-
-
-
 # Town Of Host-Temp
 <img width="auto" height="auto" alt="TownOfHost-Temp" src="https://github.com/user-attachments/assets/edd99697-9213-45a0-8155-ce074399a137" />
 
